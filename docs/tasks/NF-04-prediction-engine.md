@@ -1,6 +1,8 @@
 # NF-04 — Molecular Prediction Engine
 
-Status: **M1 implemented and verified; M2–M5 proposed.**
+Status: **M1 and M2 implemented and verified; M3–M5 open.**
+[M2 orchestration decisions](../prediction-orchestration.md) and
+[M2 execution evidence](../testing/nf04-m2-evidence.md).
 [Contract decisions](../prediction-contracts.md) and
 [executed evidence](../testing/nf04-m1-evidence.md). Parent: [NF-EPIC-001](../EPIC.md). Initial real adapter target:
 Boltz-2; no installation or inference is authorized by this planning document.
@@ -100,12 +102,20 @@ MSA modes; never pass arbitrary CLI flags, paths or shell fragments from HTTP.
 The server loads sequences from immutable records, recomputes hashes, and does
 not trust sequence bytes supplied alongside an ID.
 
+M2 uses the additive `neurofold-prediction-status/1` envelope around the unchanged
+M1 job with an explicit nullable operational failure reason. Result and manifest
+bodies keep their exact M1 contracts. See the linked orchestration guide for
+required fields/nulls, precise errors, resource bounds and recovery semantics.
+
 | Method/path | Contract |
 | --- | --- |
-| `GET /v1/prediction-capabilities` | 200 explicit profiles/limits/availability; fake profile labeled `synthetic`; no runtime import or weight download |
-| `POST /v1/prediction-jobs` | `{reference_id, variant_id: null\|id, adapter_profile_id, parameters, seed, msa_artifact_id: null\|id}` plus required `Idempotency-Key`; 202 job with `Location` |
-| `GET /v1/prediction-jobs/{job_id}` | 200 state, timestamps, stage, nullable progress, warnings, error and registered results; 404 unknown |
-| `POST /v1/prediction-jobs/{job_id}/cancel` | 202 when cancellation is pending; 200 for already-cancelled; 409 for succeeded/failed terminal jobs |
+| `GET /v1/prediction-capabilities` | 200 static profiles/limits/availability; authored synthetic profile is `contract_only`, Boltz-2 unavailable; no runtime probe |
+| `POST /v1/prediction-jobs` | `{reference_id, variant_id: null\|id, adapter_profile_id, parameters, seed, msa_artifact_id: null\|id, retry_of_job_id: null\|id}` plus required `Idempotency-Key`; 202 status envelope with `Location` and `Retry-After: 1` |
+| `GET /v1/prediction-jobs/{job_id}` | 200 status envelope with full M1 state/timestamps/stage/null progress/failure/result refs; 404 unknown |
+| `POST /v1/prediction-jobs/{job_id}/cancel` | Required `{}`; 202 pending, 200 queued/already cancelled; 409 succeeded/failed |
+| `GET /v1/prediction-jobs/{job_id}/result` | 200 verified M1 result; 409 unless succeeded |
+| `GET /v1/prediction-jobs/{job_id}/manifest` | 200 verified M1 successful provenance; 409 unless succeeded |
+| `GET /v1/prediction-jobs/{job_id}/artifacts/{artifact_id}` | Verified registered bytes only from the bound graph; 404 unknown, 500 known corruption |
 
 One idempotency key reused with the same resolved spec returns the existing job;
 different content returns 409 `IDEMPOTENCY_CONFLICT`. Record keys durably for the
@@ -177,8 +187,11 @@ causality. Affinity outputs are outside this single-chain MVP.
    samples/maps/confidence and complete successful-provenance contracts; pure
    publication validation, safe typed errors, schemas and offline synthetic tests.
    No execution/storage implementation. See the linked guide/evidence above.
-2. **M2 — Durable orchestration:** SQLite adapter, transactional transitions,
-   idempotency, isolated child supervisor, leases, artifact publication and routes.
+2. **M2 — Durable orchestration (complete):** SQLite
+   jobs/attempts/idempotency, fenced atomic transitions, separate child supervisor,
+   leases/deadlines/cancellation, verified graph publication, retained reads and
+   strict HTTP routes. Test-only controlled children copy authored M1 bundles;
+   no executable fake adapter or frontend interaction is included.
 3. **M3 — Fake vertical slice:** deterministic synthetic coordinates and known
    confidence, injected failures/timeouts, separate CPU worker and frontend polling.
    Fake execution is never a fallback for a failing real model.

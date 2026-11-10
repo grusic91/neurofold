@@ -73,7 +73,7 @@ jobs:
   containers:
     name: Development containers
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -91,7 +91,14 @@ jobs:
           python3 infra/testing/smoke.py create /tmp/neurofold-smoke-records.json
           docker compose -f compose.yaml -f compose.offline.yaml up --detach --force-recreate --no-deps --wait --wait-timeout 120 backend
           python3 infra/testing/smoke.py read /tmp/neurofold-smoke-records.json
+      - name: Controlled prediction worker, persistence and Linux crash recovery
+        env:
+          NF04_COMPOSE_PROJECT: neurofold
+        run: |
+          docker compose -f compose.yaml -f compose.prediction-test.yaml config --quiet
+          docker compose -f compose.yaml -f compose.prediction-test.yaml up --build --detach --wait --wait-timeout 120 backend frontend controlled-worker
+          python3 infra/testing/prediction_smoke.py
       - if: failure()
-        run: docker compose logs
+        run: docker compose -f compose.yaml -f compose.prediction-test.yaml logs
       - if: always()
         run: docker compose down --volumes --remove-orphans

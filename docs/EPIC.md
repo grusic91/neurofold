@@ -3,7 +3,9 @@
 Status: NF-01, NF-08 M1 shared [provenance contracts](provenance-contracts.md),
 NF-09 M1 [test foundation](testing/README.md), and NF-02 M1–M4 biological data
 integration, [NF-03 M1–M3 substitutions, identity/storage and HTTP](variants.md),
-and [NF-04 M1 prediction contracts](prediction-contracts.md) are implemented.
+and [NF-04 M1 prediction contracts](prediction-contracts.md) plus
+[M2 durable orchestration](prediction-orchestration.md) are implemented and verified.
+[M2 evidence](testing/nf04-m2-evidence.md) records native and Linux acceptance.
 NF-03 M3 HTTP integration is implemented; variant interaction remains NF-07 work.
 [M2 lookup/pinning](uniprot-lookup.md) and
 [M3 structure imports/maps](structure-import.md) are composed into operational
@@ -60,8 +62,8 @@ names and packages for later tasks below remain proposed future work.
   UniProt lookup/pinning and M3 added experimental discovery, mmCIF import and
   explicit maps as Python services. M4 now composes these services into the
   operational API/UI. NF-03 M3 now exposes the offline M2 variant service through strict HTTP routes.
-  There is no viewer, inference runtime,
-  job system, database, authentication or export implementation.
+  There is no viewer, inference runtime, authentication or export implementation. NF-04 M2 now adds local
+  SQLite jobs and isolated worker supervision; see its separate acceptance evidence.
 - NF-03 M1: frozen standard-library substitution/result/difference records,
   strict notation and whole-reference alphabet validation, exact sequence/hash
   construction and synthetic offline tests. Full pinned sequence numbering is
@@ -114,7 +116,7 @@ Record rejected inputs rather than silently approximating them.
 | --- | --- | --- |
 | [NF-02 Biological data](tasks/NF-02-biological-data.md) | UniProt/RCSB adapters, immutable reference snapshots and structure imports | NF-01; NF-08 M1 contracts |
 | [NF-03 Protein variants](tasks/NF-03-protein-variants.md) | M1 pure domain, M2 immutable identity/storage and M3 HTTP complete; interaction later | NF-02 snapshots; NF-08 M1 |
-| [NF-04 Prediction engine](tasks/NF-04-prediction-engine.md) | M1 contracts complete; M2 durable jobs, M3 fake execution, M4/M5 real runtime remain proposed | NF-03; NF-08 M1 |
+| [NF-04 Prediction engine](tasks/NF-04-prediction-engine.md) | M1 contracts complete; M2 durable orchestration complete; M3 fake execution and M4/M5 real runtime open | NF-03; NF-08 M1 |
 | [NF-05 Molecular viewer](tasks/NF-05-molecular-viewer.md) | Mol* viewing, mapped selection and confidence display | NF-02 imports/mapping; NF-08 M1; NF-04 for predicted artifacts |
 | [NF-06 Structure comparison](tasks/NF-06-structure-comparison.md) | Explicit mapping, alignment and reproducible metrics | NF-03; NF-04; NF-08 M1; NF-05 for overlays |
 | [NF-07 Research workflow](tasks/NF-07-research-workflow.md) | Integrated UI with recoverable states and provenance | NF-02 through NF-06; NF-08 export |

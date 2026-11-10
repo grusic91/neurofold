@@ -246,3 +246,16 @@ manifest hash. No self checksum or checksum cycle exists. Specs use the NF-08
 canonical and exact sequence domains; operational IDs/times/retries are excluded
 from spec identity. The frozen skeleton remains unchanged and cannot certify
 success. NF-08 M2 capture/storage and M3/M4 export/audit remain open.
+
+## NF-04 M2 durable publication
+
+[M2 orchestration](prediction-orchestration.md) registers verified complete M1
+prediction graphs under an independent namespace, retains exact input copies,
+uses durable SQLite publication intents/immutable registration rows, then binds
+result/manifest refs in a final fenced transaction. No frozen NF-08/NF-02/NF-03
+bytes or original archive semantics change. Filesystem fsync and SQLite commits
+are separate boundaries; interrupted registration may leave orphans, never a
+successful job without registered dependencies. Reads detect retained damage;
+there is no silent repair or deletion. This is software/process/storage evidence,
+not molecular validity, runtime truth or license/scientific approval. NF-08
+exports, independent offline review and broader capture remain open.

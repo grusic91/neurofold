@@ -285,3 +285,29 @@ Future M2 must perform final expected-version/state/lease/fence checks atomicall
 with successful publication. M1 byte validation cannot supply that transaction
 or verify actual model execution. NF-03 M3's stopped-daemon build/smoke gap remains
 open until the next execution-infrastructure checkpoint.
+
+## NF-04 M2 prediction integration
+
+The [orchestration guide](prediction-orchestration.md) supersedes the historical
+M1-only boundary above. Seven prediction resource paths now expose static
+capabilities, idempotent submit/get/cancel, result/manifest and graph-bound raw
+artifacts. Job HTTP bodies use the explicit versioned status envelope around the
+unchanged M1 job. Required nulls and Idempotency-Key, status/error precedence,
+Location/Retry-After and uncertain mutation outcomes are specified there.
+
+Prediction composition is independently lazy: a damaged prediction database does
+not block biological reads, startup, health or static capabilities. SQLite and
+archive verification/serialization use the existing admitted blocking workers.
+No provider calls occur on prediction polls or retained reads. Production
+`NEUROFOLD_CODE_IDENTITY` is strict M1 CodeIdentity JSON; absent identity blocks
+submission rather than inventing a clean revision. Dirty code requires a retained
+raw patch reference. No shipped profile is executable in M2, even with identity
+configured. The test-only composition is mounted explicitly and cannot be enabled
+through production request parameters.
+
+Storage is under `<archive>/predictions/{jobs.sqlite3,registered/,staging/}`.
+The DB’s durable identity marker detects a missing retained database instead of
+silently creating new empty history. Retain DB/WAL, identity marker and archive
+together. A successful job verifies its complete retained graph on every read,
+including duplicate submissions. Missing/corrupt required dependencies are 500
+integrity failures. Recovery never overwrites retained data or reruns inference.

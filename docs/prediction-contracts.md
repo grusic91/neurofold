@@ -1,7 +1,8 @@
 # NF-04 M1 prediction contracts
 
 Decision record, 2026-11-10. This guide defines the contracts before dependent
-implementation. M1 supplies pure records/validation, no execution or publication.
+implementation. M1 supplies pure records/validation. [M2 orchestration](prediction-orchestration.md)
+now supplies durable storage, supervision, publication and HTTP without inference.
 
 ## Authoritative interfaces and versions
 
@@ -225,3 +226,22 @@ establish that the declared transformations actually occurred.
 Model and weight sections carry explicit present/unavailable/not_applicable states.
 Synthetic completeness requires not_applicable with reasons; unavailable is not
 a substitute. Real completeness requires present identities and weight inventory.
+
+
+## M2 compatibility and operational envelopes
+
+M1 scientific/job/result/provenance codec, schema, fixture and hash bytes remain
+unchanged. The M1 `JobRepository` proposal interface is retained for compatibility;
+production uses the narrower explicit `DurableJobs` operation protocol instead of
+a general commit capable of bypassing publication. SQL and concrete process
+launchers stay outside core and application services depend only on core seams.
+
+Additive `neurofold-child-proposal/1` stages strict result/manifest/artifact-byte
+proposals, and `neurofold-prediction-status/1` exposes `{schema_version, job,
+operational_failure}`. This deliberate HTTP envelope preserves the M1 failure
+enum: operational WORKER_LOST/TIMEOUT/SHUTDOWN/CHILD_FAILED/INVALID_OUTPUT/
+PUBLICATION_FAILED/SUPERVISION_FAILED live in the nullable sidecar; the nested
+unchanged M1 failure uses ILLEGAL_PREDICTION_TRANSITION/lifecycle. No existing
+prediction HTTP consumer existed. Frozen biological/variant routes are unchanged.
+See the orchestration guide for full schemas/statuses, sealing, resource bounds,
+strict final transactions, filesystem registration and crash/restart policies.

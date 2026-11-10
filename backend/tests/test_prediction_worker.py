@@ -1,0 +1,213 @@
+"""Harmless real POSIX children, FIFO/event barriers and confirmed reaping."""
+
+import json
+import os
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+from threading import Event
+
+import pytest
+from orchestration_examples import ManualClock, bundle_for, service_for, submit
+from prediction_examples import ENDED
+
+from neurofold.adapters.prediction_process import ProcessChild, ProcessLauncher
+from neurofold.application.prediction_worker import PredictionWorker
+from neurofold.core.prediction_jobs import PredictionJob
+
+
+class ControlledLauncher(ProcessLauncher):
+    def __init__(self, mode: str = "copy") -> None:
+        super().__init__("orchestration_child", grace=0.1)
+        self.mode = mode
+        self.started = Event()
+        self.child: ProcessChild | None = None
+        self.directory: Path | None = None
+
+    def launch(self, directory: Path, job: PredictionJob) -> ProcessChild:
+        (directory / "control.json").write_text(json.dumps({"mode": self.mode}))
+        (directory / "proposal.json").write_bytes(bundle_for(job).to_json())
+        os.mkfifo(directory / "ready.fifo")
+        child = super().launch(directory, job)
+        self.child, self.directory = child, directory
+        with (directory / "ready.fifo").open("rb", buffering=0) as ready:
+            assert ready.read(5) == b"ready"
+        self.started.set()
+        return child
+
+
+@pytest.fixture(autouse=True)
+def child_imports(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("PYTHONPATH", str(Path(__file__).parent.resolve()))
+
+
+@pytest.mark.parametrize(
+    "mode,expected",
+    [
+        ("copy", "succeeded"),
+        ("crash", "failed"),
+        ("missing", "failed"),
+        ("malformed", "failed"),
+        ("oversized", "failed"),
+    ],
+)
+def test_real_child_output_and_reaping(
+    tmp_path: Path, mode: str, expected: str
+) -> None:
+    clock = ManualClock()
+    service = service_for(tmp_path, clock)
+    queued = submit(service)
+    clock.now = ENDED
+    launcher = ControlledLauncher(mode)
+    worker = PredictionWorker(service, launcher, tmp_path / "staging")
+    assert worker.once()
+    assert service.get(queued.job_id).state == expected
+    assert launcher.child is not None
+    assert launcher.child.process.returncode is not None
+    with pytest.raises(ProcessLookupError):
+        os.killpg(launcher.child.process.pid, 0)
+    if mode == "copy":
+        assert service.records(queued.job_id)[0].evidence == "synthetic"
+    else:
+        assert service.jobs.reason(queued.job_id) in ("CHILD_FAILED", "INVALID_OUTPUT")
+
+
+@pytest.mark.parametrize("mode", ["wait", "ignore"])
+@pytest.mark.parametrize("action", ["cancel", "shutdown", "expiry"])
+def test_active_child_cancellation_shutdown_loss_and_force_kill(
+    tmp_path: Path, mode: str, action: str
+) -> None:
+    clock = ManualClock()
+    service = service_for(tmp_path, clock)
+    queued = submit(service)
+    clock.now = ENDED
+    launcher = ControlledLauncher(mode)
+    worker = PredictionWorker(
+        service, launcher, tmp_path / "staging", poll_seconds=0.01
+    )
+    with ThreadPoolExecutor(1) as pool:
+        future = pool.submit(worker.once)
+        assert launcher.started.wait(10)
+        if action == "cancel":
+            assert service.cancel(queued.job_id).state == "cancelling"
+        elif action == "shutdown":
+            worker.stop.set()
+        else:
+            clock.now = "2026-11-10T11:00:00Z"
+            service.jobs.recover()
+        assert future.result(timeout=10)
+    job = service.get(queued.job_id)
+    assert job.state == ("cancelled" if action == "cancel" else "failed")
+    assert job.termination_confirmed == (action == "cancel")
+    assert launcher.child is not None and launcher.child.process.returncode is not None
+    if mode == "ignore":
+        assert launcher.child.process.returncode == -9
+
+
+def test_timeout_before_capacity_released_and_queued_shutdown(tmp_path: Path) -> None:
+    from dataclasses import replace
+
+    clock = ManualClock()
+    service = service_for(tmp_path, clock)
+    profile = service.profiles[0]
+    service.profiles = (
+        replace(profile, limits=replace(profile.limits, max_seconds=1)),
+    )
+    queued = submit(service)
+    clock.now = ENDED
+    launcher = ControlledLauncher("ignore")
+    worker = PredictionWorker(
+        service,
+        launcher,
+        tmp_path / "staging",
+        heartbeat_seconds=0.1,
+        poll_seconds=0.01,
+    )
+    assert worker.once()
+    assert service.get(queued.job_id).state == "failed"
+    assert service.jobs.reason(queued.job_id) == "TIMEOUT"
+    second = submit(service, "second")
+    worker.stop.set()
+    assert not worker.once()
+    assert service.get(second.job_id).state == "queued"
+
+
+def test_cancel_before_claim_and_confirmed_termination_required(tmp_path: Path) -> None:
+    clock = ManualClock()
+    service = service_for(tmp_path, clock)
+    queued = submit(service)
+    cancelled = service.cancel(queued.job_id)
+    assert cancelled.termination_confirmed
+    assert service.cancel(queued.job_id) == cancelled
+    worker = PredictionWorker(service, ControlledLauncher(), tmp_path / "staging")
+    assert not worker.once()
+    assert submit(service) == cancelled
+    assert submit(service, "second").state == "queued"
+    running = service.jobs.claim("worker-1", 60)
+    assert running
+    cancelling = service.cancel(running.job_id)
+    failed = service.jobs.finish(cancelling, "WORKER_LOST", terminated=False)
+    assert failed.state == "failed" and not failed.termination_confirmed
+
+
+def test_parent_death_pipe_kills_child_group(tmp_path: Path) -> None:
+    # A real supervisor process abruptly exits, rather than a simulated transition.
+    script = """
+import os
+from pathlib import Path
+from orchestration_examples import ManualClock, service_for, submit
+from test_prediction_worker import ControlledLauncher
+from neurofold.application.prediction_worker import PredictionWorker
+root = Path(__import__('sys').argv[1])
+service = service_for(root, ManualClock())
+submit(service)
+launcher = ControlledLauncher('ignore')
+job = service.jobs.claim('parent-worker', 60)
+stage = root / 'child'
+stage.mkdir()
+child = launcher.launch(stage, job)
+(root / 'child-pid').write_text(str(child.process.pid))
+os._exit(91)
+"""
+    import select
+
+    fifo = tmp_path / "liveness.fifo"
+    os.mkfifo(fifo)
+    reader = os.open(fifo, os.O_RDONLY | os.O_NONBLOCK)
+    try:
+        result = subprocess.run(
+            [sys.executable, "-c", script, str(tmp_path)],
+            capture_output=True,
+            timeout=15,
+        )
+        assert result.returncode == 91, result.stderr
+        readable, _, _ = select.select([reader], [], [], 10)
+        assert readable and os.read(reader, 1) == b""
+    finally:
+        os.close(reader)
+
+
+def test_heartbeat_database_failure_stops_and_reaps_child(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    clock = ManualClock()
+    service = service_for(tmp_path, clock)
+    job = submit(service)
+    launcher = ControlledLauncher("ignore")
+
+    def unavailable(owner: PredictionJob, lease_seconds: float) -> PredictionJob:
+        raise OSError("authored heartbeat failure")
+
+    monkeypatch.setattr(service.jobs, "renew", unavailable)
+    worker = PredictionWorker(
+        service,
+        launcher,
+        tmp_path / "staging",
+        heartbeat_seconds=0.05,
+        poll_seconds=0.01,
+    )
+    assert worker.once()
+    assert service.get(job.job_id).state == "failed"
+    assert service.jobs.reason(job.job_id) == "SUPERVISION_FAILED"
+    assert launcher.child is not None and launcher.child.process.returncode == -9

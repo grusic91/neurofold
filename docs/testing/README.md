@@ -240,3 +240,29 @@ checkpoint under both Python 3.12 and a separate 3.13 environment, setting
 `UV_PROJECT_ENVIRONMENT=/tmp/neurofold-nf04-py313` and `--python 3.13` for every
 alternate sync/run. Scientific review and the historical stopped-daemon
 container-execution gap remain separate open gates.
+
+## NF-04 M2 local orchestration
+
+[Executed M2 evidence](nf04-m2-evidence.md) records locked Python 3.12/3.13,
+Node 24 and actual Linux/container checkpoints. Tests use real temporary SQLite
+connections, barrier-synchronized submissions/claims/cancellation/success, fsynced
+archives, abrupt process exits and harmless FIFO-controlled children. Children
+copy authored M1 output bundles, deny sockets/DNS and are never production
+adapters. Existing M1 validators cover scientific/provenance/byte negative paths;
+M2 tests exercise their storage and process integration. Every source-backed
+fixture is inventoried. Software tests do not satisfy scientific review gates.
+
+Use an isolated Compose project for controlled-child acceptance:
+
+```sh
+docker compose -p neurofold-nf04-m2 -f compose.yaml -f compose.prediction-test.yaml up --build --detach --wait backend frontend controlled-worker
+python3 infra/testing/prediction_smoke.py
+docker compose -p neurofold-nf04-m2 -f compose.yaml -f compose.prediction-test.yaml down --remove-orphans
+```
+
+The smoke driver uses loopback ports 8000/5173, recreates only its own services,
+and retains its named volume. Set NF04_COMPOSE_PROJECT/NF04_API_URL/
+NF04_FRONTEND_URL plus Compose port variables when using other ports. Do not run
+this composition against a production archive. It checks non-root writes,
+retained jobs/idempotency, separate workers, cancellation/timeout/shutdown/loss,
+and Linux race/crash tests. M3 fake execution/UI and real runtime gates stay open.

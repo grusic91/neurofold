@@ -58,3 +58,11 @@ See [operational commands](operational-checks.md) and
 | Lifecycle | All allowed/forbidden edges, version/attempt/fence, cancellation, terminal history, expiry, lease renewal, linked retries and competing proposals | Pure snapshots only; no transactional winner, database or supervisor |
 | Outputs/provenance | All samples/ranks, predicted mapping/units, confidence definitions/absence, full conditional typed provenance, auxiliary capture, complete inventory/byte integrity | Supplied metadata/bytes only; no molecular parsing, fake execution or real runtime truth |
 | Compatibility/architecture | Strict construction/codecs, required fields, four additive schemas, authored frozen fixture, safe errors, existing health/startup/core import and NF-08 skeleton rejection | Frozen NF-02/NF-03/NF-08 bytes preserved; scientific review remains required |
+
+| NF-04 M2 layer | Implemented checks | Limits |
+| --- | --- | --- |
+| Durable SQLite | Separate connections, concurrent key convergence/reopening/conflicts, exactly one claim, version/owner/lease/fence checks, immutable terminal retries, busy/schema/corruption handling | Trusted local filesystem/operator; no distributed scheduling |
+| Publication | Exact M1 graph, immutable ready registrations, final cancellation/expiry/version/deadline checks, real cancellation-success race, bad proposals, known retained damage, IO uncertainty and abrupt exits at five publication boundaries | fsync/process behavior does not simulate physical power loss or malicious external deletion |
+| Supervisor | Real guarded children, parent-death EOF, graceful/forced termination, timeout, shutdown, heartbeat failure, cancellation and reaping, worker-loss fencing and stale publication rejection | Controlled copied proposals; no fake adapter, molecular parsing or inference |
+| HTTP | Strict nulls/types/keys, concurrent submit, retained result/manifest/artifacts, versioned status sidecar, health/capability independence, admission/timeout/drain | No frontend prediction polling; all shipped profiles unavailable/contract-only |
+| Linux containers | Non-root shared storage, API recreation/idempotency, independent worker, cancellation/timeout/shutdown/restart and process/storage crash suites | Execution outcomes and exact platform recorded separately in M2 evidence |

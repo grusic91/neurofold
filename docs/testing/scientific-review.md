@@ -114,3 +114,9 @@ They do not establish runtime truth, molecular validity, model/weight rights
 approval or independent scientific acceptance. All gates above remain required;
 M2 transactional fencing, M3 synthetic execution and M4/M5 reviewed real runtime
 evidence are separate from this contract checkpoint.
+
+NF-04 M2 adds durable process/storage/HTTP acceptance using controlled children
+and authored M1 bundles. Such children perform no prediction algorithm. Passing
+SQLite races, cancellation, crash recovery or Linux/container checks does not
+establish molecular validity, model accuracy, real-runtime provenance truth or
+independent scientific acceptance. M3–M5 and all required reviews above remain open.

@@ -1,4 +1,4 @@
-# Architecture: NF-01, NF-08 M1, NF-09 M1, NF-02 M1–M4, NF-03 M1–M3 and NF-04 M1
+# Architecture: NF-01, NF-08 M1, NF-09 M1, NF-02 M1–M4, NF-03 M1–M3 and NF-04 M1/M2
 
 ## Current implementation
 
@@ -66,12 +66,23 @@ vocabulary; no arbitrary payload can replace a profile or successful section.
 See [the contract guide](prediction-contracts.md) for schemas, identity domains,
 conditional completeness and the manifest/result cycle avoidance rule.
 
-Injected artifact reads verify declared bytes/metadata only. M2 must register
-artifacts and recheck job version/state/active fence atomically at success commit.
-Pure competing proposals do not establish atomicity, worker termination, molecular
-parsing or scientific acceptance. Static capabilities advertise only a synthetic
-contract-only profile and an unresolved unavailable Boltz-2 target. M1 includes no
-job storage, dispatcher, prediction routes, fake adapter or runtime provisioning.
+NF-04 M2 adds `application/predictions.py` and `prediction_worker.py` over core
+`DurableJobs`, `PublicationArchive` and `ChildLauncher` protocols. Standard-library
+SQLite SQL stays in `adapters/prediction_sqlite.py`; immutable prediction copies
+use the existing fsync/no-clobber primitive in a separate registration namespace.
+`worker.py` is a separately launched process; each child has a private directory,
+parent-death pipe, POSIX process group, deadlines and confirmed reaping. Health
+and static capabilities do not compose storage or inspect runtime availability.
+Prediction routes use the same bounded blocking executor as biological routes.
+
+[Orchestration decisions](prediction-orchestration.md) specify final transactional
+success, exact ready registration graphs, cancellation/expiry serialization and
+crash boundaries. Retained reads verify the graph and never repair corruption.
+The versioned status envelope adds operational failure reasons around the
+unchanged M1 job, preserving its scientific codec and enum bytes. All shipped
+capabilities remain contract-only/unavailable. Controlled authored-output children
+exist only in tests, separate from any adapter registration. M3 owns executable
+synthetic prediction and frontend polling; M4/M5 own reviewed real execution.
 
 Future orchestration will accept an adapter implementing this protocol. A Boltz-2
 adapter will translate domain inputs to model inputs, execute in an appropriate
@@ -80,8 +91,8 @@ import concrete adapters. Adapters must not use FastAPI request/response types.
 Optional runtime imports must occur only when explicitly selecting an adapter.
 The API must remain startable without scientific packages or weights installed.
 
-No model adapter, adapter registry, job scheduler, persistence layer, authentication,
-or inference endpoint is introduced in NF-01. Long-running GPU inference should
+NF-01 introduced no model adapter, scheduler, persistence or authentication.
+NF-04 M2 now supplies local durable orchestration without model execution. Long-running GPU inference should
 eventually execute outside HTTP request handling; the execution mechanism remains
 an explicit future decision rather than an implicit API dependency.
 

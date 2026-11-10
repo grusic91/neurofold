@@ -123,7 +123,15 @@ def test_all_integer_fields_reject_coercion_and_unsafe_values(
 
 
 def test_schema_generator_is_reproducible_and_part_of_strict_checkpoint() -> None:
-    paths = sorted((ROOT / "docs/schemas").glob("neurofold-prediction*-1.schema.json"))
+    paths = [
+        ROOT / "docs/schemas" / f"neurofold-{family}-1.schema.json"
+        for family in (
+            "prediction",
+            "prediction-job",
+            "prediction-result",
+            "prediction-provenance",
+        )
+    ]
     assert len(paths) == 4
     before = {path: path.read_bytes() for path in paths}
     result = subprocess.run(

@@ -23,6 +23,8 @@ from neurofold.core.lookup import (
     SourceChanged,
     UnsupportedIdentifier,
 )
+from neurofold.core.orchestration import OrchestrationError
+from neurofold.core.prediction_base import PredictionError, PredictionErrorCode
 from neurofold.core.structures import (
     RevisionUnavailable,
     StructureSourceChanged,
@@ -65,6 +67,35 @@ def translate(
     mutating: bool = False,
     variant_operation: bool = False,
 ) -> JSONResponse:
+    if isinstance(exc, OrchestrationError):
+        status = {
+            "INVALID_IDEMPOTENCY_KEY": 422,
+            "IDEMPOTENCY_CONFLICT": 409,
+            "JOB_CONFLICT": 409,
+        }.get(exc.code, 503)
+        return error_response(
+            request_id,
+            status,
+            exc.code,
+            "Prediction operation could not be completed.",
+            details={
+                "publication_may_complete": True,
+                "automatic_retry": False,
+                "recovery": (
+                    "Read the job or deliberately repeat the same idempotency key."
+                ),
+            }
+            if mutating and status == 503
+            else {},
+        )
+    if isinstance(exc, PredictionError):
+        return error_response(
+            request_id,
+            409 if exc.code is PredictionErrorCode.ILLEGAL_TRANSITION else 422,
+            exc.code.value,
+            "Prediction validation failed.",
+            details=exc.details,
+        )
     if isinstance(exc, VariantError):
         status = {
             VariantErrorCode.REFERENCE_NOT_FOUND: 404,

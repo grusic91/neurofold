@@ -8,7 +8,7 @@ reproducible, and to support molecular exploration with Mol*.
 
 **Implemented: NF-01, NF-08 M1 provenance contracts, NF-09 M1 test foundation,
 NF-02 M1–M4 biological data integration, and NF-03 M1–M3 substitutions,
-immutable variant storage and HTTP integration, plus NF-04 M1 prediction contracts.**
+immutable variant storage and HTTP integration, plus NF-04 M1 contracts and M2 durable orchestration.**
 The API serves canonical protein
 lookup, immutable reference pinning, experimental structure discovery/import,
 retained residue maps/audits and registered original artifacts. The frontend
@@ -31,11 +31,14 @@ See [HTTP contracts and recovery](docs/variants.md#m3-http-contract) and
 [executed M3 evidence](docs/testing/nf03-m3-evidence.md).
 [NF-04 M1](docs/prediction-contracts.md) adds strict capabilities, resolved exact
 inputs, lifecycle/attempt proposals, sample/confidence/mapping records and complete
-successful-provenance/publication validators. These are pure contracts with
-authored synthetic examples. Durable jobs, prediction routes, fake execution,
-real inference, molecular visualization, comparisons, manifest capture and exports
-remain future work. Boltz-2 is not installed or executed. See
-[executed M1 evidence](docs/testing/nf04-m1-evidence.md).
+successful-provenance/publication validators. M2 adds SQLite jobs/idempotency, separately launched process supervision,
+transactional fenced publication, verified retained reads and prediction HTTP
+routes. All shipped profiles remain contract-only/unavailable: no executable fake
+adapter, frontend polling or real runtime is installed. See
+[orchestration and recovery](docs/prediction-orchestration.md) and
+[M2 evidence](docs/testing/nf04-m2-evidence.md). M3 fake execution/frontend polling,
+M4/M5 reviewed Boltz-2, viewing, comparisons, exports and independent scientific
+acceptance remain open.
 
 ## Objectives
 
@@ -54,7 +57,7 @@ backend/
     api/            FastAPI application, routes, and HTTP schemas
     core/           Standard-library-only contracts and pure substitution logic
     adapters/       UniProt/RCSB, CIF/alignment and immutable storage adapters
-    application/    Reference, structure import and variant orchestration
+    application/    Reference, structure, variant and prediction orchestration
   tests/            Offline HTTP, core, fixture and architectural boundary tests
   pyproject.toml    Dependencies, lint, formatting, types, and test settings
   uv.lock           Locked Python dependencies
@@ -76,7 +79,8 @@ Prerequisites: Git, [uv](https://docs.astral.sh/uv/getting-started/installation/
 0.13.7, Python 3.12+ (uv can download 3.12), and Node.js 24 with npm.
 `backend/.python-version` selects Python 3.12; `frontend/.nvmrc` selects Node 24.
 Docker with Compose is an alternative to installing the application toolchains.
-No CUDA, database, authentication service, weights, or research data is required.
+No CUDA, external database, authentication service, weights or research data is required.
+M2 uses Python’s standard-library SQLite only when prediction storage is accessed.
 
 ```sh
 git clone https://github.com/grusic91/neurofold.git
@@ -149,14 +153,25 @@ docker compose down
 These are development images using a Vite server and API reload. Production
 serving and a separate CUDA inference image are deferred; see [infra notes](infra/README.md).
 
+## Separate prediction worker
+
+From `backend/`, run `uv run --locked python -m neurofold.worker` independently
+of Uvicorn, using the same `NEUROFOLD_ARCHIVE_ROOT`. In Compose use
+`docker compose --profile worker up --build --detach worker`.
+The worker polls durable jobs; M2 deliberately has no executable profile and
+production submission reports unavailable. Health/capabilities remain usable.
+See the orchestration guide for strict submission schemas, code-identity
+configuration, leases, cancellation, restart and integrity recovery. The explicit
+`compose.prediction-test.yaml` runs controlled authored-output children only.
+
 ## Checks
 
 From `backend/`, after `uv sync --locked`:
 
 ```sh
-uv run --locked ruff check .
-uv run --locked ruff format --check .
-uv run --locked mypy src tests scripts
+uv run --locked ruff check . ../infra/testing
+uv run --locked ruff format --check . ../infra/testing
+uv run --locked mypy src tests scripts ../infra/testing
 uv run --locked pytest
 ```
 

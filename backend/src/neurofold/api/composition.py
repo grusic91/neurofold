@@ -1,5 +1,6 @@
 """Composition root. Nothing here performs network IO or scientific parsing."""
 
+import os
 from collections.abc import Callable
 from dataclasses import dataclass
 from threading import Lock
@@ -12,14 +13,18 @@ from neurofold.adapters.biological.storage import FilesystemStore
 from neurofold.adapters.biological.structure_storage import FilesystemStructures
 from neurofold.adapters.biological.transport import HttpxTransport
 from neurofold.adapters.biological.uniprot import UniProtCatalog
+from neurofold.adapters.prediction_archive import PredictionArchive
+from neurofold.adapters.prediction_sqlite import SQLiteJobs, utc_now
 from neurofold.adapters.variant_storage import FilesystemVariants
 from neurofold.api.configuration import ConfigurationError, Settings
 from neurofold.application.biological import BiologicalService
+from neurofold.application.predictions import PredictionService
 from neurofold.application.references import ReferenceService
 from neurofold.application.structures import StructureService
 from neurofold.application.variants import VariantService
 from neurofold.core.biological import ExperimentalStructureCatalog, ProteinCatalog
 from neurofold.core.lookup import PinReceipt
+from neurofold.core.prediction_inputs import CodeIdentity, capabilities
 from neurofold.core.provenance import ArtifactStore
 
 
@@ -67,6 +72,23 @@ def compose(settings: Settings) -> Services:
         archive.artifact_store,
         archive,
         VariantService(archive, FilesystemVariants(archive, archive)),
+    )
+
+
+def compose_predictions(settings: Settings) -> PredictionService:
+    archive = FilesystemStore(settings.archive_root)
+    prediction_root = archive.root / "predictions"
+    jobs = SQLiteJobs(prediction_root / "jobs.sqlite3")
+    code_json = os.environ.get("NEUROFOLD_CODE_IDENTITY")
+    code = CodeIdentity.from_json(code_json.encode("utf-8")) if code_json else None
+    return PredictionService(
+        jobs,
+        PredictionArchive(prediction_root / "registered", jobs, archive.artifact_store),
+        archive,
+        FilesystemVariants(archive, archive),
+        profiles=tuple(p for c in capabilities() for p in c.profiles),
+        code=code,
+        clock=utc_now,
     )
 
 

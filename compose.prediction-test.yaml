@@ -1,0 +1,32 @@
+# Explicit test-only services. No production test-mode or executable fake adapter.
+services:
+  backend:
+    build:
+      dockerfile: infra/docker/prediction-checks.Dockerfile
+    command: [uvicorn, prediction_app:app, --app-dir, /app/smoke, --host, 0.0.0.0, --port, "8000"]
+    init: true
+    healthcheck:
+      timeout: 15s
+      start_period: 45s
+    volumes:
+      - ./backend/tests:/app/backend/tests:ro
+      - ./infra/testing:/app/smoke:ro
+      - ./backend/scripts:/app/backend/scripts:ro
+      - ./docs:/app/docs:ro
+  controlled-worker:
+    build:
+      context: .
+      dockerfile: infra/docker/prediction-checks.Dockerfile
+    command: [python, /app/smoke/prediction_worker.py]
+    init: true
+    environment:
+      NEUROFOLD_ARCHIVE_ROOT: /app/data/archive
+      CONTROLLED_CHILD: ${CONTROLLED_CHILD:-copy}
+    volumes:
+      - biological-archive:/app/data/archive
+      - ./backend/src:/app/backend/src:ro
+      - ./backend/tests:/app/backend/tests:ro
+      - ./infra/testing:/app/smoke:ro
+      - ./backend/scripts:/app/backend/scripts:ro
+      - ./docs:/app/docs:ro
+    stop_grace_period: 10s

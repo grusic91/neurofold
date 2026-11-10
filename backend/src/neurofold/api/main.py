@@ -11,13 +11,27 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from neurofold.api.composition import LazyServices, Services, compose
+from neurofold.api.composition import (
+    LazyServices,
+    Services,
+    compose,
+    compose_predictions,
+)
 from neurofold.api.configuration import Settings
 from neurofold.api.errors import error_response, http_error, invalid_request
 from neurofold.api.execution import BlockingExecutor
 from neurofold.api.health import router as health_router
+from neurofold.api.prediction_schema import scientific_schema
+from neurofold.api.predictions import (
+    CapabilityDTO,
+    JobDTO,
+    ManifestDTO,
+    ResultDTO,
+    prediction_router,
+)
 from neurofold.api.routes import biological_router
 from neurofold.api.variants import EXAMPLE_RESPONSE
+from neurofold.application.predictions import PredictionService
 
 
 def unique_fields(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -109,6 +123,7 @@ def create_app(
     *,
     settings: Settings | None = None,
     service_factory: Callable[[], Services] | None = None,
+    prediction_factory: Callable[[], PredictionService] | None = None,
 ) -> FastAPI:
     config = settings or Settings.from_environment()
     executor = BlockingExecutor(config.workers, config.operation_seconds)
@@ -127,10 +142,20 @@ def create_app(
     application.add_exception_handler(HTTPException, http_error)  # type: ignore[arg-type]
     application.include_router(health_router)
     application.include_router(biological_router(services, executor))
+    application.include_router(
+        prediction_router(
+            prediction_factory or (lambda: compose_predictions(config)), executor
+        )
+    )
     original_openapi = application.openapi
 
     def openapi() -> dict[str, Any]:
         schema = original_openapi()
+        definitions = schema["components"]["schemas"]
+        for projection in (JobDTO, CapabilityDTO, ResultDTO, ManifestDTO):
+            definitions[projection.__name__] = scientific_schema(
+                projection.contract, definitions
+            )
         # FastAPI's OpenAPI encoding drops None recursively, including required
         # explicit absence fields in arbitrary example dictionaries. Restore the
         # exact strict variant examples after that encoding step.
