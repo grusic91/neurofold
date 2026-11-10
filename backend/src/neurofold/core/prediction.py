@@ -1,31 +1,20 @@
-"""Initial single-protein adapter contract; no inference implementation."""
+"""Authoritative NF-04 M1 worker seam; no adapter execution implementation."""
 
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
+from neurofold.core.prediction_inputs import PredictionSpec as PredictionSpec
+from neurofold.core.prediction_outputs import PredictionResult as PredictionResult
 
-@dataclass(frozen=True)
-class PredictionRequest:
-    """Protein sequence and explicit random seed for a future prediction."""
-
-    sequence: str
-    seed: int
-
-
-@dataclass(frozen=True)
-class PredictionResult:
-    """Paths to a generated structure and its scientific provenance manifest."""
-
-    structure_path: Path
-    provenance_path: Path
+# One class and codec, not competing legacy/rich request representations.
+PredictionRequest = PredictionSpec
 
 
 class PredictionAdapter(Protocol):
-    """Implement in adapters without coupling core to a model runtime or HTTP."""
+    """Future adapters stage locally and return registered scientific identities."""
 
     def predict(
         self, request: PredictionRequest, *, output_dir: Path
     ) -> PredictionResult:
-        """Write structure and provenance artifacts to an explicit directory."""
+        """Retain every sample/raw output; output paths remain worker-internal."""
         ...

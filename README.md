@@ -8,7 +8,7 @@ reproducible, and to support molecular exploration with Mol*.
 
 **Implemented: NF-01, NF-08 M1 provenance contracts, NF-09 M1 test foundation,
 NF-02 M1–M4 biological data integration, and NF-03 M1–M3 substitutions,
-immutable variant storage and HTTP integration.**
+immutable variant storage and HTTP integration, plus NF-04 M1 prediction contracts.**
 The API serves canonical protein
 lookup, immutable reference pinning, experimental structure discovery/import,
 retained residue maps/audits and registered original artifacts. The frontend
@@ -29,8 +29,13 @@ verified duplicate, both with Location) and `GET /v1/variants/{variant_id}`.
 Results are sequence hypotheses; frontend variant interaction remains NF-07 work.
 See [HTTP contracts and recovery](docs/variants.md#m3-http-contract) and
 [executed M3 evidence](docs/testing/nf03-m3-evidence.md).
-Prediction, molecular visualization, comparisons, complete scientific manifests
-and exports remain future work. Boltz-2 is not installed or executed.
+[NF-04 M1](docs/prediction-contracts.md) adds strict capabilities, resolved exact
+inputs, lifecycle/attempt proposals, sample/confidence/mapping records and complete
+successful-provenance/publication validators. These are pure contracts with
+authored synthetic examples. Durable jobs, prediction routes, fake execution,
+real inference, molecular visualization, comparisons, manifest capture and exports
+remain future work. Boltz-2 is not installed or executed. See
+[executed M1 evidence](docs/testing/nf04-m1-evidence.md).
 
 ## Objectives
 

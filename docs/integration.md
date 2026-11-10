@@ -271,3 +271,17 @@ contracts, source provenance, frozen schemas/fixtures and archive bytes remain
 unchanged. Prediction, comparison, export and independent scientific acceptance
 remain separate gates; a sequence hypothesis is no disease-effect claim.
 See [executed M3 evidence](testing/nf03-m3-evidence.md).
+
+
+## NF-04 M1 contract boundary
+
+[Prediction contracts](prediction-contracts.md) are pure core records and injected
+validators. The synchronous worker seam now accepts an authoritative resolved
+`PredictionSpec` and returns registered sample/artifact/manifest identities.
+No prediction endpoint, submission service, job repository implementation,
+background execution or frontend interaction is composed. Startup, health,
+existing API paths and the immutable biological/variant archive remain unchanged.
+Future M2 must perform final expected-version/state/lease/fence checks atomically
+with successful publication. M1 byte validation cannot supply that transaction
+or verify actual model execution. NF-03 M3's stopped-daemon build/smoke gap remains
+open until the next execution-infrastructure checkpoint.

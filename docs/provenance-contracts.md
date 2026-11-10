@@ -9,7 +9,8 @@ The implemented foundation is `backend/src/neurofold/core/canonical.py` and
 `core/provenance.py`, with a private strict wire codec in `core/_contracts.py`.
 These standard-library-only contracts preserve **API → core ← adapters**. They
 perform no retrieval, inference, job execution, filesystem writes, export, or
-biological interpretation. The NF-01 prediction seam and health API are unchanged.
+biological interpretation. NF-04 M1 now evolves the NF-01 records while preserving the synchronous worker
+seam; the health API and frozen NF-08 contracts remain unchanged.
 
 ## M1 decisions and ambiguities
 
@@ -226,3 +227,22 @@ Compressed entity bytes retain their own raw hash; decoding is separately record
 Coordinates remain deposited Cartesian angstroms; assembly operators are retained
 as not applied. This is source/import lineage, not a complete prediction manifest
 or scientific validation. See [M3 decisions](structure-import.md).
+
+## NF-04 M1 complete prediction contracts
+
+[Prediction contracts](prediction-contracts.md) introduce the separate
+`neurofold-prediction-provenance/1` successful schema, required typed model/weights,
+software/environment/locks, execution, preprocessing and captured auxiliary inputs,
+full samples/raw artifacts, nondeterminism and interpretation declarations.
+Synthetic inapplicability differs from unavailable required real provenance.
+`validate_completeness` and `validate_publication` check supplied records and
+injected byte identities; they perform no storage/transaction, runtime inspection,
+scientific review or molecular parsing. Real unknown required sections prevent
+publication. License declarations do not independently approve rights; unknown
+redistribution still blocks any later unreviewed export, not merely a byte check.
+
+The manifest identifies the result by ID only; the result references the canonical
+manifest hash. No self checksum or checksum cycle exists. Specs use the NF-08
+canonical and exact sequence domains; operational IDs/times/retries are excluded
+from spec identity. The frozen skeleton remains unchanged and cannot certify
+success. NF-08 M2 capture/storage and M3/M4 export/audit remain open.

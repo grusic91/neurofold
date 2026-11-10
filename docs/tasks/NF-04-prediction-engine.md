@@ -1,6 +1,8 @@
 # NF-04 — Molecular Prediction Engine
 
-Status: proposed. Parent: [NF-EPIC-001](../EPIC.md). Initial real adapter target:
+Status: **M1 implemented and verified; M2–M5 proposed.**
+[Contract decisions](../prediction-contracts.md) and
+[executed evidence](../testing/nf04-m1-evidence.md). Parent: [NF-EPIC-001](../EPIC.md). Initial real adapter target:
 Boltz-2; no installation or inference is authorized by this planning document.
 
 ## 1. Objective and scientific motivation
@@ -170,8 +172,11 @@ causality. Affinity outputs are outside this single-chain MVP.
 
 ## 6. Implementation milestones
 
-1. **M1 — Contracts/capabilities:** evolve the NF-01 protocol records; pin job,
-   parameter, result and manifest contracts; define domain errors and limits.
+1. **M1 — Contracts/capabilities (complete):** one authoritative evolved NF-01
+   seam; strict versioned capabilities, resolved inputs, lifecycle/attempt/fencing,
+   samples/maps/confidence and complete successful-provenance contracts; pure
+   publication validation, safe typed errors, schemas and offline synthetic tests.
+   No execution/storage implementation. See the linked guide/evidence above.
 2. **M2 — Durable orchestration:** SQLite adapter, transactional transitions,
    idempotency, isolated child supervisor, leases, artifact publication and routes.
 3. **M3 — Fake vertical slice:** deterministic synthetic coordinates and known
@@ -253,3 +258,20 @@ not replace those terms.
 - **Scientific applicability:** target selection must include relevant monomer/
   assembly/disorder limitations; failure on a target is reportable, not replaceable
   by a plausible synthetic result.
+
+## M1 boundary and carried gates
+
+The public interfaces/identity documents and exact versions are specified in
+[the prediction guide](../prediction-contracts.md). NF-02/NF-03/NF-08 frozen
+records, identity/fixture bytes and archive semantics are preserved. The NF-08
+skeleton still cannot certify successful predictions. The authored capability
+profile is contract-only, not fake execution or measured real capacity.
+
+M2 owns SQLite/idempotency, transactional final fencing/state checks, staging and
+publication, supervisors and routes; M3 owns executable synthetic inference and
+its vertical slice; M4 chooses reviewed pinned real releases/licenses/weights and
+measures named hardware; M5 integrates real Boltz-2 execution. Independent review
+remains required at the real prediction/comparison gates. The NF-03 M3 container
+gap is carried forward: Compose configuration passed historically, but the stopped
+daemon prevented builds/smokes. Contract design is not blocked; close that gap
+when execution infrastructure changes, without relabeling historical evidence.

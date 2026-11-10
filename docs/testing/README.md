@@ -37,9 +37,9 @@ From `backend/`, using Python 3.12 (CI also uses 3.13):
 
 ```sh
 uv sync --locked
-uv run --locked ruff check .
-uv run --locked ruff format --check .
-uv run --locked mypy src tests
+uv run --locked ruff check . ../infra/testing
+uv run --locked ruff format --check . ../infra/testing
+uv run --locked mypy src tests scripts ../infra/testing
 uv run --locked pytest
 ```
 
@@ -217,3 +217,26 @@ The explicit local/container synthetic server also installs outbound-connection
 and DNS guards (`infra/testing/offline_server.py`), while allowing its incoming
 HTTP listener. A subprocess regression verifies TCP/UDP/DNS rejection. This does
 not add a production test switch or relax ordinary pytest socket policy.
+
+
+## NF-04 M1 contracts
+
+[Executed evidence](nf04-m1-evidence.md) covers strict construction/codecs and
+four additive exchange schemas, independently spelled spec identity/hash goldens,
+NF-02/NF-03 linkage, defaults/parameters/limits, all lifecycle edges, leases/fences,
+cancellation/terminal history, samples/ranks/maps/confidence, synthetic/real
+conditional provenance, captured remote-policy input identities and corrupt/missing
+artifact bytes. Helpers provide authored in-memory records, not fake execution.
+All socket/DNS guards remain intact. Existing startup/health, skeleton rejection
+and all-core `-I -S` isolation tests remain required. Source-backed fixture bytes
+and the standalone compatibility example are inventoried in fixtures.json.
+
+Schemas can be regenerated from backend with
+`uv run --locked python scripts/prediction_schema.py`; a reproducibility test
+checks their checked-in bytes. The generator defines exchange shapes; core owns
+cross-record/conditional invariants documented in the prediction guide. Every new
+module/test/script participates in the existing strict CI checks. Run the full
+checkpoint under both Python 3.12 and a separate 3.13 environment, setting
+`UV_PROJECT_ENVIRONMENT=/tmp/neurofold-nf04-py313` and `--python 3.13` for every
+alternate sync/run. Scientific review and the historical stopped-daemon
+container-execution gap remain separate open gates.

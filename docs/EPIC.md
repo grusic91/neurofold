@@ -2,8 +2,8 @@
 
 Status: NF-01, NF-08 M1 shared [provenance contracts](provenance-contracts.md),
 NF-09 M1 [test foundation](testing/README.md), and NF-02 M1–M4 biological data
-integration, plus [NF-03 M1–M3 substitutions, identity/storage and HTTP](variants.md),
-are implemented.
+integration, [NF-03 M1–M3 substitutions, identity/storage and HTTP](variants.md),
+and [NF-04 M1 prediction contracts](prediction-contracts.md) are implemented.
 NF-03 M3 HTTP integration is implemented; variant interaction remains NF-07 work.
 [M2 lookup/pinning](uniprot-lookup.md) and
 [M3 structure imports/maps](structure-import.md) are composed into operational
@@ -40,10 +40,12 @@ names and packages for later tasks below remain proposed future work.
   liveness contract, eight operational biological `/v1` routes and two retained
   audit subresources, plus NF-03 variant POST/GET. Injected application services
   use bounded blocking workers
-  and a shared immutable filesystem archive. `core/prediction.py` retains frozen
-  `PredictionRequest(sequence, seed)`,
-  `PredictionResult(structure_path, provenance_path)`, and a synchronous
-  `PredictionAdapter.predict(request, *, output_dir)` protocol.
+  and a shared immutable filesystem archive. `core/prediction.py` now exports
+  authoritative versioned `PredictionRequest`/`PredictionSpec` and rich
+  `PredictionResult`, preserving synchronous
+  `PredictionAdapter.predict(request, *, output_dir)`. NF-04 M1 defines pure
+  capability/input/lifecycle/sample/provenance and publication contracts.
+  NF-01 path-only records are deliberately migrated; no execution caller existed.
 - Frontend: React function components, strict TypeScript and Vite; service status,
   explicit protein/reference/experimental-structure selection, provenance,
   mapping tables, retained-ID reopening and registered original downloads.
@@ -112,7 +114,7 @@ Record rejected inputs rather than silently approximating them.
 | --- | --- | --- |
 | [NF-02 Biological data](tasks/NF-02-biological-data.md) | UniProt/RCSB adapters, immutable reference snapshots and structure imports | NF-01; NF-08 M1 contracts |
 | [NF-03 Protein variants](tasks/NF-03-protein-variants.md) | M1 pure domain, M2 immutable identity/storage and M3 HTTP complete; interaction later | NF-02 snapshots; NF-08 M1 |
-| [NF-04 Prediction engine](tasks/NF-04-prediction-engine.md) | Durable jobs, fake adapter, isolated Boltz-2 worker | NF-03; NF-08 M1 |
+| [NF-04 Prediction engine](tasks/NF-04-prediction-engine.md) | M1 contracts complete; M2 durable jobs, M3 fake execution, M4/M5 real runtime remain proposed | NF-03; NF-08 M1 |
 | [NF-05 Molecular viewer](tasks/NF-05-molecular-viewer.md) | Mol* viewing, mapped selection and confidence display | NF-02 imports/mapping; NF-08 M1; NF-04 for predicted artifacts |
 | [NF-06 Structure comparison](tasks/NF-06-structure-comparison.md) | Explicit mapping, alignment and reproducible metrics | NF-03; NF-04; NF-08 M1; NF-05 for overlays |
 | [NF-07 Research workflow](tasks/NF-07-research-workflow.md) | Integrated UI with recoverable states and provenance | NF-02 through NF-06; NF-08 export |
@@ -195,7 +197,7 @@ storage implementations, numerical engines and explicitly selected model code.
 Scientific libraries used for parsing/alignment must stay behind adapters.
 
 The existing synchronous `PredictionAdapter` remains the worker-side seam.
-NF-04 explicitly evolves its minimal request/result records and tests callers;
+NF-04 M1 evolves its minimal request/result records and verifies the worker seam;
 the HTTP API never calls `predict`. Core imports and `/health` must work without
 model libraries, weights, networks, database initialization or GPUs.
 

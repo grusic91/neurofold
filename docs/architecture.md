@@ -1,4 +1,4 @@
-# Architecture: NF-01, NF-08 M1, NF-09 M1, NF-02 M1–M4 and NF-03 M1–M3
+# Architecture: NF-01, NF-08 M1, NF-09 M1, NF-02 M1–M4, NF-03 M1–M3 and NF-04 M1
 
 ## Current implementation
 
@@ -51,13 +51,27 @@ NF-02/NF-08 contracts stay unchanged.
 
 ## Prediction boundary
 
-`core/prediction.py` defines immutable request/result dataclasses and a structural
-`PredictionAdapter` protocol. The initial request carries a single protein
-sequence and explicit seed. The result identifies a structure artifact and its
-provenance manifest. This is an initial Python interface, not a prediction API,
-validated input schema, or implemented inference service. Complexes, ligands,
-model-specific parameters, and execution-specific manifest schemas require later
-design. NF-08 M1 supplies shared provenance contracts without changing this seam.
+`core/prediction.py` exports one authoritative `PredictionRequest`/`PredictionSpec`
+class and `PredictionResult`, preserving synchronous
+`PredictionAdapter.predict(request, *, output_dir) -> PredictionResult`.
+NF-01's sequence/seed and path-only constructors are deliberately migrated.
+`prediction_inputs.py` supplies typed profiles, resolved parameters, exact NF-02/03
+source linkage and scientific identities; `prediction_jobs.py` supplies lifecycle,
+version/lease/fencing and retry proposal validators plus a repository protocol.
+`prediction_outputs.py` defines every sample, predicted map, confidence descriptor,
+raw artifact inventory, separately versioned complete successful provenance and
+pure completeness/publication validation. `prediction_base.py` owns sanitized
+typed failures. All use standard-library types and the frozen NF-08 codec/hash
+vocabulary; no arbitrary payload can replace a profile or successful section.
+See [the contract guide](prediction-contracts.md) for schemas, identity domains,
+conditional completeness and the manifest/result cycle avoidance rule.
+
+Injected artifact reads verify declared bytes/metadata only. M2 must register
+artifacts and recheck job version/state/active fence atomically at success commit.
+Pure competing proposals do not establish atomicity, worker termination, molecular
+parsing or scientific acceptance. Static capabilities advertise only a synthetic
+contract-only profile and an unresolved unavailable Boltz-2 target. M1 includes no
+job storage, dispatcher, prediction routes, fake adapter or runtime provisioning.
 
 Future orchestration will accept an adapter implementing this protocol. A Boltz-2
 adapter will translate domain inputs to model inputs, execute in an appropriate
@@ -89,7 +103,7 @@ input hashes/sources, preprocessing, model/adapter versions, weight checksums,
 parameters, seeds, code revision, dependency locks, runtime/container identity,
 hardware, and CUDA versions. Preserve raw outputs and document nondeterminism.
 Define confidence metrics and validation criteria before making biological claims.
-The current adapter interface names a provenance artifact; no writer exists yet.
+The M1 result references complete provenance; no capture writer exists yet.
 
 ## Shared provenance foundation (NF-08 M1)
 
@@ -103,8 +117,9 @@ remain usable with site-packages disabled.
 The [contract guide](provenance-contracts.md) records M1 decisions, identity rules,
 compatibility policy and ownership by NF-02 through NF-08. A checked-in JSON Schema
 and synthetic compatibility/golden fixtures are tested with a development-only
-validator. Capture, persistence, complete successful prediction manifests, runtime
-inspection and exports remain future milestones; M1 adds no routes or startup work.
+validator. NF-04 M1 separately defines complete successful prediction contracts;
+actual capture, prediction persistence, runtime inspection and exports remain future
+milestones. The contract work adds no routes or startup work.
 
 ## Validation boundaries
 

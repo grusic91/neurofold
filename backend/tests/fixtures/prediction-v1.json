@@ -1,0 +1,1014 @@
+{
+  "spec_canonical": "{\"code\":{\"dirty\":false,\"patch\":null,\"revision\":\"authored-source-v1\",\"schema_version\":\"neurofold-prediction/1\"},\"constraints\":{\"artifacts\":[],\"mode\":\"none\",\"query_sequence_hash\":null,\"reason\":\"Authored synthetic input without auxiliary data.\",\"schema_version\":\"neurofold-prediction/1\",\"transformation\":null},\"msa\":{\"artifacts\":[],\"mode\":\"none\",\"query_sequence_hash\":null,\"reason\":\"Authored synthetic input without auxiliary data.\",\"schema_version\":\"neurofold-prediction/1\",\"transformation\":null},\"parameters\":[{\"name\":\"samples\",\"schema_version\":\"neurofold-prediction/1\",\"value\":1}],\"profile\":{\"adapter\":{\"name\":\"authored-synthetic\",\"version\":\"1\"},\"alphabet\":\"ACDEFGHIKLMNPQRSTVWY\",\"availability\":\"contract_only\",\"availability_reason\":\"Authored contracts only; no executable adapter exists.\",\"constraint_modes\":[\"none\"],\"evidence\":\"synthetic\",\"limits\":{\"max_memory_bytes\":1048576,\"max_output_bytes\":4096,\"max_residues\":32,\"max_samples\":2,\"max_seconds\":10,\"min_residues\":1,\"schema_version\":\"neurofold-prediction/1\"},\"molecule_types\":[\"protein\"],\"msa_modes\":[\"none\"],\"parameters\":[{\"choices\":[],\"default\":1,\"kind\":\"integer\",\"maximum\":2,\"minimum\":1,\"name\":\"samples\",\"schema_version\":\"neurofold-prediction/1\"}],\"profile\":{\"name\":\"contract-monomer\",\"version\":\"1\"},\"requirements\":[],\"schema_version\":\"neurofold-prediction/1\",\"seed_max\":4294967295,\"seed_min\":0,\"template_modes\":[\"none\"]},\"reference\":{\"content_hash\":{\"algorithm\":\"sha256\",\"encoding\":\"neurofold-json/1\",\"sha256\":\"a36dc032d7baa24bf2d1a3a30f67491826fb4f702626b308df6d80c685a77bdb\"},\"record_id\":\"synthetic-variant-reference\"},\"reference_sequence_hash\":{\"algorithm\":\"sha256\",\"encoding\":\"sequence-ascii/1\",\"sha256\":\"c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e\"},\"schema_version\":\"neurofold-prediction/1\",\"seed\":0,\"sequence\":\"MACAG\",\"sequence_hash\":{\"algorithm\":\"sha256\",\"encoding\":\"sequence-ascii/1\",\"sha256\":\"c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e\"},\"templates\":{\"artifacts\":[],\"mode\":\"none\",\"query_sequence_hash\":null,\"reason\":\"Authored synthetic input without auxiliary data.\",\"schema_version\":\"neurofold-prediction/1\",\"transformation\":null},\"transformations\":[],\"variant\":null}",
+  "spec_sha256": "5eedf8b6a799e1350b343733265c13dabaa9f2d7d03af52189ab815701b1e8ce",
+  "capabilities": [
+    {
+      "schema_version": "neurofold-prediction/1",
+      "adapter_id": "authored-synthetic",
+      "adapter_version": {
+        "state": "present",
+        "value": "1",
+        "reason": null
+      },
+      "availability": "contract_only",
+      "reason": "Authored contracts only; no executable adapter exists.",
+      "profiles": [
+        {
+          "schema_version": "neurofold-prediction/1",
+          "adapter": {
+            "name": "authored-synthetic",
+            "version": "1"
+          },
+          "profile": {
+            "name": "contract-monomer",
+            "version": "1"
+          },
+          "evidence": "synthetic",
+          "availability": "contract_only",
+          "availability_reason": "Authored contracts only; no executable adapter exists.",
+          "molecule_types": [
+            "protein"
+          ],
+          "alphabet": "ACDEFGHIKLMNPQRSTVWY",
+          "parameters": [
+            {
+              "schema_version": "neurofold-prediction/1",
+              "name": "samples",
+              "kind": "integer",
+              "default": 1,
+              "minimum": 1,
+              "maximum": 2,
+              "choices": []
+            }
+          ],
+          "requirements": [],
+          "seed_min": 0,
+          "seed_max": 4294967295,
+          "limits": {
+            "schema_version": "neurofold-prediction/1",
+            "min_residues": 1,
+            "max_residues": 32,
+            "max_samples": 2,
+            "max_seconds": 10,
+            "max_memory_bytes": 1048576,
+            "max_output_bytes": 4096
+          },
+          "msa_modes": [
+            "none"
+          ],
+          "template_modes": [
+            "none"
+          ],
+          "constraint_modes": [
+            "none"
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "neurofold-prediction/1",
+      "adapter_id": "boltz-2",
+      "adapter_version": {
+        "state": "unavailable",
+        "value": null,
+        "reason": "No release or weight/license review selected; M4 gate pending."
+      },
+      "availability": "unavailable",
+      "reason": "Release, weights, licenses and runtime limits unresolved.",
+      "profiles": []
+    }
+  ],
+  "job": {
+    "schema_version": "neurofold-prediction-job/1",
+    "job_id": "job-1",
+    "spec": {
+      "schema_version": "neurofold-prediction/1",
+      "reference": {
+        "record_id": "synthetic-variant-reference",
+        "content_hash": {
+          "sha256": "a36dc032d7baa24bf2d1a3a30f67491826fb4f702626b308df6d80c685a77bdb",
+          "encoding": "neurofold-json/1",
+          "algorithm": "sha256"
+        }
+      },
+      "reference_sequence_hash": {
+        "sha256": "c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e",
+        "encoding": "sequence-ascii/1",
+        "algorithm": "sha256"
+      },
+      "variant": null,
+      "sequence": "MACAG",
+      "sequence_hash": {
+        "sha256": "c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e",
+        "encoding": "sequence-ascii/1",
+        "algorithm": "sha256"
+      },
+      "profile": {
+        "schema_version": "neurofold-prediction/1",
+        "adapter": {
+          "name": "authored-synthetic",
+          "version": "1"
+        },
+        "profile": {
+          "name": "contract-monomer",
+          "version": "1"
+        },
+        "evidence": "synthetic",
+        "availability": "contract_only",
+        "availability_reason": "Authored contracts only; no executable adapter exists.",
+        "molecule_types": [
+          "protein"
+        ],
+        "alphabet": "ACDEFGHIKLMNPQRSTVWY",
+        "parameters": [
+          {
+            "schema_version": "neurofold-prediction/1",
+            "name": "samples",
+            "kind": "integer",
+            "default": 1,
+            "minimum": 1,
+            "maximum": 2,
+            "choices": []
+          }
+        ],
+        "requirements": [],
+        "seed_min": 0,
+        "seed_max": 4294967295,
+        "limits": {
+          "schema_version": "neurofold-prediction/1",
+          "min_residues": 1,
+          "max_residues": 32,
+          "max_samples": 2,
+          "max_seconds": 10,
+          "max_memory_bytes": 1048576,
+          "max_output_bytes": 4096
+        },
+        "msa_modes": [
+          "none"
+        ],
+        "template_modes": [
+          "none"
+        ],
+        "constraint_modes": [
+          "none"
+        ]
+      },
+      "parameters": [
+        {
+          "schema_version": "neurofold-prediction/1",
+          "name": "samples",
+          "value": 1
+        }
+      ],
+      "seed": 0,
+      "msa": {
+        "schema_version": "neurofold-prediction/1",
+        "mode": "none",
+        "artifacts": [],
+        "reason": "Authored synthetic input without auxiliary data.",
+        "query_sequence_hash": null,
+        "transformation": null
+      },
+      "templates": {
+        "schema_version": "neurofold-prediction/1",
+        "mode": "none",
+        "artifacts": [],
+        "reason": "Authored synthetic input without auxiliary data.",
+        "query_sequence_hash": null,
+        "transformation": null
+      },
+      "constraints": {
+        "schema_version": "neurofold-prediction/1",
+        "mode": "none",
+        "artifacts": [],
+        "reason": "Authored synthetic input without auxiliary data.",
+        "query_sequence_hash": null,
+        "transformation": null
+      },
+      "code": {
+        "schema_version": "neurofold-prediction/1",
+        "revision": "authored-source-v1",
+        "dirty": false,
+        "patch": null
+      },
+      "transformations": []
+    },
+    "spec_hash": {
+      "sha256": "5eedf8b6a799e1350b343733265c13dabaa9f2d7d03af52189ab815701b1e8ce",
+      "encoding": "neurofold-json/1",
+      "algorithm": "sha256"
+    },
+    "state": "running",
+    "version": 1,
+    "submitted_at": "2026-11-10T10:00:00Z",
+    "started_at": "2026-11-10T10:00:01Z",
+    "ended_at": null,
+    "attempt": {
+      "schema_version": "neurofold-prediction-job/1",
+      "attempt_id": "attempt-1",
+      "worker_id": "worker-1",
+      "lease_id": "lease-1",
+      "fence": 1,
+      "started_at": "2026-11-10T10:00:01Z",
+      "heartbeat_at": "2026-11-10T10:00:01Z",
+      "lease_expires_at": "2026-11-10T10:01:01Z",
+      "fenced": false
+    },
+    "cancellation_requested": false,
+    "termination_confirmed": false,
+    "retry_of_job_id": null,
+    "stage": "preparing",
+    "progress_basis_points": null,
+    "failure": null,
+    "result": null,
+    "manifest": null
+  },
+  "result": {
+    "schema_version": "neurofold-prediction-result/1",
+    "result_id": "result-1",
+    "spec_hash": {
+      "sha256": "5eedf8b6a799e1350b343733265c13dabaa9f2d7d03af52189ab815701b1e8ce",
+      "encoding": "neurofold-json/1",
+      "algorithm": "sha256"
+    },
+    "job_id": "job-1",
+    "attempt_id": "attempt-1",
+    "evidence": "synthetic",
+    "manifest": {
+      "record_id": "manifest-1",
+      "content_hash": {
+        "sha256": "ad435ef4eb41abbbec5b64e4990ddf2967656c4bdd5e4b8dd24e1fef0b5abc18",
+        "encoding": "neurofold-json/1",
+        "algorithm": "sha256"
+      }
+    },
+    "samples": [
+      {
+        "schema_version": "neurofold-prediction-result/1",
+        "sample_id": "sample-1",
+        "evidence": "synthetic",
+        "returned_rank": 1,
+        "ranking_definition": "Authored order only; no biological accuracy meaning.",
+        "structure": {
+          "record_id": "structure-1",
+          "content_hash": {
+            "sha256": "209db51fbd6b2583f50a844d079100c27d2bd7194a3635b78bbc366560257328",
+            "encoding": "raw-bytes/1",
+            "algorithm": "sha256"
+          }
+        },
+        "mapping": {
+          "schema_version": "neurofold-prediction-result/1",
+          "mapping_id": "mapping-1",
+          "sample_id": "sample-1",
+          "spec_hash": {
+            "sha256": "5eedf8b6a799e1350b343733265c13dabaa9f2d7d03af52189ab815701b1e8ce",
+            "encoding": "neurofold-json/1",
+            "algorithm": "sha256"
+          },
+          "sequence_hash": {
+            "sha256": "c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e",
+            "encoding": "sequence-ascii/1",
+            "algorithm": "sha256"
+          },
+          "structure": {
+            "record_id": "structure-1",
+            "content_hash": {
+              "sha256": "209db51fbd6b2583f50a844d079100c27d2bd7194a3635b78bbc366560257328",
+              "encoding": "raw-bytes/1",
+              "algorithm": "sha256"
+            }
+          },
+          "method": {
+            "name": "authored-contract",
+            "version": "1"
+          },
+          "rows": [
+            {
+              "schema_version": "neurofold-prediction-result/1",
+              "chain_id": "A",
+              "token_index": 0,
+              "input_position": 1,
+              "coordinate_residue_id": "1",
+              "insertion_code": {
+                "state": "not_applicable",
+                "value": null,
+                "reason": "Synthetic contract; no runtime operation or physical measurement."
+              }
+            },
+            {
+              "schema_version": "neurofold-prediction-result/1",
+              "chain_id": "A",
+              "token_index": 1,
+              "input_position": 2,
+              "coordinate_residue_id": "2",
+              "insertion_code": {
+                "state": "not_applicable",
+                "value": null,
+                "reason": "Synthetic contract; no runtime operation or physical measurement."
+              }
+            },
+            {
+              "schema_version": "neurofold-prediction-result/1",
+              "chain_id": "A",
+              "token_index": 2,
+              "input_position": 3,
+              "coordinate_residue_id": "3",
+              "insertion_code": {
+                "state": "not_applicable",
+                "value": null,
+                "reason": "Synthetic contract; no runtime operation or physical measurement."
+              }
+            },
+            {
+              "schema_version": "neurofold-prediction-result/1",
+              "chain_id": "A",
+              "token_index": 3,
+              "input_position": 4,
+              "coordinate_residue_id": "4",
+              "insertion_code": {
+                "state": "not_applicable",
+                "value": null,
+                "reason": "Synthetic contract; no runtime operation or physical measurement."
+              }
+            },
+            {
+              "schema_version": "neurofold-prediction-result/1",
+              "chain_id": "A",
+              "token_index": 4,
+              "input_position": 5,
+              "coordinate_residue_id": "5",
+              "insertion_code": {
+                "state": "not_applicable",
+                "value": null,
+                "reason": "Synthetic contract; no runtime operation or physical measurement."
+              }
+            }
+          ],
+          "transformations": [],
+          "numbering": "input-1-based;token-0-based;coordinate-text",
+          "coordinate_units": "angstrom",
+          "coordinate_convention": "cartesian"
+        },
+        "confidence": [
+          {
+            "schema_version": "neurofold-prediction-result/1",
+            "name": "authored-score",
+            "state": "present",
+            "reason": null,
+            "source_field": "authored_score",
+            "definition": "Authored test values; no accuracy interpretation.",
+            "units": "dimensionless",
+            "scale_min": "0",
+            "scale_max": "1",
+            "scope": "residue",
+            "artifact": {
+              "record_id": "confidence-1",
+              "content_hash": {
+                "sha256": "711d636d7e4f0287322b1adc2541e905843a0f6481f39f27f1dce4fb7364f15e",
+                "encoding": "raw-bytes/1",
+                "algorithm": "sha256"
+              }
+            },
+            "mapping": {
+              "record_id": "mapping-1",
+              "content_hash": {
+                "sha256": "b19f71291284458da349a96c698fde00d5ef1ab64cdfdee23caacb25950f183a",
+                "encoding": "neurofold-json/1",
+                "algorithm": "sha256"
+              }
+            }
+          }
+        ],
+        "raw_artifacts": [
+          {
+            "record_id": "structure-1",
+            "content_hash": {
+              "sha256": "209db51fbd6b2583f50a844d079100c27d2bd7194a3635b78bbc366560257328",
+              "encoding": "raw-bytes/1",
+              "algorithm": "sha256"
+            }
+          },
+          {
+            "record_id": "confidence-1",
+            "content_hash": {
+              "sha256": "711d636d7e4f0287322b1adc2541e905843a0f6481f39f27f1dce4fb7364f15e",
+              "encoding": "raw-bytes/1",
+              "algorithm": "sha256"
+            }
+          }
+        ],
+        "warnings": []
+      }
+    ],
+    "raw_artifacts": [
+      {
+        "record_id": "structure-1",
+        "content_hash": {
+          "sha256": "209db51fbd6b2583f50a844d079100c27d2bd7194a3635b78bbc366560257328",
+          "encoding": "raw-bytes/1",
+          "algorithm": "sha256"
+        }
+      },
+      {
+        "record_id": "confidence-1",
+        "content_hash": {
+          "sha256": "711d636d7e4f0287322b1adc2541e905843a0f6481f39f27f1dce4fb7364f15e",
+          "encoding": "raw-bytes/1",
+          "algorithm": "sha256"
+        }
+      }
+    ],
+    "warnings": []
+  },
+  "manifest": {
+    "schema_version": "neurofold-prediction-provenance/1",
+    "manifest_id": "manifest-1",
+    "result_id": "result-1",
+    "spec": {
+      "schema_version": "neurofold-prediction/1",
+      "reference": {
+        "record_id": "synthetic-variant-reference",
+        "content_hash": {
+          "sha256": "a36dc032d7baa24bf2d1a3a30f67491826fb4f702626b308df6d80c685a77bdb",
+          "encoding": "neurofold-json/1",
+          "algorithm": "sha256"
+        }
+      },
+      "reference_sequence_hash": {
+        "sha256": "c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e",
+        "encoding": "sequence-ascii/1",
+        "algorithm": "sha256"
+      },
+      "variant": null,
+      "sequence": "MACAG",
+      "sequence_hash": {
+        "sha256": "c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e",
+        "encoding": "sequence-ascii/1",
+        "algorithm": "sha256"
+      },
+      "profile": {
+        "schema_version": "neurofold-prediction/1",
+        "adapter": {
+          "name": "authored-synthetic",
+          "version": "1"
+        },
+        "profile": {
+          "name": "contract-monomer",
+          "version": "1"
+        },
+        "evidence": "synthetic",
+        "availability": "contract_only",
+        "availability_reason": "Authored contracts only; no executable adapter exists.",
+        "molecule_types": [
+          "protein"
+        ],
+        "alphabet": "ACDEFGHIKLMNPQRSTVWY",
+        "parameters": [
+          {
+            "schema_version": "neurofold-prediction/1",
+            "name": "samples",
+            "kind": "integer",
+            "default": 1,
+            "minimum": 1,
+            "maximum": 2,
+            "choices": []
+          }
+        ],
+        "requirements": [],
+        "seed_min": 0,
+        "seed_max": 4294967295,
+        "limits": {
+          "schema_version": "neurofold-prediction/1",
+          "min_residues": 1,
+          "max_residues": 32,
+          "max_samples": 2,
+          "max_seconds": 10,
+          "max_memory_bytes": 1048576,
+          "max_output_bytes": 4096
+        },
+        "msa_modes": [
+          "none"
+        ],
+        "template_modes": [
+          "none"
+        ],
+        "constraint_modes": [
+          "none"
+        ]
+      },
+      "parameters": [
+        {
+          "schema_version": "neurofold-prediction/1",
+          "name": "samples",
+          "value": 1
+        }
+      ],
+      "seed": 0,
+      "msa": {
+        "schema_version": "neurofold-prediction/1",
+        "mode": "none",
+        "artifacts": [],
+        "reason": "Authored synthetic input without auxiliary data.",
+        "query_sequence_hash": null,
+        "transformation": null
+      },
+      "templates": {
+        "schema_version": "neurofold-prediction/1",
+        "mode": "none",
+        "artifacts": [],
+        "reason": "Authored synthetic input without auxiliary data.",
+        "query_sequence_hash": null,
+        "transformation": null
+      },
+      "constraints": {
+        "schema_version": "neurofold-prediction/1",
+        "mode": "none",
+        "artifacts": [],
+        "reason": "Authored synthetic input without auxiliary data.",
+        "query_sequence_hash": null,
+        "transformation": null
+      },
+      "code": {
+        "schema_version": "neurofold-prediction/1",
+        "revision": "authored-source-v1",
+        "dirty": false,
+        "patch": null
+      },
+      "transformations": []
+    },
+    "source_receipt": {
+      "schema_version": "neurofold-research/1",
+      "receipt_id": "synthetic-variant-reference-receipt",
+      "provider": "synthetic-inline",
+      "query": "fixture:test_variants.py:authored-sequence-bytes",
+      "retrieved_at": "2026-11-10T00:00:00Z",
+      "raw_artifact": {
+        "schema_version": "neurofold-research/1",
+        "artifact_id": "synthetic-variant-reference-raw",
+        "content_hash": {
+          "sha256": "c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e",
+          "encoding": "raw-bytes/1",
+          "algorithm": "sha256"
+        },
+        "byte_size": 5,
+        "media_type": "text/plain",
+        "evidence": "synthetic",
+        "rights": {
+          "license": {
+            "state": "present",
+            "value": "Apache-2.0",
+            "reason": null
+          },
+          "attribution": {
+            "state": "present",
+            "value": "NeuroFold contributors; authored synthetic fixtures.",
+            "reason": null
+          },
+          "redistribution": "allowed",
+          "basis": "Original synthetic test bytes authored under the repository license; no provider content."
+        },
+        "parents": [],
+        "transformation": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "record_kind": "artifact"
+      },
+      "accession": {
+        "state": "present",
+        "value": "P00001",
+        "reason": null
+      },
+      "isoform": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Not applicable to this synthetic record."
+      },
+      "taxon_id": {
+        "state": "present",
+        "value": 1,
+        "reason": null
+      },
+      "entry_version": {
+        "state": "present",
+        "value": 2,
+        "reason": null
+      },
+      "sequence_version": {
+        "state": "present",
+        "value": 1,
+        "reason": null
+      },
+      "release": {
+        "state": "unavailable",
+        "value": null,
+        "reason": "Not supplied in the synthetic source."
+      },
+      "release_date": {
+        "state": "unavailable",
+        "value": null,
+        "reason": "Not supplied in the synthetic source."
+      },
+      "etag": {
+        "state": "unavailable",
+        "value": null,
+        "reason": "Not supplied in the synthetic source."
+      },
+      "last_modified": {
+        "state": "unavailable",
+        "value": null,
+        "reason": "Not supplied in the synthetic source."
+      },
+      "license_references": {
+        "state": "present",
+        "values": [
+          "Apache-2.0"
+        ],
+        "reason": null
+      },
+      "citation_references": {
+        "state": "not_applicable",
+        "values": [],
+        "reason": "Synthetic records have no scientific publication."
+      },
+      "record_kind": "source_receipt"
+    },
+    "evidence": "synthetic",
+    "model": {
+      "schema_version": "neurofold-prediction-provenance/1",
+      "model_state": "not_applicable",
+      "weights_state": "not_applicable",
+      "model": null,
+      "model_absence_reason": "Synthetic authored contract without a model.",
+      "weights": [],
+      "weights_absence_reason": "No model weights used."
+    },
+    "environment": {
+      "schema_version": "neurofold-prediction-provenance/1",
+      "runtime": {
+        "name": "authored-contract",
+        "version": "1"
+      },
+      "operating_system": {
+        "name": "authored-contract",
+        "version": "1"
+      },
+      "hardware": "Authored CPU identity, not an execution observation.",
+      "processor_kind": "cpu",
+      "accelerator": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Synthetic contract; no runtime operation or physical measurement."
+      },
+      "driver": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Synthetic contract; no runtime operation or physical measurement."
+      },
+      "cuda": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Synthetic contract; no runtime operation or physical measurement."
+      },
+      "libraries": [
+        {
+          "name": "authored-contract",
+          "version": "1"
+        }
+      ],
+      "dependency_locks": [
+        {
+          "record_id": "lock-1",
+          "content_hash": {
+            "sha256": "ae8c5650881923d39117e9e76bd1f3e53b1b0128cabdb8f7013cdb3de51753e3",
+            "encoding": "raw-bytes/1",
+            "algorithm": "sha256"
+          }
+        }
+      ]
+    },
+    "execution": {
+      "schema_version": "neurofold-prediction-provenance/1",
+      "job_id": "job-1",
+      "attempt": {
+        "schema_version": "neurofold-prediction-job/1",
+        "attempt_id": "attempt-1",
+        "worker_id": "worker-1",
+        "lease_id": "lease-1",
+        "fence": 1,
+        "started_at": "2026-11-10T10:00:01Z",
+        "heartbeat_at": "2026-11-10T10:00:01Z",
+        "lease_expires_at": "2026-11-10T10:01:01Z",
+        "fenced": false
+      },
+      "started_at": "2026-11-10T10:00:01Z",
+      "ended_at": "2026-11-10T10:00:02Z"
+    },
+    "preprocessing": {
+      "schema_version": "neurofold-prediction-provenance/1",
+      "software": {
+        "name": "authored-contract",
+        "version": "1"
+      },
+      "steps": [],
+      "no_steps_reason": "Exact authored input retained unchanged."
+    },
+    "msa": {
+      "schema_version": "neurofold-prediction-provenance/1",
+      "resolved": {
+        "schema_version": "neurofold-prediction/1",
+        "mode": "none",
+        "artifacts": [],
+        "reason": "Authored synthetic input without auxiliary data.",
+        "query_sequence_hash": null,
+        "transformation": null
+      },
+      "provider": null,
+      "obtained_at": null
+    },
+    "templates": {
+      "schema_version": "neurofold-prediction-provenance/1",
+      "resolved": {
+        "schema_version": "neurofold-prediction/1",
+        "mode": "none",
+        "artifacts": [],
+        "reason": "Authored synthetic input without auxiliary data.",
+        "query_sequence_hash": null,
+        "transformation": null
+      },
+      "provider": null,
+      "obtained_at": null
+    },
+    "constraints": {
+      "schema_version": "neurofold-prediction-provenance/1",
+      "resolved": {
+        "schema_version": "neurofold-prediction/1",
+        "mode": "none",
+        "artifacts": [],
+        "reason": "Authored synthetic input without auxiliary data.",
+        "query_sequence_hash": null,
+        "transformation": null
+      },
+      "provider": null,
+      "obtained_at": null
+    },
+    "samples": [
+      {
+        "schema_version": "neurofold-prediction-result/1",
+        "sample_id": "sample-1",
+        "evidence": "synthetic",
+        "returned_rank": 1,
+        "ranking_definition": "Authored order only; no biological accuracy meaning.",
+        "structure": {
+          "record_id": "structure-1",
+          "content_hash": {
+            "sha256": "209db51fbd6b2583f50a844d079100c27d2bd7194a3635b78bbc366560257328",
+            "encoding": "raw-bytes/1",
+            "algorithm": "sha256"
+          }
+        },
+        "mapping": {
+          "schema_version": "neurofold-prediction-result/1",
+          "mapping_id": "mapping-1",
+          "sample_id": "sample-1",
+          "spec_hash": {
+            "sha256": "5eedf8b6a799e1350b343733265c13dabaa9f2d7d03af52189ab815701b1e8ce",
+            "encoding": "neurofold-json/1",
+            "algorithm": "sha256"
+          },
+          "sequence_hash": {
+            "sha256": "c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e",
+            "encoding": "sequence-ascii/1",
+            "algorithm": "sha256"
+          },
+          "structure": {
+            "record_id": "structure-1",
+            "content_hash": {
+              "sha256": "209db51fbd6b2583f50a844d079100c27d2bd7194a3635b78bbc366560257328",
+              "encoding": "raw-bytes/1",
+              "algorithm": "sha256"
+            }
+          },
+          "method": {
+            "name": "authored-contract",
+            "version": "1"
+          },
+          "rows": [
+            {
+              "schema_version": "neurofold-prediction-result/1",
+              "chain_id": "A",
+              "token_index": 0,
+              "input_position": 1,
+              "coordinate_residue_id": "1",
+              "insertion_code": {
+                "state": "not_applicable",
+                "value": null,
+                "reason": "Synthetic contract; no runtime operation or physical measurement."
+              }
+            },
+            {
+              "schema_version": "neurofold-prediction-result/1",
+              "chain_id": "A",
+              "token_index": 1,
+              "input_position": 2,
+              "coordinate_residue_id": "2",
+              "insertion_code": {
+                "state": "not_applicable",
+                "value": null,
+                "reason": "Synthetic contract; no runtime operation or physical measurement."
+              }
+            },
+            {
+              "schema_version": "neurofold-prediction-result/1",
+              "chain_id": "A",
+              "token_index": 2,
+              "input_position": 3,
+              "coordinate_residue_id": "3",
+              "insertion_code": {
+                "state": "not_applicable",
+                "value": null,
+                "reason": "Synthetic contract; no runtime operation or physical measurement."
+              }
+            },
+            {
+              "schema_version": "neurofold-prediction-result/1",
+              "chain_id": "A",
+              "token_index": 3,
+              "input_position": 4,
+              "coordinate_residue_id": "4",
+              "insertion_code": {
+                "state": "not_applicable",
+                "value": null,
+                "reason": "Synthetic contract; no runtime operation or physical measurement."
+              }
+            },
+            {
+              "schema_version": "neurofold-prediction-result/1",
+              "chain_id": "A",
+              "token_index": 4,
+              "input_position": 5,
+              "coordinate_residue_id": "5",
+              "insertion_code": {
+                "state": "not_applicable",
+                "value": null,
+                "reason": "Synthetic contract; no runtime operation or physical measurement."
+              }
+            }
+          ],
+          "transformations": [],
+          "numbering": "input-1-based;token-0-based;coordinate-text",
+          "coordinate_units": "angstrom",
+          "coordinate_convention": "cartesian"
+        },
+        "confidence": [
+          {
+            "schema_version": "neurofold-prediction-result/1",
+            "name": "authored-score",
+            "state": "present",
+            "reason": null,
+            "source_field": "authored_score",
+            "definition": "Authored test values; no accuracy interpretation.",
+            "units": "dimensionless",
+            "scale_min": "0",
+            "scale_max": "1",
+            "scope": "residue",
+            "artifact": {
+              "record_id": "confidence-1",
+              "content_hash": {
+                "sha256": "711d636d7e4f0287322b1adc2541e905843a0f6481f39f27f1dce4fb7364f15e",
+                "encoding": "raw-bytes/1",
+                "algorithm": "sha256"
+              }
+            },
+            "mapping": {
+              "record_id": "mapping-1",
+              "content_hash": {
+                "sha256": "b19f71291284458da349a96c698fde00d5ef1ab64cdfdee23caacb25950f183a",
+                "encoding": "neurofold-json/1",
+                "algorithm": "sha256"
+              }
+            }
+          }
+        ],
+        "raw_artifacts": [
+          {
+            "record_id": "structure-1",
+            "content_hash": {
+              "sha256": "209db51fbd6b2583f50a844d079100c27d2bd7194a3635b78bbc366560257328",
+              "encoding": "raw-bytes/1",
+              "algorithm": "sha256"
+            }
+          },
+          {
+            "record_id": "confidence-1",
+            "content_hash": {
+              "sha256": "711d636d7e4f0287322b1adc2541e905843a0f6481f39f27f1dce4fb7364f15e",
+              "encoding": "raw-bytes/1",
+              "algorithm": "sha256"
+            }
+          }
+        ],
+        "warnings": []
+      }
+    ],
+    "returned_sample_ids": [
+      "sample-1"
+    ],
+    "raw_artifacts": [
+      {
+        "record_id": "structure-1",
+        "content_hash": {
+          "sha256": "209db51fbd6b2583f50a844d079100c27d2bd7194a3635b78bbc366560257328",
+          "encoding": "raw-bytes/1",
+          "algorithm": "sha256"
+        }
+      },
+      {
+        "record_id": "confidence-1",
+        "content_hash": {
+          "sha256": "711d636d7e4f0287322b1adc2541e905843a0f6481f39f27f1dce4fb7364f15e",
+          "encoding": "raw-bytes/1",
+          "algorithm": "sha256"
+        }
+      }
+    ],
+    "artifacts": [
+      {
+        "schema_version": "neurofold-research/1",
+        "artifact_id": "structure-1",
+        "content_hash": {
+          "sha256": "209db51fbd6b2583f50a844d079100c27d2bd7194a3635b78bbc366560257328",
+          "encoding": "raw-bytes/1",
+          "algorithm": "sha256"
+        },
+        "byte_size": 41,
+        "media_type": "text/plain",
+        "evidence": "synthetic",
+        "rights": {
+          "license": {
+            "state": "present",
+            "value": "Apache-2.0",
+            "reason": null
+          },
+          "attribution": {
+            "state": "present",
+            "value": "NeuroFold contributors; authored synthetic fixtures.",
+            "reason": null
+          },
+          "redistribution": "allowed",
+          "basis": "Original synthetic test bytes authored under the repository license; no provider content."
+        },
+        "parents": [],
+        "transformation": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "record_kind": "artifact"
+      },
+      {
+        "schema_version": "neurofold-research/1",
+        "artifact_id": "confidence-1",
+        "content_hash": {
+          "sha256": "711d636d7e4f0287322b1adc2541e905843a0f6481f39f27f1dce4fb7364f15e",
+          "encoding": "raw-bytes/1",
+          "algorithm": "sha256"
+        },
+        "byte_size": 31,
+        "media_type": "application/json",
+        "evidence": "synthetic",
+        "rights": {
+          "license": {
+            "state": "present",
+            "value": "Apache-2.0",
+            "reason": null
+          },
+          "attribution": {
+            "state": "present",
+            "value": "NeuroFold contributors; authored synthetic fixtures.",
+            "reason": null
+          },
+          "redistribution": "allowed",
+          "basis": "Original synthetic test bytes authored under the repository license; no provider content."
+        },
+        "parents": [],
+        "transformation": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "record_kind": "artifact"
+      }
+    ],
+    "warnings": [],
+    "known_nondeterminism": [
+      "Authored declarations only; seed guarantees no runtime determinism."
+    ],
+    "interpretation_limits": [
+      "Synthetic placeholders are not molecular parsing or scientific evidence."
+    ],
+    "status": "succeeded"
+  }
+}

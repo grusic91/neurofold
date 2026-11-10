@@ -847,6 +847,209 @@
         "encoding": "raw-bytes/1",
         "sha256": "2db4096090b1b7c865c453adabea0d1eea3ae8fc35c1c6b57fbff2347a315602"
       }
+    },
+    {
+      "fixture_id": "prediction-v1",
+      "path": "backend/tests/fixtures/prediction-v1.json",
+      "generation_method": "Authored synthetic MACAG contract proposal, static capabilities and exact identity spelling/digest; no execution, retrieved data or molecular coordinates.",
+      "expected_invariants": [
+        "Strict versioned records and exact canonical/raw/sequence hash domains.",
+        "Frozen version-1 exchange and canonical spec identity compatibility."
+      ],
+      "purpose": "Frozen version-1 exchange and canonical spec identity compatibility.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 34815,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "b9f6c5fa1cf9d4d065698f6d7194904959c9749666c3b9a4d51207e52f12b4a3"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-examples-inline",
+      "path": "backend/tests/prediction_examples.py",
+      "generation_method": "Authored in-memory reference-linked job/sample/provenance proposals and short structure/confidence/lock placeholder bytes; unchanged NF-03 snapshot helper reused.",
+      "expected_invariants": [
+        "Strict versioned records and exact canonical/raw/sequence hash domains.",
+        "Complete metadata/byte fixture for pure validation, never a fake prediction adapter."
+      ],
+      "purpose": "Complete metadata/byte fixture for pure validation, never a fake prediction adapter.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 9699,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "ddb2380a40d40effea291464de965ccdc27d85663492255a1e1f6913c98fd6d6"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-inputs-inline",
+      "path": "backend/tests/test_prediction_inputs.py",
+      "generation_method": "Independently spelled full spec document and fixed SHA-256, exact MACAG/A4V linkage and authored parameter/profile/alphabet/resource boundary mutations.",
+      "expected_invariants": [
+        "Strict versioned records and exact canonical/raw/sequence hash domains.",
+        "Input identities, strict defaults/types, capability availability and verified NF-02/03 linkage."
+      ],
+      "purpose": "Input identities, strict defaults/types, capability availability and verified NF-02/03 linkage.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 19260,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "1984957995b0fd3ffe94c0228a000ffe1dc2af7cecc9536d3276207d3eaf18e5"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-jobs-inline",
+      "path": "backend/tests/test_prediction_jobs.py",
+      "generation_method": "Authored UTC times, all lifecycle state pairs, lease/fence/cancellation/retry snapshots and competing pure proposals.",
+      "expected_invariants": [
+        "Strict versioned records and exact canonical/raw/sequence hash domains.",
+        "State invariants without database atomicity or process execution claims."
+      ],
+      "purpose": "State invariants without database atomicity or process execution claims.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 12000,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "3e82c33a7b8d958eab0577d1165f0664f1ea1865c66046b39578298b431b9819"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-outputs-inline",
+      "path": "backend/tests/test_prediction_outputs.py",
+      "generation_method": "Authored synthetic and hypothetical real-conditional metadata proposals; mutated in-memory bytes/rights/sample/map/confidence/auxiliary inventories. No actual real outputs or weights.",
+      "expected_invariants": [
+        "Strict versioned records and exact canonical/raw/sequence hash domains.",
+        "Successful completeness and publication-integrity rejection, with explicit software/scientific limits."
+      ],
+      "purpose": "Successful completeness and publication-integrity rejection, with explicit software/scientific limits.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 28227,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "22c63dee7ba4e12cd47ffa9b4e6f748332fd75838c0373bf5c95bcfe5492312e"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-exchange-inline",
+      "path": "backend/tests/test_prediction_exchange.py",
+      "generation_method": "Strict mutations and schema/codec comparisons of authored proposal helpers, including hypothetical conditional records.",
+      "expected_invariants": [
+        "Strict versioned records and exact canonical/raw/sequence hash domains.",
+        "All required exchange fields, coercion rejection, additive schema reproducibility and direct construction."
+      ],
+      "purpose": "All required exchange fields, coercion rejection, additive schema reproducibility and direct construction.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 5161,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "1946ba339c6548fb939ce9781bd41e7c1fbc1f55877912ced477ff26f27cffbd"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-capability-authoring",
+      "path": "backend/src/neurofold/core/prediction_inputs.py",
+      "generation_method": "Small authored synthetic contract-only bounds/profile and static unresolved Boltz-2 declaration; no runtime measurements or model execution.",
+      "expected_invariants": [
+        "Strict versioned records and exact canonical/raw/sequence hash domains.",
+        "Declarative inspectable capabilities with no imports/probes/providers and no claimed real capacity."
+      ],
+      "purpose": "Declarative inspectable capabilities with no imports/probes/providers and no claimed real capacity.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 15320,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "704cf64c9e616e669d0bef956e0819266307bb2dceaad168a39ad0459b7b66de"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
     }
   ]
 }

@@ -1,0 +1,812 @@
+{
+  "$comment": "Shape schema; strict codecs and semantic validation required.",
+  "$defs": {
+    "AuxiliaryInput": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/ContentReference"
+          },
+          "type": "array"
+        },
+        "mode": {
+          "enum": [
+            "none",
+            "local",
+            "remote"
+          ]
+        },
+        "query_sequence_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContentHash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction/1"
+          ]
+        },
+        "transformation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "mode",
+        "artifacts",
+        "reason",
+        "query_sequence_hash",
+        "transformation"
+      ],
+      "type": "object"
+    },
+    "CodeIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "dirty": {
+          "type": "boolean"
+        },
+        "patch": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContentReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "type": "string"
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction/1"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "revision",
+        "dirty",
+        "patch"
+      ],
+      "type": "object"
+    },
+    "ContentHash": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "enum": [
+            "sha256"
+          ]
+        },
+        "encoding": {
+          "enum": [
+            "raw-bytes/1",
+            "sequence-ascii/1",
+            "neurofold-json/1"
+          ],
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sha256",
+        "encoding",
+        "algorithm"
+      ],
+      "type": "object"
+    },
+    "ContentReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "$ref": "#/$defs/ContentHash"
+        },
+        "record_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "content_hash"
+      ],
+      "type": "object"
+    },
+    "ParameterDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "choices": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "default": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "integer",
+            "boolean",
+            "choice"
+          ]
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minimum": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction/1"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "kind",
+        "default",
+        "minimum",
+        "maximum",
+        "choices"
+      ],
+      "type": "object"
+    },
+    "ParameterRequirement": {
+      "additionalProperties": false,
+      "properties": {
+        "requires": {
+          "$ref": "#/$defs/ParameterValue"
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction/1"
+          ]
+        },
+        "when": {
+          "$ref": "#/$defs/ParameterValue"
+        }
+      },
+      "required": [
+        "schema_version",
+        "when",
+        "requires"
+      ],
+      "type": "object"
+    },
+    "ParameterValue": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction/1"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "value"
+      ],
+      "type": "object"
+    },
+    "PredictionAttempt": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_id": {
+          "type": "string"
+        },
+        "fence": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer"
+        },
+        "fenced": {
+          "type": "boolean"
+        },
+        "heartbeat_at": {
+          "type": "string"
+        },
+        "lease_expires_at": {
+          "type": "string"
+        },
+        "lease_id": {
+          "type": "string"
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction-job/1"
+          ]
+        },
+        "started_at": {
+          "type": "string"
+        },
+        "worker_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "attempt_id",
+        "worker_id",
+        "lease_id",
+        "fence",
+        "started_at",
+        "heartbeat_at",
+        "lease_expires_at",
+        "fenced"
+      ],
+      "type": "object"
+    },
+    "PredictionFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "INVALID_REPRESENTATION",
+            "UNSUPPORTED_CAPABILITY",
+            "UNSUPPORTED_PARAMETER",
+            "PREDICTION_RESOURCE_LIMIT",
+            "INCONSISTENT_PREDICTION_INPUT",
+            "ILLEGAL_PREDICTION_TRANSITION",
+            "INCOMPLETE_PREDICTION_PROVENANCE",
+            "PREDICTION_PUBLICATION_INTEGRITY"
+          ],
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction-job/1"
+          ]
+        },
+        "stage": {
+          "enum": [
+            "representation",
+            "profile",
+            "parameters",
+            "inputs",
+            "lifecycle",
+            "provenance",
+            "artifacts"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "code",
+        "stage",
+        "retryable"
+      ],
+      "type": "object"
+    },
+    "PredictionJob": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PredictionAttempt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cancellation_requested": {
+          "type": "boolean"
+        },
+        "ended_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PredictionFailure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "job_id": {
+          "type": "string"
+        },
+        "manifest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContentReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "progress_basis_points": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContentReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retry_of_job_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction-job/1"
+          ]
+        },
+        "spec": {
+          "$ref": "#/$defs/PredictionSpec"
+        },
+        "spec_hash": {
+          "$ref": "#/$defs/ContentHash"
+        },
+        "stage": {
+          "enum": [
+            "queued",
+            "preparing",
+            "inference",
+            "validating",
+            "finished"
+          ]
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "cancelling",
+            "succeeded",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "submitted_at": {
+          "type": "string"
+        },
+        "termination_confirmed": {
+          "type": "boolean"
+        },
+        "version": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "job_id",
+        "spec",
+        "spec_hash",
+        "state",
+        "version",
+        "submitted_at",
+        "started_at",
+        "ended_at",
+        "attempt",
+        "cancellation_requested",
+        "termination_confirmed",
+        "retry_of_job_id",
+        "stage",
+        "progress_basis_points",
+        "failure",
+        "result",
+        "manifest"
+      ],
+      "type": "object"
+    },
+    "PredictionProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter": {
+          "$ref": "#/$defs/SoftwareIdentity"
+        },
+        "alphabet": {
+          "type": "string"
+        },
+        "availability": {
+          "enum": [
+            "available",
+            "unavailable",
+            "contract_only"
+          ]
+        },
+        "availability_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "constraint_modes": {
+          "items": {
+            "enum": [
+              "none",
+              "local",
+              "remote"
+            ]
+          },
+          "type": "array"
+        },
+        "evidence": {
+          "enum": [
+            "experimental",
+            "predicted",
+            "synthetic"
+          ],
+          "type": "string"
+        },
+        "limits": {
+          "$ref": "#/$defs/ResourceLimits"
+        },
+        "molecule_types": {
+          "items": {
+            "enum": [
+              "protein"
+            ]
+          },
+          "type": "array"
+        },
+        "msa_modes": {
+          "items": {
+            "enum": [
+              "none",
+              "local",
+              "remote"
+            ]
+          },
+          "type": "array"
+        },
+        "parameters": {
+          "items": {
+            "$ref": "#/$defs/ParameterDefinition"
+          },
+          "type": "array"
+        },
+        "profile": {
+          "$ref": "#/$defs/SoftwareIdentity"
+        },
+        "requirements": {
+          "items": {
+            "$ref": "#/$defs/ParameterRequirement"
+          },
+          "type": "array"
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction/1"
+          ]
+        },
+        "seed_max": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer"
+        },
+        "seed_min": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer"
+        },
+        "template_modes": {
+          "items": {
+            "enum": [
+              "none",
+              "local",
+              "remote"
+            ]
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "adapter",
+        "profile",
+        "evidence",
+        "availability",
+        "availability_reason",
+        "molecule_types",
+        "alphabet",
+        "parameters",
+        "requirements",
+        "seed_min",
+        "seed_max",
+        "limits",
+        "msa_modes",
+        "template_modes",
+        "constraint_modes"
+      ],
+      "type": "object"
+    },
+    "PredictionSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/CodeIdentity"
+        },
+        "constraints": {
+          "$ref": "#/$defs/AuxiliaryInput"
+        },
+        "msa": {
+          "$ref": "#/$defs/AuxiliaryInput"
+        },
+        "parameters": {
+          "items": {
+            "$ref": "#/$defs/ParameterValue"
+          },
+          "type": "array"
+        },
+        "profile": {
+          "$ref": "#/$defs/PredictionProfile"
+        },
+        "reference": {
+          "$ref": "#/$defs/ContentReference"
+        },
+        "reference_sequence_hash": {
+          "$ref": "#/$defs/ContentHash"
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction/1"
+          ]
+        },
+        "seed": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer"
+        },
+        "sequence": {
+          "type": "string"
+        },
+        "sequence_hash": {
+          "$ref": "#/$defs/ContentHash"
+        },
+        "templates": {
+          "$ref": "#/$defs/AuxiliaryInput"
+        },
+        "transformations": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "variant": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContentReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "reference",
+        "reference_sequence_hash",
+        "variant",
+        "sequence",
+        "sequence_hash",
+        "profile",
+        "parameters",
+        "seed",
+        "msa",
+        "templates",
+        "constraints",
+        "code",
+        "transformations"
+      ],
+      "type": "object"
+    },
+    "ResourceLimits": {
+      "additionalProperties": false,
+      "properties": {
+        "max_memory_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_output_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_residues": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_samples": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "min_residues": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction/1"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "min_residues",
+        "max_residues",
+        "max_samples",
+        "max_seconds",
+        "max_memory_bytes",
+        "max_output_bytes"
+      ],
+      "type": "object"
+    },
+    "SoftwareIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$",
+          "type": "string"
+        },
+        "version": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:neurofold:prediction-job:1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/PredictionAttempt"
+    },
+    {
+      "$ref": "#/$defs/PredictionFailure"
+    },
+    {
+      "$ref": "#/$defs/PredictionJob"
+    }
+  ],
+  "title": "NeuroFold prediction-job v1 exchange shapes"
+}

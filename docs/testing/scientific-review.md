@@ -105,3 +105,12 @@ input, model, weights, protocol, dependency, runtime or schema changes.
 
 Release review authorizes no push, publication, deployment or PR. Those require
 separate user authorization.
+
+
+NF-04 M1 now supplies a separately versioned complete successful-provenance
+contract and pure completeness/publication validators. The authored synthetic and
+conditional real-proposal tests establish supplied-record/byte consistency only.
+They do not establish runtime truth, molecular validity, model/weight rights
+approval or independent scientific acceptance. All gates above remain required;
+M2 transactional fencing, M3 synthetic execution and M4/M5 reviewed real runtime
+evidence are separate from this contract checkpoint.
