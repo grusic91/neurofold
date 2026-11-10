@@ -7,14 +7,15 @@ NeuroFold aims to make prediction workflows modular, inspectable, and scientific
 reproducible, and to support molecular exploration with Mol*.
 
 **Implemented: NF-01, NF-08 M1 shared provenance contracts, NF-09 M1 test
-foundation, and NF-02 M1 contracts plus M2 lookup/pinning.** The API exposes a
-tested health endpoint and the frontend displays service status. Shared immutable
+foundation, and NF-02 M1 contracts, M2 lookup/pinning and M3 structures.**
+The API exposes a tested health endpoint and the frontend displays service status. Shared immutable
 provenance contracts and offline backend,
 component and browser tests are present. [Biological contracts](docs/biological-contracts.md)
 and [source licensing inventory](docs/source-licensing.md) are implemented;
 [UniProt lookup and immutable reference pinning](docs/uniprot-lookup.md) are
-implemented as Python services; structure imports and HTTP/UI integration await
-NF-02 M3–M4. Prediction,
+implemented as Python services. [Experimental structure discovery/import and maps](docs/structure-import.md)
+are available as opt-in Python services; HTTP/UI integration awaits NF-02 M4.
+Prediction,
 molecular visualization, complete manifests and exports remain future work.
 Boltz-2 is planned; it is not installed or executed.
 
@@ -34,8 +35,8 @@ backend/
   src/neurofold/
     api/            FastAPI application, routes, and HTTP schemas
     core/           Standard-library-only prediction, provenance and biological contracts
-    adapters/       UniProt/storage adapters; future model implementations
-    application/    Reference pinning orchestration
+    adapters/       UniProt/RCSB, CIF/alignment and immutable storage adapters
+    application/    Reference pinning and structure import orchestration
   tests/            Offline HTTP, core, fixture and architectural boundary tests
   pyproject.toml    Dependencies, lint, formatting, types, and test settings
   uv.lock           Locked Python dependencies
@@ -133,7 +134,7 @@ uv run --locked pytest
 ```
 
 Pytest checks liveness/OpenAPI, core contracts/canonical hashes, biological/HTTP
-schemas, fixture integrity,
+schemas, experimental-only discovery/import and residue maps, fixture integrity,
 offline guards and core importability without third-party packages. Internet
 sockets and DNS are blocked by default. Coverage must be at least 90%.
 To apply Python formatting, run `uv run --locked ruff format .`.

@@ -6,9 +6,9 @@ M1 adds [biological contracts](../biological-contracts.md), synthetic provider
 examples and a separate ASGI HTTP-contract harness; no operational lookup/import
 or live provider compatibility is claimed by that harness.
 [NF-02 M2](../uniprot-lookup.md) separately adds offline UniProt transport, lookup,
-cache/cursor, pinning and filesystem behavior tests. A passing foundation is neither an
-integrated synthetic preview
-nor a real scientific MVP. [The matrix](test-matrix.md) separates implemented
+cache/cursor, pinning and filesystem behavior tests. [M3](../structure-import.md)
+adds experimental discovery/import, CIF/alignment and immutable map tests. A
+passing foundation is neither an integrated synthetic preview nor a real scientific MVP. [The matrix](test-matrix.md) separates implemented
 coverage from planned work; [scientific review](scientific-review.md) and the
 [evidence template](evidence-template.md) define later acceptance.
 The [M1 acceptance record](nf09-m1-evidence.md) records local results and gaps.
@@ -135,8 +135,19 @@ For a new fixture:
 All present fixtures are authored for NeuroFold under Apache-2.0. This does not
 relicense future external source data. NF-02 provider-shaped examples are
 authored synthetic records, not captured
-responses. Analytic coordinate fixtures and actual adapter transport behavior
-remain future work. See [NF-02 M1 evidence](nf02-m1-evidence.md).
+responses. M3 adds an authored coordinate fixture and RCSB adapter behavior with
+injected transports; comparison numerics and biological validation remain future
+work. See [NF-02 M1 evidence](nf02-m1-evidence.md).
 
 NF-02 M2 local results and remaining environment/integration gates are recorded
 in [its acceptance evidence](nf02-m2-evidence.md).
+
+M3 results are recorded in [its evidence](nf02-m3-evidence.md). The authored
+`structure-synthetic-v1.cif` uses angstroms in original deposited Cartesian
+coordinates; unlike prior metadata fixtures its inventory marks those values
+present. `test_structures.py` mutates those tiny bytes and independently specifies
+maps for tags, substitutions, fragments, internal gaps and repeated domains.
+Gzip bombs, over-limit content and malformed events are generated in memory.
+All tests remain under the existing socket/DNS guards; no live structures or
+research data are fetched. Full Python 3.13 verification uses a separate
+`UV_PROJECT_ENVIRONMENT` and `--python`, preserving the default 3.12 environment.

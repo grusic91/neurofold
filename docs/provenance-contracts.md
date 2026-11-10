@@ -209,3 +209,15 @@ metadata caches. A separately versioned `neurofold-reference-pin/1` audit links
 a pin's authoritative 200/304 check to the original source receipt without changing
 NF-08 v1 identities. Full scientific manifests, exports and replay remain future
 NF-08 milestones.
+
+## NF-02 M3 capture
+
+M3 preserves frozen research/biological v1 bytes and adds
+`neurofold-structure-import/1`: an atomic descriptor/map/audit with authoritative
+200/304 checks, original receipt IDs, raw source artifacts, parsing/normalization
+and alignment parameters/versions, selection inventories and coverage counts.
+304 check time/headers never replace original retrieval bytes or receipt metadata.
+Compressed entity bytes retain their own raw hash; decoding is separately recorded.
+Coordinates remain deposited Cartesian angstroms; assembly operators are retained
+as not applied. This is source/import lineage, not a complete prediction manifest
+or scientific validation. See [M3 decisions](structure-import.md).

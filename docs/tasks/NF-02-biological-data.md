@@ -1,12 +1,13 @@
 # NF-02 — Biological Data Integration
 
-Status: M1 contracts and M2 lookup/pinning implemented; M3–M4 incomplete.
+Status: M1 contracts, M2 lookup/pinning and M3 structures implemented; M4 incomplete.
 Parent: [NF-EPIC-001](../EPIC.md). See [final M1 decisions](../biological-contracts.md),
 [source licensing inventory](../source-licensing.md) and
 [acceptance evidence](../testing/nf02-m1-evidence.md).
 Production routes remain health-only. [M2 Python lookup/pinning](../uniprot-lookup.md)
-and [acceptance evidence](../testing/nf02-m2-evidence.md) are available; structure
-import and route/frontend integration remain deferred.
+and [acceptance evidence](../testing/nf02-m2-evidence.md) are available.
+[M3 structures](../structure-import.md) and [M3 evidence](../testing/nf02-m3-evidence.md)
+cover Python discovery/import/mapping; route/frontend integration remains deferred.
 
 ## 1. Objective and scientific motivation
 
@@ -125,9 +126,11 @@ Retained immutable snapshots are not subject to cache TTL eviction.
    bounded opaque pagination, injected transport/clock/retry controls, bounded
    cache/conditional validation and immutable reference pinning. See the M2
    guide for concrete limits, 304 provenance, storage configuration and tests.
-3. **M3 — Structures:** discover only experimental candidates, import selected
-   mmCIF, preserve revisions and create explicit sequence/residue maps. Show
-   construct mismatches, fragments and missing coordinates.
+3. **M3 — Structures: implemented.** Experimental-only RCSB discovery; explicit
+   revision-checked mmCIF imports; atomic original artifact/receipt/structure/map
+   retention; bounded Gemmi parsing and Biopython alignment with ambiguity,
+   construct mismatches, fragments and missing coordinates. See the M3 guide
+   for concrete limits and safe unsupported/missing-revision behavior.
 4. **M4 — Integration:** expose routes, test partial failures and offline pinned
    reads; document configuration, source attribution and refresh semantics.
 
@@ -183,15 +186,16 @@ UniProt terms and attribution requirements before shipping its client/export.
 
 ## 10. Risks and unresolved decisions
 
-- **Parser/alignment selection:** review an optional library's license, Python
-  support and ability to preserve identifiers before M3; numerical imports stay
-  out of core. Identity mapping alone cannot handle real constructs.
+- **Parser/alignment selection: resolved for M3.** Gemmi 0.7.5 CIF tables and
+  Biopython 1.88 optimal-path alignment, with NumPy 2.5.4 locked transitively;
+  adapter-only lazy imports. The M3 guide records licenses and limitations.
 - **Upstream drift/rate limits:** version the adapter and cache schema; tune the
   proposed bounds against provider policies without unbounded fallback requests.
 - **Identity scope:** canonical-only editing is the MVP default. Isoform support
   needs new explicit reference selection and tests, not silent normalization.
-- **Structure size and assembly complexity:** set measured parse/download limits
-  in M2; fail explicitly rather than silently extracting a convenient fragment.
+- **Structure size and assembly complexity:** M3 sets conservative tested bounds;
+  real workload calibration and broader identifier/chemistry profiles remain open.
+  Oversized/unsupported inputs fail without selecting a convenient fragment.
 - **Source licensing:** M1 records reviewed policy identifiers/attribution in the
   [inventory](../source-licensing.md). Persist actual source notices in receipts
   when clients land; recheck before shipping and on upstream changes. The

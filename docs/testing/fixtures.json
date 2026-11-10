@@ -348,6 +348,64 @@
         "value": null,
         "reason": "No physical coordinates or numeric scientific results are present."
       }
+    },
+    {
+      "fixture_id": "structure-synthetic-v1",
+      "path": "backend/tests/fixtures/structure-synthetic-v1.cif",
+      "generation_method": "Authored six-residue fictional CIF, two models and chains, explicit author/label differences, alternate locations and identity/translation operators; no retrieval.",
+      "expected_invariants": [
+        "Original Cartesian bytes and hashes retained; no assembly transform applied",
+        "Independent negative/zero/insertion numbering and coordinate-absent polymer positions"
+      ],
+      "purpose": "NF-02 M3 parser and import fixture; not a deposited structure or scientific validation.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 2913,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "5cab5e1e7834c06363f4d4d259ad71acaeabeecc32d1cd1054fd64e13ef07282"
+      },
+      "units": {
+        "state": "present",
+        "value": "angstrom",
+        "reason": null
+      },
+      "coordinate_convention": {
+        "state": "present",
+        "value": "original-deposited-cartesian; authored synthetic coordinates, no transform applied",
+        "reason": null
+      }
+    },
+    {
+      "fixture_id": "structures-m3-inline",
+      "path": "backend/tests/test_structures.py",
+      "generation_method": "Inline authored RCSB Search/Data events, mutations of the synthetic CIF, independently specified maps, injected clocks/transports and generated bounds/corruption cases; no retrieval.",
+      "expected_invariants": [
+        "Experimental-only identity/revision validation and original 200 versus 304 events",
+        "Bounded mapping ambiguity, resource enforcement and offline atomic retention"
+      ],
+      "purpose": "Offline NF-02 M3 discovery, revisions, parser/alignment and immutable import acceptance.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 52819,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "69265f753df1a9450ae4054531cbcd1927892bdd7b73a9576a79d07cda868cbd"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Test source containing authored event mutations; physical fixture conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Test source containing authored event mutations; physical fixture conventions are inventoried separately."
+      }
     }
   ]
 }

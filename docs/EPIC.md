@@ -6,7 +6,9 @@ documents. Planning baseline: NF-01, inspected 2026-11-10. NF-08 M1 shared
 [test foundation](testing/README.md) and NF-02 M1
 [biological contracts](biological-contracts.md) are implemented.
 [NF-02 M2 lookup and pinning](uniprot-lookup.md) are implemented as opt-in Python
-services; production remains health-only. Other later milestones remain proposed.
+services; [NF-02 M3 structures](structure-import.md) now adds experimental
+discovery, immutable imports and maps. Production remains health-only; M4 and other
+later milestones remain proposed.
 
 ## Objective and scientific motivation
 
@@ -40,7 +42,8 @@ the roadmap below is proposed future work, including endpoint names and packages
 - NF-02 M1 adds frozen biological records, protocols, HTTP DTO/schema contracts,
   synthetic contract tests and a source licensing inventory; operational routes
   remain deferred. NF-02 M2 adds a UniProt client, bounded cache/cursors and
-  immutable filesystem reference pinning; there is no variant service, viewer,
+  immutable filesystem reference pinning; M3 adds RCSB experimental discovery,
+  mmCIF import and explicit maps. There is no variant service, viewer,
   inference runtime,
   job system, database, authentication, or export implementation.
 

@@ -1,4 +1,4 @@
-# Architecture: NF-01, NF-08 M1, NF-09 M1 and NF-02 M1–M2
+# Architecture: NF-01, NF-08 M1, NF-09 M1 and NF-02 M1–M3
 
 ## Current implementation
 
@@ -116,8 +116,8 @@ coverage, absence, protocol/error semantics and the contract-only scope. The
 UniProt/RCSB terms and attribution. All fixtures are authored synthetic records.
 Tests use a separate ASGI contract harness for planned `/v1` operations; the
 production application remains health-only. M2 now adds opt-in lookup, cache and
-filesystem references as described below. Imports, parsing/alignment and
-operational routes remain NF-02 M3/M4; scientific runtimes remain out of scope.
+filesystem references and M3 adds structures as described below. Operational
+routes remain NF-02 M4; scientific runtimes remain out of scope.
 
 ## UniProt lookup and reference pinning (NF-02 M2)
 
@@ -134,4 +134,30 @@ The [M2 guide](uniprot-lookup.md) documents limits, time/concurrency semantics,
 cache TTLs, 200/304 provenance, typed conflicts, storage composition and offline
 tests. The raw source archive is independent of LRU metadata caches. Application
 services import core only; the dependency direction remains API → core ← adapters.
-RCSB, molecular structures/mapping and operational `/v1` routes remain M3/M4.
+M3 now adds RCSB and molecular structures/mapping. Operational `/v1` routes remain M4.
+
+## Experimental structure imports (NF-02 M3)
+
+[The M3 decision/behavior guide](structure-import.md) pins libraries, numbering,
+scoring, chemistry, alternate-location, assembly and resource policies.
+`adapters/biological/rcsb.py` implements the existing experimental catalog and
+additive source acquisition protocol. It uses Search/Data APIs, independently
+validates experimental origin, and retains raw metadata and selected mmCIF.
+`mmcif.py` reads Gemmi CIF tables; `alignment.py` uses Biopython optimal-path
+consensus. These CPU dependencies are lazy adapter imports; core and API startup
+remain independent of them. HTTPX remains the explicit production transport.
+
+`application/structures.py` loads the actual pinned reference, validates explicit
+selection/revision, delegates parsing/mapping and revalidates the entry immediately
+before publication. Unknown revisions fail closed; changed revisions have a typed
+conflict. `core/structures.py` adds standard-library seams and a separately
+versioned `neurofold-structure-import/1` bundle/audit, preserving all frozen v1
+records and schemas. No inference, API routes or frontend features are added.
+
+`FilesystemStructures` composes the M2 store to publish descriptor/map/audit as
+one checksummed atomic bundle after artifacts/receipts/reference dependencies.
+Both map and descriptor lookup resolve the same bundle; map IDs are the opaque
+structure ID plus `:map`. Original deposited Cartesian coordinates remain intact;
+assembly/operator matrices are recorded without applying them. Retained references,
+raw bytes, receipts and maps remain readable offline after restart and cache loss.
+This is trusted local filesystem storage, not a database or multi-user service.

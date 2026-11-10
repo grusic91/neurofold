@@ -49,9 +49,11 @@ def test_fixture_inventory_matches_bytes_and_provenance() -> None:
         )
         for field in ("units", "coordinate_convention"):
             metadata = Metadata.from_dict(entry[field])
-            # All current fixtures are identity/transport records, not coordinates.
-            assert metadata.state == MetadataState.NOT_APPLICABLE
-            assert metadata.reason
+            if metadata.state == MetadataState.PRESENT:
+                assert isinstance(metadata.value, str) and metadata.value.strip()
+            else:
+                assert metadata.state == MetadataState.NOT_APPLICABLE
+                assert metadata.reason
 
     fixture_dir = ROOT / "backend/tests/fixtures"
     assert {path for path in fixture_dir.rglob("*") if path.is_file()} <= paths

@@ -13,8 +13,9 @@ operations in [NF-02](tasks/NF-02-biological-data.md#5-data-models-and-api-contr
 are exercised in a **test-only ASGI harness** with fixed responses. The harness
 remains fixed-response contract evidence.
 [M2](uniprot-lookup.md) now implements Python lookup/pinning/storage separately;
-M3 owns structures and M4 owns operational routes. M1 fixtures and HTTP schema
-remain unchanged; M2 introduces a separate pin-audit record for 304 checks.
+[M3](structure-import.md) implements structures and M4 owns operational routes.
+M1 fixtures and HTTP schema remain unchanged; M2 introduces a separate pin-audit record for 304 checks, and
+M3 adds a separate import bundle/audit without changing v1 wire fields.
 
 ## Records and identity
 
@@ -54,7 +55,8 @@ residue identifiers are strings, preserving `-2`, `0` and nonnumeric identifiers
 Insertion codes have independent Metadata states; no author number or chain is
 invented from a label. Following the [PDBx/mmCIF guide](https://mmcif.wwpdb.org/docs/user-guide/guide.html),
 future parsers must distinguish `?` (unknown) from `.` (inapplicable/intentionally
-omitted) with context and reasons, retaining original bytes. M1 parses no mmCIF.
+omitted) with context and reasons, retaining original bytes. M1 parses no mmCIF;
+[M3](structure-import.md) now provides the bounded parser.
 
 | Status | Meaning and invariant |
 | --- | --- |
@@ -143,3 +145,22 @@ See [M1 acceptance evidence](testing/nf02-m1-evidence.md) for checks and gaps.
 
 M2 implementation/status supersedes the future-tense M2 work above; see its
 [guide](uniprot-lookup.md) and [acceptance evidence](testing/nf02-m2-evidence.md).
+
+## Additive M3 producer and repository
+
+The v1 records above remain frozen. `core/structures.py` adds a strict
+`neurofold-structure-import/1` envelope, source validation checks and adapter
+protocols. Its producer validates every mapped residue against the actual pinned
+reference and selected entity polymer, retains reference and polymer gap rows,
+and fills typed imported reference coverage. Additional polymer/coordinate/identity
+counts and all scoring/tie policies are in the audit. Models, chains, components,
+alternate locations and assembly operators remain identifiable in retained bytes
+and parse inventory. Unknown component parents produce ambiguous rows.
+
+The filesystem repository validates cross-record IDs/hashes, reference dependencies,
+original artifacts/receipts and final authoritative revision. It publishes a single
+checksummed descriptor/map/audit bundle. `StructureRepository.publish` supports
+identical repeats of an already complete import; initial publication uses the
+additive `publish_import` protocol so an unaudited pair cannot become visible.
+Missing revision fails closed, and source changes raise `StructureSourceChanged`.
+Operational HTTP translation remains M4. See [M3 policy](structure-import.md).

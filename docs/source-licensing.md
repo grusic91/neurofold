@@ -52,3 +52,25 @@ several help/API pages still exposed a JavaScript fallback on review; the API
 support statement, dataset declaration and CC terms remain the policy basis.
 No retrieved biological content is committed or exported by this milestone.
 See [M2 behavior and bounds](uniprot-lookup.md).
+
+## NF-02 M3 review (2026-11-10)
+
+Rechecked [RCSB API/archive CC0 policy](https://www.rcsb.org/pages/usage-policy),
+[Search documentation](https://search.rcsb.org/), [Data API](https://data.rcsb.org/)
+and official entry/entity/instance schemas. These are documentation/schema reads,
+not retrieval of biological records. Receipts retain wwPDB/RCSB attribution,
+CC0 URL, exact source/query/revision and supplied primary DOI/PubMed identifiers;
+full citation/entry/entity/instance annotations remain in immutable raw responses.
+Unrelated linked third-party rights require separate review and remain unknown.
+Fictional transport artifacts explicitly carry synthetic/Apache-2.0 rights.
+
+New locked components: Gemmi 0.7.5 (selected MPL-2.0 option; packaged notice and
+covered-source availability on binary redistribution), Biopython 1.88 (Biopython
+License Agreement, with per-file BSD alternatives; retain copyright/permission
+notices and do not imply endorsement), and transitive NumPy 2.5.4 (wheel metadata:
+`BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0`). Preserve all packaged notices,
+including bundled code; no library source is modified or vendored. See the
+[comparison and primary license links](structure-import.md#libraries-and-source-review).
+The installed wheel license files were inspected separately from behavior tests.
+The project LICENSE/attribution are unchanged. Larger exports/distribution still
+need their own artifact-specific rights and notice review.
