@@ -1,4 +1,4 @@
-# Architecture: NF-01, NF-08 M1, NF-09 M1, NF-02 M1–M4 and NF-03 M1
+# Architecture: NF-01, NF-08 M1, NF-09 M1, NF-02 M1–M4 and NF-03 M1/M2
 
 ## Current implementation
 
@@ -29,9 +29,18 @@ Results retain the entire immutable `ReferenceSnapshot`, using its actual nested
 methionine and ignore structural coverage/numbering. Exact construction preserves
 length and changes one residue; hashes use NF-08 `sequence_sha256`. Hypothesis
 interpretation stays separate from evidence labels. See [domain rules](variants.md).
-M1 adds no application service, repository, ID, storage adapter, HTTP schema/route
-or frontend. M2 defines the persisted `VariantDefinition` and identity/storage;
-M3 owns HTTP translation. Existing frozen NF-02/NF-08 contracts stay unchanged.
+M1 records remain unchanged. M2 adds `VariantDefinition`, its prescribed
+four-field `neurofold-variant/1` identity and the narrow `VariantRepository`.
+`application/variants.py::VariantService` resolves an injected retained reference,
+checks the caller's expected sequence hash and uses M1 before publication.
+`adapters/variant_storage.py::FilesystemVariants` uses the existing staged,
+fsynced, no-clobber archive primitive and verifies the full definition/actual
+reference derivation on every load. Duplicate outcomes expose a transient
+`created` boolean; corruption is never repaired or treated as absence. No clock,
+provider, API startup wiring or new runtime dependency is introduced. M3 owns
+HTTP DTOs/routes/status translation; frontend interaction remains later work.
+See [identity, failures and atomicity limits](variants.md). Existing frozen
+NF-02/NF-08 contracts stay unchanged.
 
 ## Prediction boundary
 

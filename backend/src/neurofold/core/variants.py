@@ -1,13 +1,13 @@
-"""NF-03 M1 sequence hypotheses against complete pinned reference sequences.
+"""NF-03 sequence hypotheses and reference-aware immutable definition contracts.
 
-Pure domain logic only: no structure numbering, persistence, IDs or HTTP.
-Validation/error precedence and the provisional result shape: docs/variants.md.
+Pure standard-library logic: no structure numbering, filesystem I/O or HTTP.
+Validation/error precedence and persisted identity: docs/variants.md.
 """
 
 import re
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import ClassVar, Literal, Self
+from typing import ClassVar, Literal, Protocol, Self
 
 from neurofold.core._contracts import Contract
 from neurofold.core.biological import ReferenceSnapshot
@@ -15,8 +15,9 @@ from neurofold.core.canonical import (
     MAX_SAFE_INTEGER,
     CanonicalObject,
     sequence_sha256,
+    sha256_bytes,
 )
-from neurofold.core.provenance import ContentHash, HashEncoding
+from neurofold.core.provenance import ContentHash, HashEncoding, Metadata, _text
 
 CANONICAL_AMINO_ACIDS = "ACDEFGHIKLMNPQRSTVWY"
 NOTATION_VERSION: Literal["nf-substitution/1"] = "nf-substitution/1"
@@ -34,6 +35,10 @@ class VariantErrorCode(StrEnum):
     INVALID_DIFFERENCE_INPUT = "INVALID_DIFFERENCE_INPUT"
     SEQUENCE_LENGTH_MISMATCH = "SEQUENCE_LENGTH_MISMATCH"
     INVALID_VARIANT_RESULT = "INVALID_VARIANT_RESULT"
+    INVALID_VARIANT_DEFINITION = "INVALID_VARIANT_DEFINITION"
+    INVALID_EXPECTED_REFERENCE_HASH = "INVALID_EXPECTED_REFERENCE_HASH"
+    REFERENCE_NOT_FOUND = "REFERENCE_NOT_FOUND"
+    REFERENCE_HASH_MISMATCH = "REFERENCE_HASH_MISMATCH"
 
 
 class VariantError(ValueError):
@@ -306,3 +311,151 @@ def apply_substitution(
         ),
         differences=sequence_difference(reference.protein.sequence, sequence),
     )
+
+
+VARIANT_SCHEMA_VERSION: Literal["neurofold-variant/1"] = "neurofold-variant/1"
+
+
+def variant_identity_document(
+    *,
+    reference_id: str,
+    reference_sequence_sha256: str,
+    substitution: Substitution,
+) -> CanonicalObject:
+    """Exactly the NF-03 four-field document, without an identity envelope."""
+    if type(reference_id) is not str or type(substitution) is not Substitution:
+        raise VariantError(
+            VariantErrorCode.INVALID_VARIANT_DEFINITION, "Invalid identity fields"
+        )
+    try:
+        _text(reference_id)
+        ContentHash(sha256=reference_sequence_sha256, encoding=HashEncoding.SEQUENCE)
+    except (ValueError, TypeError) as exc:
+        raise VariantError(
+            VariantErrorCode.INVALID_VARIANT_DEFINITION, "Invalid identity fields"
+        ) from exc
+    return CanonicalObject.from_value(
+        {
+            "schema_version": VARIANT_SCHEMA_VERSION,
+            "reference_id": reference_id,
+            "reference_sequence_sha256": reference_sequence_sha256,
+            "substitution": substitution.to_dict(),
+        }
+    )
+
+
+@dataclass(frozen=True, kw_only=True)
+class VariantDefinition(_VariantRecord):
+    """Immutable persisted hypothesis; validate_reference checks its dependency."""
+
+    _error_code = VariantErrorCode.INVALID_VARIANT_DEFINITION
+    schema_version: Literal["neurofold-variant/1"] = VARIANT_SCHEMA_VERSION
+    variant_id: str
+    reference_id: str
+    reference_sequence_sha256: str
+    reference_content_hash: ContentHash
+    reference_accession: str
+    reference_taxon_id: int
+    reference_sequence_version: Metadata
+    reference_entry_version: Metadata
+    substitution: Substitution
+    notation: str
+    sequence: str
+    sequence_hash: ContentHash
+    sequence_length: int
+    differences: tuple[SequenceDifference, ...]
+    interpretation_kind: Literal["hypothesis"] = "hypothesis"
+
+    @property
+    def identity_document(self) -> CanonicalObject:
+        return variant_identity_document(
+            reference_id=self.reference_id,
+            reference_sequence_sha256=self.reference_sequence_sha256,
+            substitution=self.substitution,
+        )
+
+    def _validate(self) -> None:
+        if self.variant_id != "variant-" + sha256_bytes(self.identity_document.data):
+            raise ValueError("Variant content identity mismatch")
+        if (
+            self.reference_content_hash.encoding is not HashEncoding.CANONICAL_JSON
+            or self.reference_taxon_id <= 0
+            or self.notation != self.substitution.notation
+            or self.sequence_length != len(self.sequence)
+            or self.sequence_hash.encoding is not HashEncoding.SEQUENCE
+            or self.sequence_hash.sha256 != sequence_sha256(self.sequence)
+            or self.differences
+            != (
+                SequenceDifference(
+                    position=self.substitution.position,
+                    reference_aa=self.substitution.reference_aa,
+                    alternate_aa=self.substitution.alternate_aa,
+                ),
+            )
+        ):
+            raise ValueError("Invalid variant metadata or derived fields")
+
+    def validate_reference(self, reference: ReferenceSnapshot) -> None:
+        """Independently derive every retained field from the actual snapshot."""
+        result = apply_substitution(reference, self.substitution)
+        if self != _definition_from_result(result):
+            raise VariantError(
+                self._error_code,
+                "Variant does not match the pinned reference and exact derivation",
+            )
+
+
+def _definition_from_result(result: SubstitutionResult) -> VariantDefinition:
+    reference = result.reference
+    identity = variant_identity_document(
+        reference_id=reference.reference_id,
+        reference_sequence_sha256=reference.protein.sequence_hash.sha256,
+        substitution=result.substitution,
+    )
+    taxon = reference.protein.summary.taxon_id.value
+    assert type(taxon) is int  # ReferenceSnapshot guarantees a present taxon.
+    return VariantDefinition(
+        variant_id="variant-" + sha256_bytes(identity.data),
+        reference_id=reference.reference_id,
+        reference_sequence_sha256=reference.protein.sequence_hash.sha256,
+        reference_content_hash=reference.content_hash,
+        reference_accession=reference.protein.summary.accession,
+        reference_taxon_id=taxon,
+        reference_sequence_version=reference.protein.source_receipt.sequence_version,
+        reference_entry_version=reference.protein.source_receipt.entry_version,
+        substitution=result.substitution,
+        notation=result.substitution.notation,
+        sequence=result.sequence,
+        sequence_hash=result.sequence_hash,
+        sequence_length=result.sequence_length,
+        differences=result.differences,
+    )
+
+
+def define_variant(
+    reference: ReferenceSnapshot, substitution: Substitution
+) -> VariantDefinition:
+    """Use unchanged M1 validation and construction before assigning identity."""
+    return _definition_from_result(apply_substitution(reference, substitution))
+
+
+@dataclass(frozen=True, kw_only=True)
+class VariantPublication(Contract):
+    """Transient repository outcome; never stored inside the definition."""
+
+    definition: VariantDefinition
+    created: bool
+
+
+class VariantRepository(Protocol):
+    """Offline immutable definitions with fully verified reference dependencies.
+
+    get: KeyError only for unknown IDs; ArchiveIntegrityError for retained damage.
+    publish: identical repeats return created=False; ArchiveConflict for different
+    valid content, ArchiveIntegrityError for corrupt targets/dependencies, and
+    ArchivePublicationError for failed I/O (complete publication may be visible).
+    """
+
+    def get(self, variant_id: str) -> VariantDefinition: ...
+
+    def publish(self, definition: VariantDefinition) -> VariantPublication: ...

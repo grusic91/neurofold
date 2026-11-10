@@ -756,6 +756,37 @@
         "value": null,
         "reason": "No molecular coordinates; hypothetical polymer coverage does not number the pinned reference."
       }
+    },
+    {
+      "fixture_id": "variant-storage-inline",
+      "path": "backend/tests/test_variant_storage.py",
+      "generation_method": "Authored MACAG/A4V/MACVG identity golden bytes and independently calculated SHA-256; reused M1 synthetic metadata/receipt, temporary offline archives, synchronized threads/processes, injected write failures and self-consistent checksum mutations. No retrieval.",
+      "expected_invariants": [
+        "Exactly four identity fields; pinned reference-aware IDs distinct from exact sequence hashes and canonical bundle checksums",
+        "Immutable complete publication, exactly one concurrent winner, offline process reopening and no partial final records after failed/abrupt writes",
+        "Every load revalidates M1 derivation and actual reference dependencies; self-consistent checksum tampering, corrupt duplicates and missing dependencies fail without repair",
+        "Original snapshots/provenance remain byte-identical; no timestamp/receipt in definition content identity"
+      ],
+      "purpose": "NF-03 M2 versioned identity, injected application/repository contracts and atomic archive integrity.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 30323,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "ffc081d2bcfa19f582dbf0699b5a0b7033afeab45615539da198ca81d789ba78"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Sequence positions and hashes have no physical units."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No molecular coordinates are present."
+      }
     }
   ]
 }

@@ -19,7 +19,12 @@ constructor/codec types, all twenty residues, generated exact one-change cases,
 whole-reference alphabet/error precedence, immutable reference/hash consistency,
 and a separately authored 142-residue numbering example with shorter hypothetical
 structural coverage. No live artifacts, structure/map, provider or model runtime
-is required. M2 persistence/identity and M3 HTTP tests remain future work.
+is required. [M2 evidence](nf03-m2-evidence.md) adds independently specified
+identity bytes/ID, expected-hash/reference resolution precedence, offline archive
+round trips, synchronized thread/process duplicates, failed/abrupt publication,
+strict codecs, dependency damage and self-consistent checksum tampering with
+independent M1 derivation checks. Child processes deny sockets/DNS and run without
+site-packages. M3 HTTP tests remain future work.
 
 ## Commands and compatibility
 

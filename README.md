@@ -7,7 +7,8 @@ NeuroFold aims to make prediction workflows modular, inspectable, and scientific
 reproducible, and to support molecular exploration with Mol*.
 
 **Implemented: NF-01, NF-08 M1 provenance contracts, NF-09 M1 test foundation,
-NF-02 M1–M4 biological data integration, and NF-03 M1 pure substitutions.**
+NF-02 M1–M4 biological data integration, and NF-03 M1/M2 substitutions and
+immutable variant storage.**
 The API serves canonical protein
 lookup, immutable reference pinning, experimental structure discovery/import,
 retained residue maps/audits and registered original artifacts. The frontend
@@ -21,8 +22,10 @@ See [integration/configuration decisions](docs/integration.md),
 [source licensing](docs/source-licensing.md).
 The [substitution domain](docs/variants.md) parses and validates one substitution
 against the complete pinned reference, constructs the exact sequence/hash and
-reports immutable differences. Results are sequence hypotheses; variant identity,
-storage, HTTP routes and interaction remain future NF-03 M2/M3 and NF-07 work.
+reports immutable differences. NF-03 M2 adds reference-aware content IDs, an
+injected offline variant service and atomic immutable archives with load-time
+derivation checks. Results are sequence hypotheses; variant HTTP routes and
+interaction remain future NF-03 M3 and NF-07 work.
 Prediction, molecular visualization, comparisons, complete scientific manifests
 and exports remain future work. Boltz-2 is not installed or executed.
 
@@ -43,7 +46,7 @@ backend/
     api/            FastAPI application, routes, and HTTP schemas
     core/           Standard-library-only contracts and pure substitution logic
     adapters/       UniProt/RCSB, CIF/alignment and immutable storage adapters
-    application/    Reference pinning and structure import orchestration
+    application/    Reference, structure import and variant orchestration
   tests/            Offline HTTP, core, fixture and architectural boundary tests
   pyproject.toml    Dependencies, lint, formatting, types, and test settings
   uv.lock           Locked Python dependencies

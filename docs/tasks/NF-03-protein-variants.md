@@ -1,8 +1,9 @@
 # NF-03 — Protein Variant Management
 
-Status: **M1 implemented**; M2 identity/storage and M3 HTTP integration proposed.
-Parent: [NF-EPIC-001](../EPIC.md). See [M1 domain decisions](../variants.md) and
-[M1 evidence](../testing/nf03-m1-evidence.md).
+Status: **M1 and M2 implemented**; M3 HTTP integration proposed.
+Parent: [NF-EPIC-001](../EPIC.md). See [domain/storage decisions](../variants.md),
+[M1 evidence](../testing/nf03-m1-evidence.md) and
+[M2 evidence](../testing/nf03-m2-evidence.md).
 
 ## 1. Objective and scientific motivation
 
@@ -30,14 +31,14 @@ conversion, population/clinical annotation and pathogenicity interpretation.
 - NF-04 consumes the constructed sequence; NF-05/06 use the same reference
   positions. This task must not depend on prediction or a molecular viewer.
 
-## 4. Proposed architecture and interfaces
+## 4. Architecture and interfaces
 
 Use frozen standard-library dataclasses in `core/variants.py` and pure functions
 `parse_substitution(notation)`, `validate_substitution(reference, substitution)`,
 `apply_substitution(reference, substitution)`, and `sequence_difference(...)`.
 Return typed domain errors; no HTTP exceptions or source fetches in core.
 
-In future M2, an application `VariantService` loads the immutable reference through
+In M2, the application `VariantService` loads the immutable reference through
 its repository, validates and constructs the variant, then atomically writes a
 content-addressed record through an injected `VariantRepository`. The filesystem
 adapter stores records under ignored `data/`; fake repositories support tests.
@@ -82,13 +83,13 @@ substitution separately enforces exactly one requested change. See the
 [domain guide](../variants.md) for signatures, strict codecs and additional narrow
 input/difference/result failure codes.
 
-The proposed M2 `VariantDefinition` includes schema version, content-derived
+The implemented M2 `VariantDefinition` includes schema version, content-derived
 variant ID, reference ID/accession/taxon/sequence version/hash, the substitution,
 canonical notation, mutated sequence/hash, sequence length and interpretation kind
 `hypothesis` for the proposed substitution. This interpretation is separate from
 the shared `experimental`/`predicted`/`synthetic` evidence kinds of structure
-artifacts. Creation time belongs in an append-only receipt, outside content
-identity. It is not an annotation of clinical evidence.
+artifacts. M2 records no creation time; any future creation time belongs in an
+append-only receipt, outside content identity. It is not an annotation of clinical evidence.
 
 Variant ID = SHA-256 of NF-08 canonical JSON containing `schema_version`,
 `reference_id`, `reference_sequence_sha256`, and the structured substitution.
@@ -96,6 +97,12 @@ The mutated sequence is derived and independently hashed/verified on load. Two
 reference records with identical sequences but different source identity may
 produce different variant IDs. Sequence hashes permit content comparisons without
 discarding source provenance. Repeating an identical create is idempotent.
+
+M2 uses schema version `neurofold-variant/1` and ID `variant-<64 lowercase hex>`.
+The [domain/storage guide](../variants.md) specifies exact canonical bytes,
+retained fields, injected public interfaces, input/hash/reference/M1 error
+precedence, concurrency outcomes, archive verification and interruption limits.
+This adds no HTTP contract or migration of frozen NF-02/NF-08 v1 records.
 
 Proposed routes:
 
@@ -122,8 +129,8 @@ invalid records, partially mutated sequences or silently refreshed references.
 
 1. **M1 — Pure domain (complete):** records, syntax/position/alphabet validation,
    construction, difference output, error codes and synthetic tests.
-2. **M2 — Identity/storage:** canonical content identity, atomic immutable writes,
-   integrity verification, duplicate semantics and reference linkage.
+2. **M2 — Identity/storage (complete):** canonical content identity, atomic
+   immutable writes, integrity verification, duplicate semantics and reference linkage.
 3. **M3 — HTTP integration:** request/response schemas, routes, OpenAPI examples,
    and frontend-ready difference records; document notation and indexing.
 

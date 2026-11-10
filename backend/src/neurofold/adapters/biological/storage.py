@@ -64,7 +64,7 @@ class FilesystemStore:
             raise ValueError("Stored record exceeds limit")
         return data
 
-    def _publish(self, kind: str, identity: str, data: bytes) -> None:
+    def _publish(self, kind: str, identity: str, data: bytes) -> bool:
         if len(data) > MAX_STORED_BYTES:
             raise ResourceLimit("Stored record exceeds limit")
         target = self._path(kind, identity)
@@ -74,11 +74,13 @@ class FilesystemStore:
                 stage.write(data)
                 stage.flush()
                 os.fsync(stage.fileno())
+                created = True
                 try:
                     os.link(
                         temporary, target
                     )  # Atomic, no-clobber even across processes.
                 except FileExistsError:
+                    created = False
                     if self._read(kind, identity) != data:
                         raise ArchiveConflict("Conflicting immutable write") from None
                 directory = os.open(self.root, os.O_RDONLY)
@@ -86,6 +88,7 @@ class FilesystemStore:
                     os.fsync(directory)
                 finally:
                     os.close(directory)
+                return created
             finally:
                 temporary.unlink()
 
