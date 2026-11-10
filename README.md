@@ -7,11 +7,14 @@ NeuroFold aims to make prediction workflows modular, inspectable, and scientific
 reproducible, and to support molecular exploration with Mol*.
 
 **Implemented: NF-01, NF-08 M1 shared provenance contracts, NF-09 M1 test
-foundation, and NF-02 M1 biological data contracts.** The API exposes a tested
-health endpoint and the frontend displays service status. Shared immutable provenance contracts and offline backend,
+foundation, and NF-02 M1 contracts plus M2 lookup/pinning.** The API exposes a
+tested health endpoint and the frontend displays service status. Shared immutable
+provenance contracts and offline backend,
 component and browser tests are present. [Biological contracts](docs/biological-contracts.md)
 and [source licensing inventory](docs/source-licensing.md) are implemented;
-lookup, pinning and structure imports await NF-02 M2–M4. Prediction,
+[UniProt lookup and immutable reference pinning](docs/uniprot-lookup.md) are
+implemented as Python services; structure imports and HTTP/UI integration await
+NF-02 M3–M4. Prediction,
 molecular visualization, complete manifests and exports remain future work.
 Boltz-2 is planned; it is not installed or executed.
 
@@ -31,7 +34,8 @@ backend/
   src/neurofold/
     api/            FastAPI application, routes, and HTTP schemas
     core/           Standard-library-only prediction, provenance and biological contracts
-    adapters/       Future model adapter implementations
+    adapters/       UniProt/storage adapters; future model implementations
+    application/    Reference pinning orchestration
   tests/            Offline HTTP, core, fixture and architectural boundary tests
   pyproject.toml    Dependencies, lint, formatting, types, and test settings
   uv.lock           Locked Python dependencies

@@ -4,7 +4,9 @@ Implemented scope: NF-01 health/status behavior and NF-08 M1 shared contracts,
 plus offline guards, fixture integrity and frontend test infrastructure. NF-02
 M1 adds [biological contracts](../biological-contracts.md), synthetic provider
 examples and a separate ASGI HTTP-contract harness; no operational lookup/import
-or live provider compatibility is claimed. A passing foundation is neither an
+or live provider compatibility is claimed by that harness.
+[NF-02 M2](../uniprot-lookup.md) separately adds offline UniProt transport, lookup,
+cache/cursor, pinning and filesystem behavior tests. A passing foundation is neither an
 integrated synthetic preview
 nor a real scientific MVP. [The matrix](test-matrix.md) separates implemented
 coverage from planned work; [scientific review](scientific-review.md) and the
@@ -135,3 +137,6 @@ relicense future external source data. NF-02 provider-shaped examples are
 authored synthetic records, not captured
 responses. Analytic coordinate fixtures and actual adapter transport behavior
 remain future work. See [NF-02 M1 evidence](nf02-m1-evidence.md).
+
+NF-02 M2 local results and remaining environment/integration gates are recorded
+in [its acceptance evidence](nf02-m2-evidence.md).

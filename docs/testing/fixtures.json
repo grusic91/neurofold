@@ -319,6 +319,35 @@
         "value": null,
         "reason": "No physical coordinates or numeric scientific results are present."
       }
+    },
+    {
+      "fixture_id": "uniprot-m2-inline",
+      "path": "backend/tests/test_uniprot.py",
+      "generation_method": "Authored synthetic provider event mutations from the frozen six-residue UniProt example; injected clocks/transports, gzip bombs and HTTPX MockTransport streams; no retrieval.",
+      "expected_invariants": [
+        "Exact raw bytes/receipt versus sequence identity and 200/304 pin audits",
+        "Query/cursor/cache/retry/size/concurrency bounds; atomic immutable offline archive reads"
+      ],
+      "purpose": "Offline NF-02 M2 lookup, resilience, pinning and storage behavior.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 32576,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "2bd2c1fe380e2a77d6278a531d11adc4a8d77f65b72261e4b06533847378c6fa"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      }
     }
   ]
 }

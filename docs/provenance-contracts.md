@@ -199,3 +199,13 @@ uv run --locked pytest
 Schema changes require deliberate compatibility decisions and fixtures. Export
 root inventories/sidecar checksums remain M3. The skeleton never embeds its own
 checksum, avoiding circular identity.
+
+## NF-02 M2 capture implementation
+
+[UniProt lookup](uniprot-lookup.md) now produces real retrieval receipts and exact
+raw artifacts through the existing protocols. The opt-in filesystem store
+implements ArtifactStore; immutable references retain receipts independently of
+metadata caches. A separately versioned `neurofold-reference-pin/1` audit links
+a pin's authoritative 200/304 check to the original source receipt without changing
+NF-08 v1 identities. Full scientific manifests, exports and replay remain future
+NF-08 milestones.

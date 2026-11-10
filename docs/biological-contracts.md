@@ -1,4 +1,4 @@
-# Biological contracts — NF-02 M1
+# Biological contracts — NF-02 M1 (frozen)
 
 Implemented: immutable standard-library records in `core/biological.py`, HTTP
 DTOs in `api/biological.py`, a frozen [HTTP JSON Schema](schemas/neurofold-biological-http-1.schema.json),
@@ -10,10 +10,11 @@ no cursor/taxon filter. Package/API application version remains 0.1.0.
 
 The production application still exposes only `/health`. The eight proposed
 operations in [NF-02](tasks/NF-02-biological-data.md#5-data-models-and-api-contracts)
-are exercised in a **test-only ASGI harness** with fixed responses. This is not
-lookup, pinning, importing, artifact storage or live provider compatibility.
-M2–M4 must implement and test those behaviors and register operational routes.
-There are no new dependencies, application services, clients or persistence.
+are exercised in a **test-only ASGI harness** with fixed responses. The harness
+remains fixed-response contract evidence.
+[M2](uniprot-lookup.md) now implements Python lookup/pinning/storage separately;
+M3 owns structures and M4 owns operational routes. M1 fixtures and HTTP schema
+remain unchanged; M2 introduces a separate pin-audit record for 304 checks.
 
 ## Records and identity
 
@@ -98,9 +99,10 @@ with a letter/digit. No source URL is accepted as an artifact identifier.
 Search accepts a single nonblank gene token (at most 128 characters), optional
 positive safe-integer taxon, bounded nonempty cursor (at most 2048 characters),
 and integer limit 1–100. Decimal query strings are explicitly decoded; JSON body
-numbers and booleans are not coerced. Cursor signing, expiry, provider/query/order
-binding and rejection with restart hints belong to M2. Accession syntax validation
-never proves an accession exists; source resolution and obsolete IDs remain M2.
+numbers and booleans are not coerced. M2 implements opaque server-side cursors,
+expiry, provider/query/order binding
+and rejection with restart hints. Accession syntax validation never proves an
+accession exists; M2 validates source identity and rejects obsolete/substituted IDs.
 
 Pages retain items, source receipts, next-cursor Metadata, availability and
 warnings. Complete-empty results differ from unavailable-empty results;
@@ -134,6 +136,10 @@ The six-row map is hand-specified, not computed from that placeholder.
 Apache-2.0 fixtures and project license. Rights remain per artifact, with unknown
 rights explicit. M2 must recheck source terms on client shipment and upstream
 changes; M3 must review parser/alignment licenses and define resource limits.
-Real provider compatibility, atomic storage, full-reference consistency,
-discovery/imports and biological validity remain unverified.
+M2 now tests atomic reference storage and full sequence/source consistency with
+synthetic inputs. Real provider compatibility, structure discovery/imports and
+biological validity remain unverified.
 See [M1 acceptance evidence](testing/nf02-m1-evidence.md) for checks and gaps.
+
+M2 implementation/status supersedes the future-tense M2 work above; see its
+[guide](uniprot-lookup.md) and [acceptance evidence](testing/nf02-m2-evidence.md).

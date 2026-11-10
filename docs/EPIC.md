@@ -5,7 +5,8 @@ documents. Planning baseline: NF-01, inspected 2026-11-10. NF-08 M1 shared
 [provenance contracts](provenance-contracts.md) and NF-09 M1
 [test foundation](testing/README.md) and NF-02 M1
 [biological contracts](biological-contracts.md) are implemented.
-Later milestones remain proposed.
+[NF-02 M2 lookup and pinning](uniprot-lookup.md) are implemented as opt-in Python
+services; production remains health-only. Other later milestones remain proposed.
 
 ## Objective and scientific motivation
 
@@ -38,7 +39,8 @@ the roadmap below is proposed future work, including endpoint names and packages
   ESLint, TypeScript, frontend build, and Linux container smoke tests.
 - NF-02 M1 adds frozen biological records, protocols, HTTP DTO/schema contracts,
   synthetic contract tests and a source licensing inventory; operational routes
-  remain deferred. There is no biological client, variant service, viewer,
+  remain deferred. NF-02 M2 adds a UniProt client, bounded cache/cursors and
+  immutable filesystem reference pinning; there is no variant service, viewer,
   inference runtime,
   job system, database, authentication, or export implementation.
 

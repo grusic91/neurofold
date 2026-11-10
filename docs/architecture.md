@@ -1,4 +1,4 @@
-# Architecture: NF-01, NF-08 M1, NF-09 M1 and NF-02 M1
+# Architecture: NF-01, NF-08 M1, NF-09 M1 and NF-02 M1–M2
 
 ## Current implementation
 
@@ -108,13 +108,30 @@ five mapping states, bounded page records and catalog/repository protocols. It
 reuses NF-08 receipts, rights, hashes and explicit Metadata absence; core remains
 standard-library-only. `api/biological.py` owns Pydantic request/response DTOs and
 conversion/response integrity checks. A frozen HTTP JSON Schema documents the
-exchange shape without changing the NF-08 schema. No dependency changes occur.
+exchange shape without changing the NF-08 schema. M1 itself added no dependencies.
 
 The [biological guide](biological-contracts.md) specifies numbering, identity,
 coverage, absence, protocol/error semantics and the contract-only scope. The
 [source licensing inventory](source-licensing.md) records independently reviewed
 UniProt/RCSB terms and attribution. All fixtures are authored synthetic records.
 Tests use a separate ASGI contract harness for planned `/v1` operations; the
-production application remains health-only. No live clients, lookup, cache,
-imports, parsing/alignment, filesystem repositories or scientific runtime are
-implemented. These remain NF-02 M2–M4, with separate acceptance evidence.
+production application remains health-only. M2 now adds opt-in lookup, cache and
+filesystem references as described below. Imports, parsing/alignment and
+operational routes remain NF-02 M3/M4; scientific runtimes remain out of scope.
+
+## UniProt lookup and reference pinning (NF-02 M2)
+
+Opt-in `adapters/biological/` implements UniProt transport/parsing, bounded cache
+and cursor policy, and immutable filesystem storage. `application/references.py`
+composes the core fresh-catalog/repository/archive protocols to revalidate, compare
+sequence identity and pin references. `core/lookup.py` adds standard-library
+errors/protocols and a separate versioned pin audit; frozen M1 records/schema stay
+unchanged. No adapter is constructed by API startup or health checks. HTTPX 0.28.1
+is now explicitly locked in production dependencies; the earlier test-only
+httpx2 client is not used by this adapter.
+
+The [M2 guide](uniprot-lookup.md) documents limits, time/concurrency semantics,
+cache TTLs, 200/304 provenance, typed conflicts, storage composition and offline
+tests. The raw source archive is independent of LRU metadata caches. Application
+services import core only; the dependency direction remains API → core ← adapters.
+RCSB, molecular structures/mapping and operational `/v1` routes remain M3/M4.

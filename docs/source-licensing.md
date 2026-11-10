@@ -30,3 +30,25 @@ and third-party annotations require their own scope/terms review. NF-08 export
 work must retain source notices and transformation lineage, and explicitly list
 omitted/prohibited/unknown-rights artifacts. A checksum is byte identity, not a
 license or evidence of scientific validity.
+
+## NF-02 M2 review (2026-11-10)
+
+The source policy remains CC BY 4.0 for copyrightable UniProt database content,
+as stated by the official API support documentation above. M2 receipts retain
+the license URL, The UniProt Consortium attribution, source URL, exact raw bytes,
+versions and any supplied copyright/citation cross-references. Extraction is
+identified; original sequence text is unchanged. Missing citations/versions remain
+explicit, and linked third-party annotations require their own review before
+reuse beyond this retained source response. Synthetic test transport artifacts
+are labeled synthetic; their authored fixture license does not grant rights to
+real external content.
+
+Production transport is now explicitly `httpx==0.28.1`, under
+[BSD-3-Clause](https://github.com/encode/httpx/blob/0.28.1/LICENSE.md); preserve its
+packaged notice. Its locked runtime additions are [httpcore (BSD-3-Clause)](https://github.com/encode/httpcore/blob/1.0.9/LICENSE.md) and
+[certifi (MPL-2.0 certificate bundle)](https://github.com/certifi/python-certifi/blob/master/LICENSE), with their own packaged notices. No
+parser/alignment/model/weight dependency was selected. UniProt help/license and
+several help/API pages still exposed a JavaScript fallback on review; the API
+support statement, dataset declaration and CC terms remain the policy basis.
+No retrieved biological content is committed or exported by this milestone.
+See [M2 behavior and bounds](uniprot-lookup.md).

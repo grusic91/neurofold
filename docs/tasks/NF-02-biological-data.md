@@ -1,10 +1,12 @@
 # NF-02 — Biological Data Integration
 
-Status: M1 contracts implemented; M2–M4 remain proposed/incomplete.
+Status: M1 contracts and M2 lookup/pinning implemented; M3–M4 incomplete.
 Parent: [NF-EPIC-001](../EPIC.md). See [final M1 decisions](../biological-contracts.md),
 [source licensing inventory](../source-licensing.md) and
 [acceptance evidence](../testing/nf02-m1-evidence.md).
-Production routes remain health-only; no lookup/client/import is implemented.
+Production routes remain health-only. [M2 Python lookup/pinning](../uniprot-lookup.md)
+and [acceptance evidence](../testing/nf02-m2-evidence.md) are available; structure
+import and route/frontend integration remain deferred.
 
 ## 1. Objective and scientific motivation
 
@@ -119,8 +121,10 @@ Retained immutable snapshots are not subject to cache TTL eviction.
    and reasoned absence, core protocols, HTTP DTOs/versioned schema, source
    licensing inventory, tiny synthetic provider fixtures and offline API contract
    harness. No operational `/v1` routes; see the evidence for scope and gaps.
-2. **M2 — Lookup:** implement clients, encoded queries, pagination, transport
-   limits, cache/revalidation and reference pinning; document resource limits.
+2. **M2 — Lookup: implemented.** UniProt client, encoded exact gene/taxon queries,
+   bounded opaque pagination, injected transport/clock/retry controls, bounded
+   cache/conditional validation and immutable reference pinning. See the M2
+   guide for concrete limits, 304 provenance, storage configuration and tests.
 3. **M3 — Structures:** discover only experimental candidates, import selected
    mmCIF, preserve revisions and create explicit sequence/residue maps. Show
    construct mismatches, fragments and missing coordinates.
