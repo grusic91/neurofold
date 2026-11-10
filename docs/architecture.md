@@ -1,4 +1,4 @@
-# Architecture: NF-01 and NF-08 M1
+# Architecture: NF-01, NF-08 M1 and NF-09 M1
 
 ## Current implementation
 
@@ -74,11 +74,21 @@ inspection and exports remain future milestones; M1 adds no routes or startup wo
 
 Backend tests exercise HTTP behavior and verify that core imports with
 site-packages disabled. They require no GPU, weights, external services, or data.
-Frontend lint, type checking, and a production build validate the scaffold;
-component/browser behavior tests remain work for future interactive features.
+NF-09 M1 adds fixture inventory/integrity checks, backend socket/DNS guards and
+Vitest/React Testing Library status behavior tests with explicit transport fakes.
+Playwright tests the built status page in Chromium, including a WebGL-disabled
+project, with mocked health responses and failing unmatched request guards.
+Frontend lint, strict test/application type checking and production build remain
+required alongside behavior tests. No API/worker/biological workflow is added.
 Container CI checks both services and Vite proxy connectivity on Linux. Neither
 health checks nor these foundation checks establish prediction accuracy or
 scientific validity.
+
+The [testing guide](testing/README.md) records tooling compatibility, fixture and
+offline policy. Its matrix, scientific review protocol and evidence template
+distinguish current foundation acceptance from future synthetic integration and
+real scientific release gates. Actual Mol* rendering/fallback and GPU validation
+remain future work with their respective features.
 
 ## Frontend tooling compatibility
 

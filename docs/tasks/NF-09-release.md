@@ -1,6 +1,12 @@
 # NF-09 — Testing, Documentation, and Release
 
-Status: proposed; testing begins with each feature, not after integration. Parent:
+Status: M1 test foundation implemented; M2–M5 remain proposed. Testing begins
+with each feature, not after integration. See the [test guide](../testing/README.md),
+[matrix](../testing/test-matrix.md), [fixture inventory](../testing/fixtures.json),
+[review protocol](../testing/scientific-review.md) and
+[evidence template](../testing/evidence-template.md).
+[M1 acceptance evidence](../testing/nf09-m1-evidence.md) records local checks and
+remaining gaps. Parent:
 [NF-EPIC-001](../EPIC.md).
 
 ## 1. Objective and scientific motivation
@@ -43,11 +49,11 @@ run a separately launched fake worker for the vertical slice. Stub HTTP at
 transport boundaries for provider contracts. Disable external network access for
 ordinary tests, including accidental Mol*/MSA downloads.
 
-Introduce frontend component and browser test tooling after compatibility review;
-proposed tools are Vitest, React Testing Library and Playwright, pinned through npm
-and its lockfile at implementation. Use a fake viewer controller for most UI tests
+M1 uses Vitest, React Testing Library and Playwright after compatibility review,
+pinned through npm and its lockfile. Current tests cover the status page; later
+milestones add feature tests. Use a fake viewer controller for most UI tests
 and a small separate actual-Mol* WebGL suite. Document test commands when created;
-these tools/scripts are not present in NF-01 today.
+M1 commands are recorded below and in the test guide.
 
 Keep CPU locked-install CI mandatory. Add a separately triggered, reviewed GPU
 validation path only when hardware and model licensing are available; do not
@@ -56,7 +62,7 @@ diagnostic and separately classified from offline required contract tests.
 
 ## 5. Data models and API contracts
 
-Future fixture inventory records fixture ID, synthetic-generation method,
+The M1 fixture inventory records fixture ID, synthetic-generation method,
 expected invariants, license/author, byte size/hash, units/coordinate convention
 and purpose. Synthetic mmCIF can live only in the existing narrow backend fixture
 allowlist. For frontend tests, reuse those files via a documented fixture-serving
@@ -139,11 +145,15 @@ From `frontend/` after `npm ci`:
 npm run lint
 npm run typecheck
 npm run build
+npm run test
+npm run test:browser:install
+npm run test:browser
 ```
 
-At M1 add explicit component/browser test scripts and CI steps alongside these
-checks; choose their final names when the tooling exists. Keep Python 3.12/3.13
-coverage in current CI and Node 24. Keep the backend's existing 90% coverage gate,
+M1 adds component/browser scripts and CI steps alongside these checks. Browser
+installation needs network access once; Linux CI passes `-- --with-deps`.
+Required behavior suites then run with guarded synthetic transports. Keep Python
+3.12/3.13 coverage in current CI and Node 24. Keep the backend's existing 90% coverage gate,
 but require meaningful negative-path/contract tests rather than chasing coverage
 with mirrored implementation assertions.
 
@@ -174,14 +184,15 @@ disclosure, export verification and why structure differences do not prove causa
 
 ## 10. Risks and unresolved decisions
 
-- **Test compatibility:** establish exact frontend versions and CI WebGL setup in
-  M1. A reliable no-WebGL path remains mandatory, not a reason to skip viewer tests.
+- **Test compatibility:** M1 pins frontend versions and runs Chromium with and
+  without WebGL. Actual Mol* rendering/software WebGL and viewer fallback remain
+  NF-05 work; a reliable no-WebGL path is not a reason to skip viewer tests.
 - **Real hardware availability:** name an operator/environment before M4; absent
   evidence blocks real MVP release but does not block the synthetic preview.
 - **Scientific review:** target panel, protocol/tolerances and interpretation need
   a recorded domain review before M5; passing code checks alone is insufficient.
 - **Docs ownership:** update README/current architecture and add feature/method
   guides during implementation, so the proposed roadmap is never misrepresented
-  as already shipped behavior. No such application/doc migration occurs here.
+  as already shipped behavior. M1 updates the foundation docs only.
 - **Deployment:** public exposure, remote scheduling or multiple users require a
   new task and security/operations design; they are outside these release gates.

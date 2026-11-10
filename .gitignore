@@ -53,6 +53,9 @@ build/
 coverage/
 *.tsbuildinfo
 *.log
+.vitest/
+test-results/
+playwright-report/
 
 # Scientific inputs, caches, weights, and outputs (at any level)
 data/

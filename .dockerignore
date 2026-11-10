@@ -40,3 +40,6 @@
 **/*.a3m
 **/.DS_Store
 **/*.log
+**/test-results
+**/playwright-report
+**/.vitest

@@ -6,10 +6,12 @@ and neurodegenerative disease research. Licensed under [Apache 2.0](LICENSE).
 NeuroFold aims to make prediction workflows modular, inspectable, and scientifically
 reproducible, and to support molecular exploration with Mol*.
 
-**Current milestone: NF-01 — Repository Foundation.** The API exposes a tested
-health endpoint and the frontend displays service status. Prediction, molecular
-visualization, and disease-specific analysis are future work. Boltz-2 is the
-planned first prediction adapter; it is not installed or executed in this milestone.
+**Implemented: NF-01, NF-08 M1 shared provenance contracts, and NF-09 M1 test
+foundation.** The API exposes a tested health endpoint and the frontend displays
+service status. Shared immutable provenance contracts and offline backend,
+component and browser tests are present. NF-02 has not started. Prediction,
+molecular visualization, complete manifests and exports remain future work.
+Boltz-2 is planned; it is not installed or executed.
 
 ## Objectives
 
@@ -26,9 +28,9 @@ planned first prediction adapter; it is not installed or executed in this milest
 backend/
   src/neurofold/
     api/            FastAPI application, routes, and HTTP schemas
-    core/           Standard-library-only prediction contracts
+    core/           Standard-library-only prediction and provenance contracts
     adapters/       Future model adapter implementations
-  tests/            HTTP and architectural boundary tests
+  tests/            Offline HTTP, core, fixture and architectural boundary tests
   pyproject.toml    Dependencies, lint, formatting, types, and test settings
   uv.lock           Locked Python dependencies
 frontend/           React, TypeScript, Vite; future Mol* integration
@@ -124,8 +126,9 @@ uv run --locked mypy src tests
 uv run --locked pytest
 ```
 
-Pytest checks liveness, the OpenAPI contract, unsupported methods, unknown routes,
-and core importability without third-party packages. Coverage must be at least 90%.
+Pytest checks liveness/OpenAPI, core contracts/canonical hashes, fixture integrity,
+offline guards and core importability without third-party packages. Internet
+sockets and DNS are blocked by default. Coverage must be at least 90%.
 To apply Python formatting, run `uv run --locked ruff format .`.
 
 From `frontend/`, after `npm ci`:
@@ -134,7 +137,18 @@ From `frontend/`, after `npm ci`:
 npm run lint
 npm run typecheck
 npm run build
+npm run test
+npm run test:browser:install
+npm run test:browser
 ```
+
+Browser installation downloads pinned Chromium once; Linux CI additionally uses
+`npm run test:browser:install -- --with-deps`. Component/browser behavior tests
+use synthetic health responses and require no backend or external service.
+See the [test foundation guide](docs/testing/README.md),
+[test matrix](docs/testing/test-matrix.md),
+[scientific review protocol](docs/testing/scientific-review.md) and
+[evidence template](docs/testing/evidence-template.md).
 
 GitHub Actions runs these checks on pushes and pull requests, with Python 3.12
 and 3.13 and Node 24. A separate job builds and smoke-tests the development

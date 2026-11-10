@@ -1,0 +1,179 @@
+{
+  "schema_version": "neurofold-fixtures/1",
+  "fixtures": [
+    {
+      "fixture_id": "canonical-v1",
+      "path": "backend/tests/fixtures/canonical-v1.json",
+      "generation_method": "Hand-specified canonical UTF-8 spellings and SHA-256 golden vectors, authored for NF-08 M1.",
+      "expected_invariants": [
+        "Exact canonical bytes and independent expected SHA-256",
+        "Unicode remains unnormalized; arrays preserve order"
+      ],
+      "purpose": "Cross-version canonical identity compatibility.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 2496,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "ad3fdef560539feb9760685bf7111ea0b57ea215b22030ff0375b58b5e049f7f"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Identity and transport fixtures have no physical units."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No molecular coordinates are present."
+      }
+    },
+    {
+      "fixture_id": "contracts-v1",
+      "path": "backend/tests/fixtures/contracts-v1.json",
+      "generation_method": "Hand-authored synthetic version-1 wire records: input, fictional diagnostic artifact, source receipt and failed skeleton.",
+      "expected_invariants": [
+        "Strict round trips with every field explicit",
+        "All artifacts synthetic; failed record is not successful prediction provenance"
+      ],
+      "purpose": "Frozen wire/schema and explicit absence/evidence compatibility.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 7066,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "bd54ba1c954a54386e188cf85dd8480c147212918079742e6254236cebac8e9a"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Identity and transport fixtures have no physical units."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No molecular coordinates are present."
+      }
+    },
+    {
+      "fixture_id": "canonical-inline",
+      "path": "backend/tests/test_canonical.py",
+      "generation_method": "Inline literal dictionaries, Unicode, invalid JSON, decimal strings and short synthetic sequences; no retrieval.",
+      "expected_invariants": [
+        "Unsupported values and duplicate keys rejected",
+        "Raw/sequence/canonical hash domains stay explicit"
+      ],
+      "purpose": "Adversarial identity and immutability policy.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 5814,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "83fc4e4cb49fcafb6afcc63d0210a651de4ea62da5d5ffca4a476daaf259792b"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Identity and transport fixtures have no physical units."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No molecular coordinates are present."
+      }
+    },
+    {
+      "fixture_id": "provenance-inline",
+      "path": "backend/tests/test_provenance.py",
+      "generation_method": "Local fixture helpers and deliberate mutations of frozen synthetic contracts; no source data.",
+      "expected_invariants": [
+        "Unknown schemas/fields, invalid absence and lineage rejected",
+        "Synthetic evidence cannot be promoted to prediction success"
+      ],
+      "purpose": "Negative validation and immutable provenance contracts.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 16791,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "05f9031a376007084599f0cabe62e14edc58b0278f1e7c0dfdcb5485aa574184"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Identity and transport fixtures have no physical units."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No molecular coordinates are present."
+      }
+    },
+    {
+      "fixture_id": "component-health-inline",
+      "path": "frontend/src/App.test.tsx",
+      "generation_method": "Inline synthetic HTTP Response objects, rejected promises, deferred results and deterministic abort timers.",
+      "expected_invariants": [
+        "Checking and online states visible by accessible role",
+        "HTTP/network/JSON/schema failures and timeout show unavailable; unmount aborts"
+      ],
+      "purpose": "Status-page behavior independent of backend services.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 2561,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "1cb0c7f5dd85592652c9948ce1920f637cc03d47186e9914758fa895e2996099"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Identity and transport fixtures have no physical units."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No molecular coordinates are present."
+      }
+    },
+    {
+      "fixture_id": "browser-health-inline",
+      "path": "frontend/tests/browser/health.spec.ts",
+      "generation_method": "Playwright route.fulfill synthetic health JSON/statuses and deliberately blocked reserved-domain guard probes.",
+      "expected_invariants": [
+        "Checking/success and failure states in native Chromium",
+        "External HTTP and WebSocket probes are intercepted without server contact"
+      ],
+      "purpose": "Built-page status behavior and unmatched transport guard regression.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 2001,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "5e6dbf4536314b829b4ae5e21093e0309b0b8a655bbddec9d266de9912565c65"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Identity and transport fixtures have no physical units."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No molecular coordinates are present."
+      }
+    }
+  ]
+}

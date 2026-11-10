@@ -20,6 +20,7 @@ dev = [
     "mypy>=1.14,<2",
     "pytest>=8,<10",
     "pytest-cov>=6,<8",
+    "pytest-socket>=0.7,<1",
     "ruff>=0.9,<1",
     "types-jsonschema>=4.23,<5",
 ]
@@ -40,7 +41,7 @@ strict = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--strict-markers --strict-config --cov=neurofold --cov-report=term-missing --cov-fail-under=90"
+addopts = "--strict-markers --strict-config --disable-socket --allow-unix-socket --cov=neurofold --cov-report=term-missing --cov-fail-under=90"
 
 [tool.coverage.run]
 branch = true
