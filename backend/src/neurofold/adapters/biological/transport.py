@@ -18,6 +18,10 @@ class TransportFailure(RuntimeError):
     pass
 
 
+class TransportTimeout(TransportFailure):
+    pass
+
+
 @dataclass(frozen=True)
 class Response:
     status: int
@@ -78,7 +82,9 @@ class HttpxTransport:
                         return Response(
                             response.status_code, received, b"".join(chunks)
                         )
-        except (httpx.TransportError, TimeoutError) as exc:
+        except (httpx.TimeoutException, TimeoutError) as exc:
+            raise TransportTimeout("HTTP deadline exceeded") from exc
+        except httpx.TransportError as exc:
             raise TransportFailure(
                 "HTTP transport failed or deadline exceeded"
             ) from exc

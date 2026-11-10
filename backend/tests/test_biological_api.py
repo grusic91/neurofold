@@ -314,8 +314,11 @@ def test_openapi_contract_and_production_scope() -> None:
     assert limit["schema"]["default"] == 20
     assert limit["schema"]["maximum"] == 100
     with TestClient(create_app()) as client:
-        assert list(client.get("/openapi.json").json()["paths"]) == ["/health"]
-        assert client.get("/v1/proteins?gene=SYNTH").status_code == 404
+        paths = client.get("/openapi.json").json()["paths"]
+        # M4 intentionally replaces the historical health-only route assertion;
+        # the fixed harness and frozen schema above remain compatibility evidence.
+        assert "/health" in paths and "/v1/proteins" in paths
+        assert len(paths) == 11
 
 
 def test_frozen_http_schema_matches_models_and_fixtures() -> None:

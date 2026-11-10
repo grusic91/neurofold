@@ -1,13 +1,15 @@
 # NF-02 — Biological Data Integration
 
-Status: M1 contracts, M2 lookup/pinning and M3 structures implemented; M4 incomplete.
+Status: M1–M4 implemented for the documented offline/single-process profile.
 Parent: [NF-EPIC-001](../EPIC.md). See [final M1 decisions](../biological-contracts.md),
 [source licensing inventory](../source-licensing.md) and
 [acceptance evidence](../testing/nf02-m1-evidence.md).
-Production routes remain health-only. [M2 Python lookup/pinning](../uniprot-lookup.md)
+Production biological routes and frontend workflow are operational; see
+[M4 integration/configuration](../integration.md) and [M4 evidence](../testing/nf02-m4-evidence.md). [M2 Python lookup/pinning](../uniprot-lookup.md)
 and [acceptance evidence](../testing/nf02-m2-evidence.md) are available.
 [M3 structures](../structure-import.md) and [M3 evidence](../testing/nf02-m3-evidence.md)
-cover Python discovery/import/mapping; route/frontend integration remains deferred.
+cover Python discovery/import/mapping. Live-provider compatibility, Linux/container
+execution and scientific validation need independent evidence.
 
 ## 1. Objective and scientific motivation
 
@@ -131,8 +133,12 @@ Retained immutable snapshots are not subject to cache TTL eviction.
    retention; bounded Gemmi parsing and Biopython alignment with ambiguity,
    construct mismatches, fragments and missing coordinates. See the M3 guide
    for concrete limits and safe unsupported/missing-revision behavior.
-4. **M4 — Integration:** expose routes, test partial failures and offline pinned
-   reads; document configuration, source attribution and refresh semantics.
+4. **M4 — Integration: implemented.** Operational injected routes, bounded blocking
+   execution/admission, typed HTTP errors, partial failures, offline retained
+   reads and verified original-artifact delivery; accessible frontend selection,
+   pin/import, retained-ID workflow, versioned audits, configuration/persistence,
+   source attribution and explicit refresh/recovery. See the M4 evidence for
+   checks and remaining independent acceptance gates.
 
 ## 7. Acceptance criteria
 

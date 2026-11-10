@@ -35,6 +35,7 @@ npm run build
 npm run test
 npm run test:browser:install
 npm run test:browser
+npm run test:integration
 ```
 
 Installation downloads dependencies/browser binaries and needs network access.
@@ -43,7 +44,12 @@ install browser OS dependencies with
 `npm run test:browser:install -- --with-deps` as CI does. Browser installation is
 explicit; `test:browser` never downloads browsers. It builds current sources and
 launches its own static Vite preview on `127.0.0.1:4173`, failing if occupied.
-It does not launch or require an API or worker. Reports/traces stay ignored in
+It does not launch or require a listening API or worker. M4 frontend tests now
+invoke `uv run --locked python tests/contract_exchange.py` in `backend/` to
+produce real offline application/service/parser/archive responses. Run the
+backend locked sync first. The Python child explicitly enables socket/DNS
+guards; browser HTTP remains mocked and unmatched traffic still fails. CI's
+frontend job installs that same locked Python environment. Reports/traces stay ignored in
 `frontend/test-results/` and `frontend/playwright-report/`; review for sensitive
 content before sharing future feature traces.
 
@@ -151,3 +157,42 @@ Gzip bombs, over-limit content and malformed events are generated in memory.
 All tests remain under the existing socket/DNS guards; no live structures or
 research data are fetched. Full Python 3.13 verification uses a separate
 `UV_PROJECT_ENVIRONMENT` and `--python`, preserving the default 3.12 environment.
+
+
+## NF-02 M4 integration coverage
+
+[M4 evidence](nf02-m4-evidence.md) separates actual production ASGI integration,
+cross-language response validation, mocked component/browser HTTP, and container
+acceptance. `test_integration.py` exercises eight operational routes plus versioned
+audit projections with injected providers, real Gemmi/Biopython adapters and
+private temporary archives. It covers offline restart, partial providers,
+conflicts, source revalidation, original plain/gzip bytes, typed errors,
+corruption/publication failures and bounded worker/cancellation accounting.
+`test_container_profile.py` tests the explicit offline smoke composition in
+process; this is not evidence of Linux/container execution.
+
+Vitest validates actual backend responses before exercising accessible
+selection, pagination, pin/import, stale/aborted requests, recovery, ambiguity,
+missing coordinates, retained IDs and download links. Playwright tests the built
+workflow and exact original download in native Chromium and no-WebGL Chromium.
+No molecular rendering or scientific accuracy is inferred. The explicit
+`compose.offline.yaml` profile and `infra/testing/smoke.py` add biological/proxy
+and persistent-volume recreation checks to container CI; run them locally only
+when a daemon is available. Frozen molecular/provider/schema examples remain
+unchanged. Inventory updates distinguish source-fixture edits from frozen bytes.
+
+
+`npm run test:integration` is the separate **unmocked local HTTP** browser layer.
+It launches an explicitly synthetic Uvicorn composition and the actual Vite
+proxy, with a private temporary archive. Its browser guard permits only that
+local app/HMR origin; the injected backend transport cannot access providers.
+The test covers pin/import, retained reopening and exact original gzip delivery
+through the proxy, including independent decoding/checksum checks. Required
+ordinary ASGI/unit tests retain their unchanged socket/DNS guards. This narrow
+local-server layer does not permit live-provider or external traffic and does
+not establish Linux/container or scientific acceptance.
+
+The explicit local/container synthetic server also installs outbound-connection
+and DNS guards (`infra/testing/offline_server.py`), while allowing its incoming
+HTTP listener. A subprocess regression verifies TCP/UDP/DNS rejection. This does
+not add a production test switch or relax ordinary pytest socket policy.

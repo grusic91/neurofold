@@ -1,0 +1,15 @@
+# Test-only injection: never use this override for live provider work.
+services:
+  backend:
+    volumes:
+      - ./infra/testing:/app/smoke:ro
+      - ./backend/tests/fixtures:/app/synthetic:ro
+    command:
+      - uvicorn
+      - offline_server:app
+      - --app-dir
+      - /app/smoke
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"

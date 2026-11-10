@@ -74,3 +74,19 @@ including bundled code; no library source is modified or vendored. See the
 The installed wheel license files were inspected separately from behavior tests.
 The project LICENSE/attribution are unchanged. Larger exports/distribution still
 need their own artifact-specific rights and notice review.
+
+
+## NF-02 M4 attribution integration (2026-11-10)
+
+No provider, model, weight, dataset or package dependency was added in M4; the
+M2/M3 reviewed source policy and packaged-library obligations above remain the
+basis. This milestone does not claim a new live-provider compatibility or legal
+review. Operational HTTP/UI now expose each receipt's source, version, evidence,
+license/attribution, supplied citations and absence reasons, plus exact original
+registered downloads. Sources remain distinct from NeuroFold's Apache-2.0.
+Synthetic UniProt compositions now explicitly use NeuroFold contributor and
+Apache-2.0 rights (as RCSB synthetic compositions already did), rather than
+attaching real UniProt rights to authored test bytes. Frozen examples are unchanged.
+Audit HTTP projections omit unreviewed response headers; original checks and
+bytes remain immutable in the private archive. See [integration](integration.md)
+and [M4 evidence](testing/nf02-m4-evidence.md).

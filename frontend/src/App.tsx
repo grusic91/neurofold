@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import Workflow from './Workflow'
+import { apiUrl } from './api'
 
 type HealthStatus = 'checking' | 'ok' | 'unavailable'
 
@@ -16,7 +18,8 @@ function App() {
 
     async function checkHealth() {
       try {
-        const response = await fetch('/api/health', {
+        const response = await fetch(apiUrl('/health'), {
+          redirect: 'error',
           signal: AbortSignal.any([
             controller.signal,
             AbortSignal.timeout(5000),
@@ -56,6 +59,7 @@ function App() {
         <p role="status">{healthMessages[health]}</p>
         <p>Prediction and molecular visualization are planned for future releases.</p>
       </section>
+      <Workflow />
       <a href="https://github.com/grusic91/neurofold">View the project on GitHub</a>
     </main>
   )

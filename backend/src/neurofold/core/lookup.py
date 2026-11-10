@@ -13,8 +13,20 @@ class ProviderError(RuntimeError):
     """Upstream unavailable or invalid; never an empty catalog result."""
 
 
+class ProviderNotFound(KeyError):
+    """Authoritative upstream 404, distinct from a missing response field."""
+
+
+class ProviderTimeout(ProviderError):
+    """The upstream operation deadline expired."""
+
+
 class ProviderValidationError(ProviderError):
     """Malformed, inconsistent, redirected or oversized upstream content."""
+
+
+class ProviderSelectionError(ProviderValidationError):
+    """Valid metadata cannot qualify the explicitly selected reference/structure."""
 
 
 class UnsupportedIdentifier(ValueError):

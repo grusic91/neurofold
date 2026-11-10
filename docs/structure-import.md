@@ -1,5 +1,10 @@
 # Experimental structures — NF-02 M3
 
+Current integration: [NF-02 M4](integration.md) now exposes production routes,
+a frontend workflow and retained audit projections. Health-only statements below
+describe the original milestone boundary. Frozen v1 records/schemas are unchanged;
+new HTTP audit versions are documented separately in the integration guide.
+
 Decision record, 2026-11-10, written before orchestration. M3 is opt-in Python
 discovery/import/storage. Production remains `/health` only. M4 owns HTTP/UI;
 NF-05/NF-06 own viewing, atom selection, fitting and comparisons. Synthetic

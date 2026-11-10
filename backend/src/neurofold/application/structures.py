@@ -113,5 +113,51 @@ class StructureService:
         self.repository.publish_import(record)
         return record
 
+    def import_request(
+        self,
+        reference_id: str,
+        entry_id: str,
+        *,
+        entity_id: str,
+        label_asym_id: str,
+        model_id: str,
+        assembly_id: Metadata,
+        operator_id: Metadata,
+        expected_source_revision: Metadata,
+    ) -> StructureImport:
+        """Resolve the omitted author chain without relaxing the M3 identity checks."""
+        if (
+            expected_source_revision.state is not MetadataState.PRESENT
+            or not isinstance(expected_source_revision.value, str)
+        ):
+            raise RevisionUnavailable("Inspect a known source revision before import")
+        reference = self.references.get(reference_id)
+        source = self.provider.inspect(reference, entry_id, label_asym_id, fresh=True)
+        actual = source.summary.source_revision
+        if actual.state is not MetadataState.PRESENT or not isinstance(
+            actual.value, str
+        ):
+            raise RevisionUnavailable("Authoritative source revision unavailable")
+        if actual != expected_source_revision:
+            raise StructureSourceChanged(
+                str(expected_source_revision.value), actual.value
+            )
+        if (
+            source.summary.entity_id != entity_id
+            or source.summary.label_asym_id != label_asym_id
+        ):
+            raise UnsupportedStructure("Selected entity/instance changed")
+        selection = StructureSelection(
+            entity_id=entity_id,
+            label_asym_id=label_asym_id,
+            auth_asym_id=source.summary.auth_asym_id,
+            model_id=model_id,
+            assembly_id=assembly_id,
+            operator_id=operator_id,
+        )
+        return self.import_selected(
+            reference_id, entry_id, selection, expected_source_revision
+        )
+
     def get(self, structure_id: str) -> StructureImport:
         return self.repository.get_import(structure_id)

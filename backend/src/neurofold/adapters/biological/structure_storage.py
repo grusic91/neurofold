@@ -1,6 +1,6 @@
 """Atomic descriptor/map/audit bundles over the existing immutable archive."""
 
-from neurofold.adapters.biological.storage import FilesystemStore
+from neurofold.adapters.biological.storage import FilesystemStore, verified_read
 from neurofold.core.biological import ResidueMap, StructureDescriptor
 from neurofold.core.canonical import canonical_json, parse_json, sha256_bytes
 from neurofold.core.provenance import Metadata
@@ -50,6 +50,7 @@ class FilesystemStructures:
             ),
         )
 
+    @verified_read
     def get_import(self, structure_id: str) -> StructureImport:
         envelope = parse_json(self.store._read("structure", structure_id))
         if not isinstance(envelope, dict) or set(envelope) != {"record", "sha256"}:

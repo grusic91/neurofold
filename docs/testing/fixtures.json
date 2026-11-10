@@ -296,18 +296,18 @@
       "path": "backend/tests/test_biological_api.py",
       "generation_method": "Fixed-response test-only ASGI harness, inline placeholder bytes, malformed DTOs and synthetic error envelopes; no orchestration.",
       "expected_invariants": [
-        "Production application remains health-only",
+        "Production M4 routes replace the historical health-only assertion; fixed M1 harness/schema compatibility stays unchanged",
         "201/Location, original placeholder bytes/checksum/size, bounded query fields and error/status shapes"
       ],
       "purpose": "All proposed route exchange shapes, request/response validation and schema compatibility.",
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 13069,
+      "byte_size": 13234,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "22d2a216ce2ebff96dc0d47b688dadc50293c0707e3b621aeb5dbdc5b9116e3b"
+        "sha256": "0051b9459bd6f8ab106b06443be8f30953df7db3fef1dcad8df8ed62e543a688"
       },
       "units": {
         "state": "not_applicable",
@@ -405,6 +405,267 @@
         "state": "not_applicable",
         "value": null,
         "reason": "Test source containing authored event mutations; physical fixture conventions are inventoried separately."
+      }
+    },
+    {
+      "fixture_id": "integration-m4-inline",
+      "path": "backend/tests/test_integration.py",
+      "generation_method": "Authored offline provider event mutations and controlled blocking workers; actual production ASGI, parsing, mapping and temporary private archives.",
+      "expected_invariants": [
+        "HTTP services, strict errors/pagination, original gzip/plain bytes, offline restart, capacity accounting and corruption.",
+        "Authored synthetic evidence only; no live compatibility or biological validation inferred"
+      ],
+      "purpose": "HTTP services, strict errors/pagination, original gzip/plain bytes, offline restart, capacity accounting and corruption.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 31797,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "b4ffd07bcc470d0e76a32c26f7bf537fc3793f2a6f258d1ea8015d204cf1b04b"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; original authored CIF coordinates remain unchanged."
+      }
+    },
+    {
+      "fixture_id": "container-profile-m4-inline",
+      "path": "backend/tests/test_container_profile.py",
+      "generation_method": "Explicit synthetic container composition tested in process with existing authored fixtures.",
+      "expected_invariants": [
+        "Offline smoke profile wiring; no Linux/container execution inferred.",
+        "Authored synthetic evidence only; no live compatibility or biological validation inferred"
+      ],
+      "purpose": "Offline smoke profile wiring; no Linux/container execution inferred.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 3580,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "c3fa5f56fa72bc002b8fba79bf559971341db00efbcbb1da2100e7588ee526be"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; original authored CIF coordinates remain unchanged."
+      }
+    },
+    {
+      "fixture_id": "contract-exchange-m4",
+      "path": "backend/tests/contract_exchange.py",
+      "generation_method": "Guarded Python child emits actual production service/ASGI responses from authored fixtures; no network.",
+      "expected_invariants": [
+        "Cross-language response exchange without frozen response snapshots.",
+        "Authored synthetic evidence only; no live compatibility or biological validation inferred"
+      ],
+      "purpose": "Cross-language response exchange without frozen response snapshots.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 3189,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "4a089b2031606225d8fd65d3f7b3df4c36848e9ca839e2f2211a141ea67b5cfd"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; original authored CIF coordinates remain unchanged."
+      }
+    },
+    {
+      "fixture_id": "workflow-m4-inline",
+      "path": "frontend/src/Workflow.test.tsx",
+      "generation_method": "Actual backend-exchange responses with explicit per-test HTTP fakes and authored conflict/ambiguity mutations.",
+      "expected_invariants": [
+        "Accessible selection, pagination, stale aborts, retained records, mapping uncertainty and recovery.",
+        "Authored synthetic evidence only; no live compatibility or biological validation inferred"
+      ],
+      "purpose": "Accessible selection, pagination, stale aborts, retained records, mapping uncertainty and recovery.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 12910,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "acbc509d4a19fcef80cbcfb8f6ca67ded52eca6e2f3a630076b0501b30bd2623"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; original authored CIF coordinates remain unchanged."
+      }
+    },
+    {
+      "fixture_id": "api-m4-inline",
+      "path": "frontend/src/api.test.ts",
+      "generation_method": "Actual backend exchange plus inline malformed version/metadata/link/identity mutations.",
+      "expected_invariants": [
+        "Strict runtime readers and registry-origin validation.",
+        "Authored synthetic evidence only; no live compatibility or biological validation inferred"
+      ],
+      "purpose": "Strict runtime readers and registry-origin validation.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 3591,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "f88c0d738b8a6e8d5d51693f2fad7509fd1f3e494af029c2b5cafa79f81d19e1"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; original authored CIF coordinates remain unchanged."
+      }
+    },
+    {
+      "fixture_id": "browser-workflow-m4",
+      "path": "frontend/tests/browser/workflow.spec.ts",
+      "generation_method": "Actual backend-exchange payloads served through explicit Playwright route.fulfill; original authored CIF bytes.",
+      "expected_invariants": [
+        "Built workflow, retained records, no-WebGL semantics and exact original download; browser HTTP remains mocked.",
+        "Authored synthetic evidence only; no live compatibility or biological validation inferred"
+      ],
+      "purpose": "Built workflow, retained records, no-WebGL semantics and exact original download; browser HTTP remains mocked.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 5811,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "67ef557fe7bf1726f47dd08ec7da693310d61ae188ad82e5eadca9762528c52a"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; original authored CIF coordinates remain unchanged."
+      }
+    },
+    {
+      "fixture_id": "container-offline-m4",
+      "path": "infra/testing/offline_app.py",
+      "generation_method": "Authored synthetic Search/Data metadata and fixed fixture transport, explicitly mounted only by offline Compose override.",
+      "expected_invariants": [
+        "No network implementation; real application/parser/archive container smoke composition.",
+        "Authored synthetic evidence only; no live compatibility or biological validation inferred"
+      ],
+      "purpose": "No network implementation; real application/parser/archive container smoke composition.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 6162,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "1558e6b61ba08a5b35faaa62b862d7d503cd1560728de161d0bdda68157b8704"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; original authored CIF coordinates remain unchanged."
+      }
+    },
+    {
+      "fixture_id": "container-smoke-m4",
+      "path": "infra/testing/smoke.py",
+      "generation_method": "Synthetic explicit model/assembly requests and byte/retention checks against local Compose proxy.",
+      "expected_invariants": [
+        "Representative biological proxy/persistent archive acceptance when a daemon exists.",
+        "Authored synthetic evidence only; no live compatibility or biological validation inferred"
+      ],
+      "purpose": "Representative biological proxy/persistent archive acceptance when a daemon exists.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 3354,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "c9289c5b6eb65f2f90bf0640890f78fe6f71209b226f57f59ae9383d4414abd9"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations/requests; original authored CIF coordinates remain unchanged."
+      }
+    },
+    {
+      "fixture_id": "real-browser-integration-m4",
+      "path": "frontend/tests/integration/workflow.spec.ts",
+      "generation_method": "Native browser, actual Vite proxy and real production routes with explicit synthetic composition; original gzip bytes checked independently.",
+      "expected_invariants": [
+        "Unmocked local browser/API/HTTPX-seam/parser/archive/proxy integration, gzip size/hash/media headers, offline retained reopening; no live providers.",
+        "Only exact local app HTTP/HMR origin is allowed; unmatched external traffic fails"
+      ],
+      "purpose": "Unmocked local browser/API/HTTPX-seam/parser/archive/proxy integration, gzip size/hash/media headers, offline retained reopening; no live providers.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 3910,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "5c1d4458a3831c495afe038d89d6836d05c46881a364adae784db7fd838e2a74"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source assertions; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source assertions; original authored CIF coordinates remain unchanged."
       }
     }
   ]

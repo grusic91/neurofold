@@ -16,7 +16,12 @@ COPY backend/src ./src
 COPY LICENSE /app/LICENSE
 RUN uv sync --locked --no-dev \
     && groupadd --system neurofold \
-    && useradd --system --gid neurofold --create-home neurofold
+    && useradd --system --gid neurofold --create-home neurofold \
+    && mkdir -p /app/data/archive \
+    && chown neurofold:neurofold /app/data/archive \
+    && chmod 700 /app/data/archive
+
+ENV NEUROFOLD_ARCHIVE_ROOT=/app/data/archive
 
 USER neurofold
 EXPOSE 8000

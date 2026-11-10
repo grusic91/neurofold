@@ -15,7 +15,7 @@ from neurofold.core.lookup import (
     SourceChanged,
     UnsupportedIdentifier,
 )
-from neurofold.core.provenance import ContentHash, HashEncoding
+from neurofold.core.provenance import ContentHash, HashEncoding, MetadataState
 
 
 class ReferenceService:
@@ -44,6 +44,8 @@ class ReferenceService:
             raise UnsupportedIdentifier("Catalog returned a different accession")
         if fresh.protein.sequence_hash != expected:
             raise SourceChanged(expected.sha256, fresh.protein.sequence_hash.sha256)
+        if fresh.protein.summary.taxon_id.state is not MetadataState.PRESENT:
+            raise UnsupportedIdentifier("Pinning requires a known taxon")
         snapshot = ReferenceSnapshot(
             reference_id=self.new_id(),
             protein=fresh.protein,

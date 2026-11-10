@@ -34,9 +34,9 @@ jobs:
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
       - run: uv sync --locked
-      - run: uv run --locked ruff check .
-      - run: uv run --locked ruff format --check .
-      - run: uv run --locked mypy src tests
+      - run: uv run --locked ruff check . ../infra/testing
+      - run: uv run --locked ruff format --check . ../infra/testing
+      - run: uv run --locked mypy src tests ../infra/testing
       - run: uv run --locked pytest
 
   frontend:
@@ -55,6 +55,12 @@ jobs:
           node-version-file: frontend/.nvmrc
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          python-version: "3.12"
+      - run: uv sync --locked
+        working-directory: backend
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
@@ -62,6 +68,7 @@ jobs:
       - run: npm run test
       - run: npm run test:browser:install -- --with-deps
       - run: npm run test:browser
+      - run: npm run test:integration
 
   containers:
     name: Development containers
@@ -78,6 +85,12 @@ jobs:
           curl --fail --silent --show-error http://127.0.0.1:8000/health
           curl --fail --silent --show-error http://127.0.0.1:5173/ > /dev/null
           curl --fail --silent --show-error http://127.0.0.1:5173/api/health
+      - name: Synthetic biological routes and persistent archive through proxy
+        run: |
+          docker compose -f compose.yaml -f compose.offline.yaml up --detach --wait --wait-timeout 120
+          python3 infra/testing/smoke.py create /tmp/neurofold-smoke-records.json
+          docker compose -f compose.yaml -f compose.offline.yaml up --detach --force-recreate --no-deps --wait --wait-timeout 120 backend
+          python3 infra/testing/smoke.py read /tmp/neurofold-smoke-records.json
       - if: failure()
         run: docker compose logs
       - if: always()

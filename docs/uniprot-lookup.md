@@ -1,5 +1,10 @@
 # UniProt lookup and immutable pinning — NF-02 M2
 
+Current integration: [NF-02 M4](integration.md) now exposes production routes,
+a frontend workflow and retained audit projections. Health-only statements below
+describe the original milestone boundary. Frozen v1 records/schemas are unchanged;
+new HTTP audit versions are documented separately in the integration guide.
+
 M2 implements Python catalog/application/storage behavior. Production still exposes
 only `/health`; operational routes, HTTP error translation and frontend lookup
 belong to M4. RCSB, structures, coordinates, parsing and alignment belong to M3.

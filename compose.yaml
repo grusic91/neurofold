@@ -9,6 +9,11 @@ services:
       - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
     volumes:
       - ./backend/src:/app/backend/src:ro
+      - biological-archive:/app/data/archive
+    environment:
+      NEUROFOLD_ARCHIVE_ROOT: /app/data/archive
+      NEUROFOLD_WORKERS: ${NEUROFOLD_WORKERS:-4}
+      NEUROFOLD_OPERATION_SECONDS: ${NEUROFOLD_OPERATION_SECONDS:-90}
     command:
       - uvicorn
       - neurofold.api.main:app
@@ -55,3 +60,6 @@ services:
       timeout: 3s
       start_period: 5s
       retries: 5
+
+volumes:
+  biological-archive:

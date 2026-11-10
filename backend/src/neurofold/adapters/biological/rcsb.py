@@ -20,6 +20,7 @@ from neurofold.adapters.biological.transport import (
     Response,
     Transport,
     TransportFailure,
+    TransportTimeout,
 )
 from neurofold.adapters.biological.uniprot import (
     absent,
@@ -45,9 +46,13 @@ from neurofold.core.canonical import (
     sequence_sha256,
     sha256_bytes,
 )
+from neurofold.core.errors import ArchiveConflict, ArchiveIntegrityError, ResourceLimit
 from neurofold.core.lookup import (
     CursorError,
     ProviderError,
+    ProviderNotFound,
+    ProviderSelectionError,
+    ProviderTimeout,
     ProviderValidationError,
     SourceArchive,
 )
@@ -191,12 +196,13 @@ class RcsbCatalog:
             raise ProviderValidationError("Forbidden RCSB destination")
         remaining = deadline - self.clock.monotonic()
         if remaining <= 0 or not PROVIDER_SLOTS.acquire(timeout=max(0, remaining)):
-            raise ProviderError("RCSB concurrency/budget exhausted")
+            raise ProviderTimeout("RCSB concurrency/budget exhausted")
         try:
+            timed_out = False
             for attempt in range(self.retry.retries + 1):
                 remaining = deadline - self.clock.monotonic()
                 if remaining <= 0:
-                    raise ProviderError("RCSB budget exhausted")
+                    raise ProviderTimeout("RCSB budget exhausted")
                 try:
                     received = self.transport.request(url, headers, timeout=remaining)
                     response = Response(
@@ -205,7 +211,7 @@ class RcsbCatalog:
                         received.body,
                     )
                     if self.clock.monotonic() >= deadline:
-                        raise ProviderError("RCSB budget exhausted")
+                        raise ProviderTimeout("RCSB budget exhausted")
                     if (
                         sum(len(k) + len(v) for k, v in response.headers.items())
                         > MAX_HEADERS
@@ -214,8 +220,10 @@ class RcsbCatalog:
                         raise ProviderValidationError("RCSB response exceeds bounds")
                     if response.status not in (429, 502, 503, 504):
                         return response
+                    timed_out = response.status == 504
                     retry_after = response.headers.get("retry-after")
-                except TransportFailure:
+                except TransportFailure as exc:
+                    timed_out = isinstance(exc, TransportTimeout)
                     retry_after = None
                 if attempt == self.retry.retries:
                     break
@@ -223,6 +231,8 @@ class RcsbCatalog:
                 if delay >= deadline - self.clock.monotonic():
                     break
                 self.clock.sleep(delay)
+            if timed_out:
+                raise ProviderTimeout("RCSB deadline exceeded")
             raise ProviderError("RCSB retry budget exhausted")
         finally:
             PROVIDER_SLOTS.release()
@@ -314,7 +324,7 @@ class RcsbCatalog:
         cached = self.cache.get(BINDING + url)
         if cached is not None and not fresh and cached.expires > self.clock.monotonic():
             if cached.receipt is None:
-                raise KeyError(url)
+                raise ProviderNotFound(url)
             return cached, None
         headers = {
             "accept": "chemical/x-mmcif"
@@ -351,7 +361,7 @@ class RcsbCatalog:
                 CachedSource(response, None, {}, self.clock.monotonic() + 300),
                 256,
             )
-            raise KeyError(url)
+            raise ProviderNotFound(url)
         elif 300 <= response.status < 400:
             raise ProviderValidationError(
                 "RCSB redirects require explicit new selection"
@@ -442,7 +452,7 @@ class RcsbCatalog:
         )
         remaining = deadline - self.clock.monotonic()
         if remaining <= 0 or not self.lock.acquire(timeout=remaining):
-            raise ProviderError("RCSB catalog budget exhausted")
+            raise ProviderTimeout("RCSB catalog budget exhausted")
         try:
             entry, receipt, check = self._entry(identity, deadline, fresh)
             checks = [check] if check else []
@@ -488,7 +498,9 @@ class RcsbCatalog:
                 == reference.protein.summary.accession
                 for item in crossrefs
             ):
-                raise ValueError("Selected entity lacks pinned UniProt identity")
+                raise ProviderSelectionError(
+                    "Selected entity lacks pinned UniProt identity"
+                )
             taxa = [
                 obj(item).get("ncbi_taxonomy_id")
                 for item in array(ent.get("rcsb_entity_source_organism", []))
@@ -496,17 +508,19 @@ class RcsbCatalog:
             if any(type(taxon) is not int or taxon <= 0 for taxon in taxa):
                 raise ValueError("Invalid source taxonomy identifier")
             if reference.protein.summary.taxon_id.value not in taxa:
-                raise ValueError("Selected entity taxon mismatch/unavailable")
+                raise ProviderSelectionError(
+                    "Selected entity taxon mismatch/unavailable"
+                )
             poly = obj(ent.get("entity_poly"))
             if poly.get("type") != "polypeptide(L)":
                 raise UnsupportedStructure("Only L-polypeptide entities are supported")
             raw_sequence = poly.get("pdbx_seq_one_letter_code_can")
             if not isinstance(raw_sequence, str) or len(raw_sequence) > 20000:
-                raise UnsupportedStructure("Polymer source text exceeds limit")
+                raise ResourceLimit("Polymer source text exceeds limit")
             sequence = "".join(raw_sequence.split())
             sequence_sha256(sequence)
             if len(sequence) > 10000:
-                raise UnsupportedStructure("Polymer sequence exceeds limit")
+                raise ResourceLimit("Polymer sequence exceeds limit")
             methods = experimental(entry, identity)
             info = obj(entry.get("rcsb_accession_info", {}))
             resolution = array(
@@ -561,7 +575,16 @@ class RcsbCatalog:
             )
             return StructureSource(summary, tuple(checks))
         except (ValueError, KeyError, UnicodeError, RecursionError) as exc:
-            if isinstance(exc, UnsupportedStructure):
+            if isinstance(
+                exc,
+                (
+                    UnsupportedStructure,
+                    ProviderNotFound,
+                    ArchiveIntegrityError,
+                    ArchiveConflict,
+                    ResourceLimit,
+                ),
+            ):
                 raise
             raise ProviderValidationError(f"Invalid RCSB metadata: {exc}") from exc
         finally:
@@ -697,8 +720,11 @@ class RcsbCatalog:
                     receipts[source.summary.source_receipt.receipt_id] = (
                         source.summary.source_receipt
                     )
-                except (ProviderError, UnsupportedStructure) as exc:
-                    warnings.append(f"{result}: {exc}")
+                except (ProviderError, UnsupportedStructure, ProviderNotFound) as exc:
+                    warnings.append(
+                        f"{result}: metadata unavailable or unsupported "
+                        f"({type(exc).__name__})."
+                    )
             next_cursor = absent("No further results", na=True)
             if start + len(results) < total:
                 if page >= 20:
@@ -725,7 +751,11 @@ class RcsbCatalog:
             UnicodeError,
             RecursionError,
         ) as exc:
-            warnings.append(f"RCSB discovery unavailable: {exc}")
+            if isinstance(exc, (ArchiveIntegrityError, ArchiveConflict, ResourceLimit)):
+                raise
+            warnings.append(
+                f"RCSB discovery unavailable ({type(exc).__name__}); retry discovery."
+            )
             availability, next_cursor = (
                 Availability.UNAVAILABLE,
                 absent("Restart discovery after provider recovery"),

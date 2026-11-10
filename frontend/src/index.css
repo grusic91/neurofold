@@ -50,3 +50,22 @@ a:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 4px;
 }
+
+main { max-width: 74rem; margin: 4vh auto; }
+form { display: flex; flex-wrap: wrap; align-items: end; gap: 0.8rem; margin: 1.5rem 0; }
+label { display: grid; gap: 0.25rem; font-weight: 600; }
+input, select, button { font: inherit; padding: 0.5rem 0.7rem; border: 1px solid #708f81; border-radius: 0.3rem; }
+button { color: #fff; background: #225c47; cursor: pointer; }
+button:disabled { background: #e2e9e5; color: #52685f; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 3px solid #9a5700; outline-offset: 3px; }
+article { border-top: 1px solid #bccfc5; padding-top: 1rem; margin-top: 1rem; }
+code, pre { overflow-wrap: anywhere; white-space: pre-wrap; font-size: 0.85rem; }
+pre { max-height: 28rem; overflow: auto; padding: 1rem; background: #f4f7f5; }
+details { margin: 0.8rem 0; }
+summary { cursor: pointer; font-weight: 600; }
+.table-scroll { overflow-x: auto; }
+table { border-collapse: collapse; min-width: 54rem; text-align: left; font-size: 0.85rem; }
+th, td { border: 1px solid #bccfc5; padding: 0.5rem; vertical-align: top; }
+caption { text-align: left; font-weight: 600; padding: 0.5rem 0; }
+[role="alert"] { border-left: 4px solid #9b421f; padding: 0.5rem 1rem; background: #fff3e9; }
+@media (max-width: 600px) { main { padding: 1rem; } section { padding: 1rem; } input, select { max-width: 100%; box-sizing: border-box; } }

@@ -1,6 +1,6 @@
 # Test matrix
 
-Status covers NF-09 M1 and NF-02 M1 contracts plus M2 lookup/pinning and M3 structures. “Planned” means no
+Status covers NF-09 M1 and NF-02 M1–M4 integration. “Planned” means no
 implementation or acceptance
 evidence exists yet. Mandatory PR CI uses locked installs, Python 3.12/3.13 and
 Node 24. Backend coverage remains at least 90%; lint/types/build are additional
@@ -31,3 +31,18 @@ exercise UI behavior, not proxy integration; the container smoke layer owns the
 real proxy check. An integrated fake prediction/export preview remains M3 and
 cannot be inferred from these status-page tests. Real scientific acceptance
 remains a separate M4/M5 gate even after the synthetic workflow passes.
+
+
+| M4 layer | Implemented acceptance | Limits |
+| --- | --- | --- |
+| Production API/application | Actual injected UniProt/RCSB routes, authoritative pin/import, strict validation/errors/cursors/Location, typed causes, partial providers, retained offline restart, audit projections, corruption/publication conflicts, exact plain/gzip originals | Authored synthetic providers; no live compatibility/scientific validation |
+| Blocking execution | Responsive health, zero-queue admission, timeout/cancellation accounting, eventual recovery/drain, mutation uncertainty and completion logging | Work-count limits; threads/native parsing cannot be preempted; one process |
+| Frontend/backend contract | Guarded Python child produces actual route/service/parser/archive responses consumed by TypeScript runtime readers and UI tests | In-process backend; no listening server/proxy in this layer |
+| Component/browser | Explicit disambiguation and pagination, inspected hash/revision, model/assembly entry, partial/unavailable/error recovery, retained IDs, stale aborts, ambiguity/missingness, coordinate text and original downloads | Browser HTTP is mocked; no viewer/WebGL rendering or scientific claims |
+| Actual local browser/API | Unmocked Chromium -> real Vite proxy -> production routes -> injected synthetic services/parser/archive; original gzip headers/bytes/hash and retained reopening | macOS local HTTP acceptance; no live providers or Linux claim |
+| Containers/proxy | Named-volume ownership/configuration, explicit offline composition and restart/original-byte smoke wired in CI; in-process profile test | Linux/daemon execution remains open until separately observed; see M4 evidence |
+
+The earlier rows describe historical foundation ownership. M4 supersedes the
+health-only/operational-route/UI gaps in those rows; NF-05/NF-06, real inference,
+live probes, complete scientific manifests/exports and independent scientific
+release gates remain open. Frontend performs no scientific canonical hashing.

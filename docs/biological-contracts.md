@@ -1,5 +1,10 @@
 # Biological contracts — NF-02 M1 (frozen)
 
+Current integration: [NF-02 M4](integration.md) now exposes production routes,
+a frontend workflow and retained audit projections. Health-only statements below
+describe the original milestone boundary. Frozen v1 records/schemas are unchanged;
+new HTTP audit versions are documented separately in the integration guide.
+
 Implemented: immutable standard-library records in `core/biological.py`, HTTP
 DTOs in `api/biological.py`, a frozen [HTTP JSON Schema](schemas/neurofold-biological-http-1.schema.json),
 synthetic fixtures and offline contract tests. `neurofold-biological/1` is a new

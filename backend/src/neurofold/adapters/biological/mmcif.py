@@ -12,6 +12,7 @@ from neurofold.adapters.biological.transport import MAX_EXPANDED
 from neurofold.adapters.biological.uniprot import absent, present
 from neurofold.core.biological import ExperimentalStructureSummary, StructureSelection
 from neurofold.core.canonical import CanonicalObject
+from neurofold.core.errors import ResourceLimit
 from neurofold.core.lookup import ProviderValidationError
 from neurofold.core.provenance import Metadata, MetadataState
 from neurofold.core.structures import (
@@ -82,7 +83,7 @@ def number(token: str) -> Decimal:
 def operations(expression: str, maximum: int) -> tuple[tuple[str, ...], ...]:
     """Bounded PDBx union/range/cartesian-product operator grammar."""
     if len(expression) > 4096:
-        raise UnsupportedStructure("Operator expression exceeds limit")
+        raise ResourceLimit("Operator expression exceeds limit")
     groups = re.findall(r"\(([^()]*)\)", expression)
     if groups:
         if "".join(f"({g})" for g in groups) != expression:
@@ -97,7 +98,7 @@ def operations(expression: str, maximum: int) -> tuple[tuple[str, ...], ...]:
             if re.fullmatch(r"[0-9]+-[0-9]+", term):
                 start, end = map(int, term.split("-"))
                 if start > end or end - start + 1 > maximum:
-                    raise UnsupportedStructure("Assembly range exceeds limit")
+                    raise ResourceLimit("Assembly range exceeds limit")
                 values.extend(str(i) for i in range(start, end + 1))
             elif re.fullmatch(r"[A-Za-z0-9_]+", term):
                 values.append(term)
@@ -107,7 +108,7 @@ def operations(expression: str, maximum: int) -> tuple[tuple[str, ...], ...]:
             raise UnsupportedStructure("Duplicate assembly operators")
         size *= len(values)
         if size > maximum:
-            raise UnsupportedStructure("Assembly product exceeds limit")
+            raise ResourceLimit("Assembly product exceeds limit")
         expanded.append(values)
     return tuple(itertools.product(*expanded))
 
@@ -125,7 +126,7 @@ class MmcifParser:
         import gemmi
 
         if len(data) > MAX_EXPANDED:
-            raise UnsupportedStructure("Expanded CIF exceeds limit")
+            raise ResourceLimit("Expanded CIF exceeds limit")
         try:
             document = gemmi.cif.read_string(data.decode("utf-8"))
             if len(document) != 1:
@@ -144,11 +145,17 @@ class MmcifParser:
                 if cells > self.limits.cells or any(
                     len(v) > self.limits.token for v in values
                 ):
-                    raise UnsupportedStructure("CIF table/token limit exceeded")
+                    raise ResourceLimit("CIF table/token limit exceeded")
             return self._parse(block, source, selection, package_version("gemmi"))
         except (ValueError, RuntimeError, UnicodeError, IndexError, KeyError) as exc:
             if isinstance(
-                exc, (UnsupportedStructure, RevisionUnavailable, StructureSourceChanged)
+                exc,
+                (
+                    UnsupportedStructure,
+                    RevisionUnavailable,
+                    StructureSourceChanged,
+                    ResourceLimit,
+                ),
             ):
                 raise
             raise ProviderValidationError(f"Invalid mmCIF: {exc}") from exc
@@ -236,7 +243,9 @@ class MmcifParser:
         ):
             raise StructureSourceChanged(expected, actual)
         chains = self._rows(block, "_struct_asym", ("id", "entity_id"))
-        if len(chains) > limits.chains or len({r["id"] for r in chains}) != len(chains):
+        if len(chains) > limits.chains:
+            raise ResourceLimit("Chain count exceeds profile")
+        if len({r["id"] for r in chains}) != len(chains):
             raise UnsupportedStructure("Chain limit/duplicate chain")
         chain_entities = {r["id"]: r["entity_id"] for r in chains}
         if chain_entities.get(selection.label_asym_id) != selection.entity_id:
@@ -354,7 +363,9 @@ class MmcifParser:
                 "label_alt_id",
             ),
         )
-        if len(atoms) > limits.atoms or len({r["id"] for r in atoms}) != len(atoms):
+        if len(atoms) > limits.atoms:
+            raise ResourceLimit("Atom count exceeds profile")
+        if len({r["id"] for r in atoms}) != len(atoms):
             raise UnsupportedStructure("Atom limit/duplicate atom IDs")
         models = sorted({r["pdbx_PDB_model_num"] for r in atoms})
         if len(models) > limits.models or any(
@@ -600,7 +611,7 @@ class MmcifParser:
                 copies.add(key)
                 atom_total += counts.get(chain, 0)
                 if len(copies) > limits.copies or atom_total > limits.expanded_atoms:
-                    raise UnsupportedStructure("Assembly expansion exceeds limit")
+                    raise ResourceLimit("Assembly expansion exceeds limit")
                 if (
                     selection.assembly_id.value == row["assembly_id"]
                     and selection.label_asym_id == chain

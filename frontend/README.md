@@ -35,3 +35,24 @@ GPU or research data is needed. Install downloads Chromium once; Linux CI adds
 
 The current page reports service status. Mol* visualization and prediction
 workflows are planned for later milestones. See [architecture](../docs/architecture.md).
+
+
+NF-02 M4 adds the protein/reference/experimental-structure workflow over
+`/api/v1`. Configure only the public API origin/prefix with `VITE_API_BASE`
+(default `/api`); `API_PROXY_TARGET` remains Vite server configuration. Backend
+links are checked registry paths and resolved through that base. There is no
+viewer or comparison engine. See [integration decisions](../docs/integration.md).
+
+Tests require the repository's backend locked environment (`cd backend && uv sync
+--locked`) and uv. A socket/DNS-guarded Python child creates actual production
+ASGI responses for TypeScript contract/component/browser tests. No API listener
+or provider network is used. Playwright HTTP responses remain explicitly mocked;
+only the local static preview is served. Run lint, typecheck, build, test and
+`test:browser` as documented at repository root.
+
+
+`npm run test:integration` separately launches a local synthetic API and the real
+Vite proxy with unmocked browser HTTP. It tests retained pin/import and original
+gzip downloads while rejecting external traffic. This is additional to the
+static-built mocked browser suite; it requires local loopback listeners and
+pinned Chromium, not live providers or Docker.

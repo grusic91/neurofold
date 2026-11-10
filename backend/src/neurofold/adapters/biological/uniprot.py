@@ -23,6 +23,7 @@ from neurofold.adapters.biological.transport import (
     Response,
     Transport,
     TransportFailure,
+    TransportTimeout,
 )
 from neurofold.core.biological import (
     Availability,
@@ -36,10 +37,12 @@ from neurofold.core.canonical import (
     sequence_sha256,
     sha256_bytes,
 )
+from neurofold.core.errors import ArchiveConflict, ArchiveIntegrityError, ResourceLimit
 from neurofold.core.lookup import (
     CursorError,
     FreshProtein,
     ProviderError,
+    ProviderTimeout,
     ProviderValidationError,
     SourceArchive,
     UnsupportedIdentifier,
@@ -199,14 +202,15 @@ class UniProtCatalog:
     ) -> Response:
         remaining = deadline - self.clock.monotonic()
         if remaining <= 0 or not PROVIDER_SLOTS.acquire(timeout=max(0, remaining)):
-            raise ProviderError(
+            raise ProviderTimeout(
                 "Provider call budget exhausted waiting for concurrency slot"
             )
         try:
+            timed_out = False
             for attempt in range(self.retry.retries + 1):
                 remaining = deadline - self.clock.monotonic()
                 if remaining <= 0:
-                    raise ProviderError("Provider call budget exhausted")
+                    raise ProviderTimeout("Provider call budget exhausted")
                 try:
                     response = self.transport.request(url, headers, timeout=remaining)
                     response = Response(
@@ -215,7 +219,7 @@ class UniProtCatalog:
                         response.body,
                     )
                     if self.clock.monotonic() >= deadline:
-                        raise ProviderError("Provider call budget exhausted")
+                        raise ProviderTimeout("Provider call budget exhausted")
                     if (
                         sum(len(k) + len(v) for k, v in response.headers.items())
                         > MAX_HEADERS
@@ -225,8 +229,10 @@ class UniProtCatalog:
                         raise ProviderValidationError("Download exceeds limit")
                     if response.status not in (429, 502, 503, 504):
                         return response
+                    timed_out = response.status == 504
                     retry_after = response.headers.get("retry-after")
-                except TransportFailure:
+                except TransportFailure as exc:
+                    timed_out = isinstance(exc, TransportTimeout)
                     retry_after = None
                 if attempt == self.retry.retries:
                     break
@@ -234,6 +240,8 @@ class UniProtCatalog:
                 if delay >= deadline - self.clock.monotonic():
                     break
                 self.clock.sleep(delay)
+            if timed_out:
+                raise ProviderTimeout("Provider deadline exceeded")
             raise ProviderError("Provider retry budget exhausted")
         finally:
             PROVIDER_SLOTS.release()
@@ -250,7 +258,7 @@ class UniProtCatalog:
         # bounds independent catalogs. Includes lock waiting in the 15s budget.
         deadline = self.clock.monotonic() + self.retry.budget
         if not self.lock.acquire(timeout=self.retry.budget):
-            raise ProviderError("Provider call budget exhausted waiting for catalog")
+            raise ProviderTimeout("Provider call budget exhausted waiting for catalog")
         try:
             cached = self.cache.get(CACHE_VERSION + url)
             if (
@@ -346,7 +354,15 @@ class UniProtCatalog:
             self.cache.put(CACHE_VERSION + url, result, payload_size)
             return result, response.status, response.headers, stamp
         except (ValueError, KeyError, RecursionError, UnicodeError) as exc:
-            if isinstance(exc, UnsupportedIdentifier):
+            if isinstance(
+                exc,
+                (
+                    UnsupportedIdentifier,
+                    ArchiveIntegrityError,
+                    ArchiveConflict,
+                    ResourceLimit,
+                ),
+            ):
                 raise
             raise ProviderValidationError(f"Invalid UniProt response: {exc}") from exc
         finally:
@@ -409,6 +425,10 @@ class UniProtCatalog:
             + url
             + "; source JSON retained; fields extracted without sequence modification."
         )
+        source_license = LICENSE
+        if self.evidence is EvidenceKind.SYNTHETIC:
+            source_license = "Apache-2.0"
+            attribution = "NeuroFold contributors; authored synthetic example"
         if entry is not None and "copyright" in entry:
             attribution += " " + text(entry["copyright"])
         artifact = ArtifactDescriptor(
@@ -420,10 +440,12 @@ class UniProtCatalog:
             else "application/json",
             evidence=self.evidence,
             rights=ArtifactRights(
-                license=present(LICENSE),
+                license=present(source_license),
                 attribution=present(attribution),
                 redistribution=RedistributionStatus.ALLOWED,
-                basis=(
+                basis="Authored synthetic transport"
+                if self.evidence is EvidenceKind.SYNTHETIC
+                else (
                     "UniProt database CC BY 4.0; reviewed 2026-11-10. "
                     "Linked third-party data requires separate review."
                 ),
@@ -477,7 +499,7 @@ class UniProtCatalog:
             last_modified=present(response.headers["last-modified"])
             if "last-modified" in response.headers
             else missing,
-            license_references=references([LICENSE]),
+            license_references=references([source_license]),
             citation_references=references(citations),
         )
         self.artifacts.publish(io.BytesIO(response.body), descriptor=artifact)
@@ -537,6 +559,8 @@ class UniProtCatalog:
                 obj(provider_json(decode(cached.response))), cached.receipt
             )
         except (ValueError, KeyError) as exc:
+            if isinstance(exc, (ArchiveIntegrityError, ArchiveConflict, ResourceLimit)):
+                raise
             raise ProviderValidationError("Invalid entry") from exc
         if record.summary.accession != accession:
             raise UnsupportedIdentifier(

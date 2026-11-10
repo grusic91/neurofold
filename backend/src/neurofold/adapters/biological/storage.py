@@ -4,15 +4,31 @@ import base64
 import io
 import os
 import tempfile
+from collections.abc import Callable
+from functools import wraps
 from pathlib import Path
 from typing import BinaryIO
 
 from neurofold.core.biological import ReferenceSnapshot
 from neurofold.core.canonical import canonical_json, parse_json, sha256_bytes
+from neurofold.core.errors import ArchiveConflict, ArchiveIntegrityError, ResourceLimit
 from neurofold.core.lookup import PinReceipt
 from neurofold.core.provenance import ArtifactDescriptor, SourceReceipt
 
 MAX_STORED_BYTES = 16 * 1024 * 1024
+
+
+def verified_read[**P, T](operation: Callable[P, T]) -> Callable[P, T]:
+    @wraps(operation)
+    def read(*args: P.args, **kwargs: P.kwargs) -> T:
+        try:
+            return operation(*args, **kwargs)
+        except (ArchiveIntegrityError, ArchiveConflict, ResourceLimit):
+            raise
+        except (ValueError, TypeError, RecursionError) as exc:
+            raise ArchiveIntegrityError(str(exc)) from exc
+
+    return read
 
 
 class FilesystemStore:
@@ -50,7 +66,7 @@ class FilesystemStore:
 
     def _publish(self, kind: str, identity: str, data: bytes) -> None:
         if len(data) > MAX_STORED_BYTES:
-            raise ValueError("Stored record exceeds limit")
+            raise ResourceLimit("Stored record exceeds limit")
         target = self._path(kind, identity)
         with tempfile.NamedTemporaryFile(dir=self.root, delete=False) as stage:
             temporary = Path(stage.name)
@@ -64,7 +80,7 @@ class FilesystemStore:
                     )  # Atomic, no-clobber even across processes.
                 except FileExistsError:
                     if self._read(kind, identity) != data:
-                        raise ValueError("Conflicting immutable write") from None
+                        raise ArchiveConflict("Conflicting immutable write") from None
                 directory = os.open(self.root, os.O_RDONLY)
                 try:
                     os.fsync(directory)
@@ -91,6 +107,7 @@ class FilesystemStore:
         self._validate_reference(snapshot)
         self._publish("reference", snapshot.reference_id, snapshot.to_json())
 
+    @verified_read
     def get(self, reference_id: str) -> ReferenceSnapshot:
         snapshot = ReferenceSnapshot.from_json(self._read("reference", reference_id))
         if snapshot.reference_id != reference_id:
@@ -103,6 +120,7 @@ class FilesystemStore:
             raise ValueError("Receipt artifact mismatch")
         self._publish("receipt", receipt.receipt_id, receipt.to_json())
 
+    @verified_read
     def get_receipt(self, receipt_id: str) -> SourceReceipt:
         receipt = SourceReceipt.from_json(self._read("receipt", receipt_id))
         if receipt.receipt_id != receipt_id:
@@ -119,6 +137,7 @@ class FilesystemStore:
         self.get_receipt(receipt.source_receipt_id)
         self._publish("pin", receipt.reference_id, receipt.to_json())
 
+    @verified_read
     def get_pin_receipt(self, reference_id: str) -> PinReceipt:
         receipt = PinReceipt.from_json(self._read("pin", reference_id))
         if receipt.reference_id != reference_id:
@@ -131,7 +150,7 @@ class FilesystemStore:
         # ArtifactStore.publish and ReferenceRepository.publish share a name.
         # artifact_store provides the existing streaming protocol without overloading.
         if descriptor.byte_size > 8 * 1024 * 1024:
-            raise ValueError("Artifact exceeds storage limit")
+            raise ResourceLimit("Artifact exceeds storage limit")
         chunks: list[bytes] = []
         size = 0
         while size <= descriptor.byte_size:
@@ -157,6 +176,7 @@ class FilesystemStore:
             ),
         )
 
+    @verified_read
     def _artifact(self, artifact_id: str) -> tuple[ArtifactDescriptor, bytes]:
         value = parse_json(self._read("artifact", artifact_id))
         if not isinstance(value, dict) or set(value) != {"descriptor", "raw"}:

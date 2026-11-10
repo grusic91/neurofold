@@ -1,14 +1,14 @@
 # NF-EPIC-001 — NeuroFold Protein Variant Explorer
 
-Status: proposed roadmap; no application functionality is implemented by these
-documents. Planning baseline: NF-01, inspected 2026-11-10. NF-08 M1 shared
-[provenance contracts](provenance-contracts.md) and NF-09 M1
-[test foundation](testing/README.md) and NF-02 M1
-[biological contracts](biological-contracts.md) are implemented.
-[NF-02 M2 lookup and pinning](uniprot-lookup.md) are implemented as opt-in Python
-services; [NF-02 M3 structures](structure-import.md) now adds experimental
-discovery, immutable imports and maps. Production remains health-only; M4 and other
-later milestones remain proposed.
+Status: NF-01, NF-08 M1 shared [provenance contracts](provenance-contracts.md),
+NF-09 M1 [test foundation](testing/README.md), and NF-02 M1–M4 biological data
+integration are implemented. [M2 lookup/pinning](uniprot-lookup.md) and
+[M3 structure imports/maps](structure-import.md) are composed into operational
+biological routes and a frontend workflow by [M4 integration](integration.md).
+[M4 acceptance evidence](testing/nf02-m4-evidence.md) covers the local offline
+synthetic profile; Linux/container execution, live-provider compatibility and
+independent scientific validation remain open. Later milestones below remain
+proposed. Original planning baseline: NF-01, inspected 2026-11-10.
 
 ## Objective and scientific motivation
 
@@ -23,33 +23,39 @@ the exact inputs, evidence, methods, and limitations behind each result. Disease
 areas motivate research questions; the MVP does not classify pathogenicity,
 diagnose disease, or establish causality from predicted structural differences.
 
-## Repository baseline
+## Current repository baseline
 
-Read this plan with [AGENTS.md](../AGENTS.md), [README.md](../README.md), and
-[architecture.md](architecture.md). The architecture document describes the
-implemented foundation, NF-08/NF-02 M1 contracts and NF-09 M1 tests and remains
-authoritative for current behavior. Beyond that baseline and these M1 milestones,
-the roadmap below is proposed future work, including endpoint names and packages.
+Read this plan with [AGENTS.md](../AGENTS.md), [README.md](../README.md),
+[architecture.md](architecture.md) and [integration.md](integration.md). These
+documents describe the implemented foundation and NF-02 M1–M4 behavior. Endpoint
+names and packages for later tasks below remain proposed future work.
 
-- Backend: Python 3.12+, FastAPI application factory, and `GET /health` only.
-  `core/prediction.py` contains frozen `PredictionRequest(sequence, seed)`,
+- Backend: Python 3.12+, FastAPI application factory, the unchanged `GET /health`
+  liveness contract, eight operational biological `/v1` routes and two retained
+  audit subresources. Injected application services use bounded blocking workers
+  and a shared immutable filesystem archive. `core/prediction.py` retains frozen
+  `PredictionRequest(sequence, seed)`,
   `PredictionResult(structure_path, provenance_path)`, and a synchronous
   `PredictionAdapter.predict(request, *, output_dir)` protocol.
-- Frontend: React function components, strict TypeScript, Vite, and service status.
+- Frontend: React function components, strict TypeScript and Vite; service status,
+  explicit protein/reference/experimental-structure selection, provenance,
+  mapping tables, retained-ID reopening and registered original downloads.
   Browser `/api/*` requests are proxied to backend `/*` in development.
 - CI: locked uv/npm installs, Ruff, mypy strict, pytest with 90% coverage minimum,
-  ESLint, TypeScript, frontend build, and Linux container smoke tests.
-- NF-02 M1 adds frozen biological records, protocols, HTTP DTO/schema contracts,
-  synthetic contract tests and a source licensing inventory; operational routes
-  remain deferred. NF-02 M2 adds a UniProt client, bounded cache/cursors and
-  immutable filesystem reference pinning; M3 adds RCSB experimental discovery,
-  mmCIF import and explicit maps. There is no variant service, viewer,
-  inference runtime,
-  job system, database, authentication, or export implementation.
+  ESLint, TypeScript, frontend build, component/browser tests, local synthetic
+  API/proxy integration and Linux container smoke configuration. See the M4
+  evidence for executed checks and remaining environment gates.
+- Milestone history: NF-02 M1 introduced frozen biological records, protocols,
+  HTTP DTO/schema contracts, synthetic contract tests and a source licensing
+  inventory. Production was intentionally health-only through M3: M2 added
+  UniProt lookup/pinning and M3 added experimental discovery, mmCIF import and
+  explicit maps as Python services. M4 now composes these services into the
+  operational API/UI. There is no variant service, viewer, inference runtime,
+  job system, database, authentication or export implementation.
 
-Preserve the Apache-2.0 LICENSE and attribution. No application code, dependency,
-lockfile, infrastructure, or existing documentation change is required to adopt
-this roadmap.
+Preserve the Apache-2.0 LICENSE and attribution. The remaining roadmap extends
+this implemented baseline; it does not imply completion of later task or
+scientific-release gates.
 
 ## MVP scope and boundaries
 
@@ -158,7 +164,7 @@ authorize delegation or implementation in this documentation change.
 
 ## Shared architectural decisions
 
-Maintain **API → core ← adapters**. Proposed `application/` services coordinate
+Maintain **API → core ← adapters**. Implemented `application/` services coordinate
 core protocols and receive adapters through an explicit composition root. They
 import neither HTTP schemas nor concrete model runtimes. `api/` owns Pydantic
 schemas and HTTP translation. `core/` owns frozen standard-library domain records,
@@ -184,9 +190,11 @@ design before exposure.
 
 ## Shared identifiers, schemas and HTTP conventions
 
-These are proposed `/v1` backend routes; browsers use `/api/v1` through existing
-development routing. `GET /health` retains its NF-01 liveness contract. Production
-must configure equivalent API routing before a deployed workflow is supported.
+NF-02 biological `/v1` routes and their audit subresources are operational since
+M4; routes belonging to later tasks remain proposed. Browsers use `/api/v1`
+through existing development routing. `GET /health` retains its NF-01 liveness
+contract. Production must configure equivalent API routing before a deployed
+workflow is supported.
 
 | Concept | Required identity and semantics | Owner |
 | --- | --- | --- |

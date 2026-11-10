@@ -6,18 +6,20 @@ and neurodegenerative disease research. Licensed under [Apache 2.0](LICENSE).
 NeuroFold aims to make prediction workflows modular, inspectable, and scientifically
 reproducible, and to support molecular exploration with Mol*.
 
-**Implemented: NF-01, NF-08 M1 shared provenance contracts, NF-09 M1 test
-foundation, and NF-02 M1 contracts, M2 lookup/pinning and M3 structures.**
-The API exposes a tested health endpoint and the frontend displays service status. Shared immutable
-provenance contracts and offline backend,
-component and browser tests are present. [Biological contracts](docs/biological-contracts.md)
-and [source licensing inventory](docs/source-licensing.md) are implemented;
-[UniProt lookup and immutable reference pinning](docs/uniprot-lookup.md) are
-implemented as Python services. [Experimental structure discovery/import and maps](docs/structure-import.md)
-are available as opt-in Python services; HTTP/UI integration awaits NF-02 M4.
-Prediction,
-molecular visualization, complete manifests and exports remain future work.
-Boltz-2 is planned; it is not installed or executed.
+**Implemented: NF-01, NF-08 M1 provenance contracts, NF-09 M1 test foundation,
+and NF-02 M1–M4 biological data integration.** The API serves canonical protein
+lookup, immutable reference pinning, experimental structure discovery/import,
+retained residue maps/audits and registered original artifacts. The frontend
+provides explicit protein/organism/model/assembly selection, provenance,
+numbering/uncertainty tables and reopening retained IDs. `/health` remains a
+liveness endpoint with no provider, archive or scientific readiness probe.
+See [integration/configuration decisions](docs/integration.md),
+[biological contracts](docs/biological-contracts.md),
+[UniProt lookup](docs/uniprot-lookup.md),
+[structure import](docs/structure-import.md) and
+[source licensing](docs/source-licensing.md).
+Prediction, molecular visualization, comparisons, complete scientific manifests
+and exports remain future work. Boltz-2 is not installed or executed.
 
 ## Objectives
 
@@ -86,6 +88,13 @@ Open <http://localhost:5173>. API documentation is at
 <http://127.0.0.1:8000/docs>, and
 `curl http://127.0.0.1:8000/health` returns `{"status":"ok"}`.
 This endpoint reports API liveness; it makes no model or GPU readiness claim.
+Biological operations lazily create `backend/data/archive` when run from
+`backend/`. Keep this private durable archive: caches are replaceable; retained
+records are not. Copy `backend/.env.example` to `backend/.env` and explicitly
+load it with `uv run --locked --env-file .env uvicorn neurofold.api.main:app`
+for custom settings. One operator and one API process are supported.
+[Configuration, resource limits, recovery and HTTP errors](docs/integration.md)
+include timed-out mutation/publication behavior.
 
 The Vite development server proxies `/api/*` to the backend, stripping `/api`.
 The browser uses `/api/health`; FastAPI serves `/health`. This keeps development
@@ -107,7 +116,9 @@ docker compose up --build --wait
 
 Use the same URLs as above. Both services run as non-root users, use native
 container dependencies, and mount application source read-only for live reload.
-Host ports bind to loopback. The frontend container talks to `http://backend:8000`
+The private `biological-archive` named volume preserves retained records across
+container recreation. `docker compose down` retains it; `down --volumes` deletes
+it deliberately. Host ports bind to loopback. The frontend container talks to `http://backend:8000`
 over the Compose network. On Apple Silicon, no forced x86 emulation is configured.
 
 Copy `.env.example` to `.env` to override `BACKEND_PORT` or `FRONTEND_PORT` for
@@ -148,11 +159,18 @@ npm run build
 npm run test
 npm run test:browser:install
 npm run test:browser
+npm run test:integration
 ```
 
 Browser installation downloads pinned Chromium once; Linux CI additionally uses
-`npm run test:browser:install -- --with-deps`. Component/browser behavior tests
-use synthetic health responses and require no backend or external service.
+`npm run test:browser:install -- --with-deps`. Component and static-browser behavior tests
+use synthetic responses and require no listening backend or external service.
+Run `uv sync --locked` in `backend/` first: frontend contract/component/browser
+tests invoke a socket/DNS-guarded Python child to produce actual application
+responses. This establishes offline contract exchange; static-browser HTTP is mocked.
+`test:integration` additionally starts a local synthetic API and Vite proxy,
+then exercises real browser HTTP, pin/import, retained records and original gzip
+downloads. Unmatched external browser traffic fails in both layers.
 See the [test foundation guide](docs/testing/README.md),
 [test matrix](docs/testing/test-matrix.md),
 [scientific review protocol](docs/testing/scientific-review.md) and

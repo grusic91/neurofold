@@ -31,3 +31,13 @@ CI runs these container checks on Linux. These images are for development.
 Production static serving, immutable base-image digests, resource limits,
 deployment configuration, and a separate NVIDIA CUDA inference image are future
 work. No image publishing or deployment workflow is configured.
+
+
+NF-02 M4 retains biological records in the private `biological-archive` named
+volume at `/app/data/archive`. The image precreates/chowns/chmods the mountpoint
+for its non-root user; Docker initializes a new named volume from it. Existing
+volumes need compatible ownership. Normal `docker compose down` retains records;
+`down --volumes` deletes the archive. One process/operator is supported.
+See [configuration and offline smoke commands](../docs/integration.md).
+`compose.offline.yaml` is only for deterministic authored-fixture acceptance;
+normal Compose uses HTTPX and contacts providers only on requested operations.

@@ -15,7 +15,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:browser": "npm run build && playwright test",
-    "test:browser:install": "playwright install chromium"
+    "test:browser:install": "playwright install chromium",
+    "test:integration": "playwright test --config playwright.integration.config.ts"
   },
   "dependencies": {
     "react": "^19.3.1",

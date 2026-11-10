@@ -1,5 +1,10 @@
 # Shared provenance contracts — NF-08 M1
 
+Current integration: [NF-02 M4](integration.md) now exposes production routes,
+a frontend workflow and retained audit projections. Health-only statements below
+describe the original milestone boundary. Frozen v1 records/schemas are unchanged;
+new HTTP audit versions are documented separately in the integration guide.
+
 The implemented foundation is `backend/src/neurofold/core/canonical.py` and
 `core/provenance.py`, with a private strict wire codec in `core/_contracts.py`.
 These standard-library-only contracts preserve **API → core ← adapters**. They

@@ -13,6 +13,7 @@ from neurofold.core.biological import (
     StructureSelection,
 )
 from neurofold.core.canonical import CanonicalObject, sequence_sha256
+from neurofold.core.errors import ResourceLimit
 from neurofold.core.provenance import ContentReference
 from neurofold.core.structures import (
     ParsedStructure,
@@ -45,7 +46,7 @@ class PolymerMapper:
             or max(len(target), len(query)) > 10000
             or len(target) * len(query) > self.max_cells
         ):
-            raise UnsupportedStructure("Alignment sequence/cell limit exceeded")
+            raise ResourceLimit("Alignment sequence/cell limit exceeded")
         if len(parsed.residues) != len(query) or any(
             r.label_seq_id != i or r.residue != query[i - 1]
             for i, r in enumerate(parsed.residues, 1)
