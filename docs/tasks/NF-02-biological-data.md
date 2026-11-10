@@ -1,6 +1,10 @@
 # NF-02 — Biological Data Integration
 
-Status: proposed; implementation has not started. Parent: [NF-EPIC-001](../EPIC.md).
+Status: M1 contracts implemented; M2–M4 remain proposed/incomplete.
+Parent: [NF-EPIC-001](../EPIC.md). See [final M1 decisions](../biological-contracts.md),
+[source licensing inventory](../source-licensing.md) and
+[acceptance evidence](../testing/nf02-m1-evidence.md).
+Production routes remain health-only; no lookup/client/import is implemented.
 
 ## 1. Objective and scientific motivation
 
@@ -111,8 +115,10 @@ Retained immutable snapshots are not subject to cache TTL eviction.
 
 ## 6. Implementation milestones
 
-1. **M1 — Contracts:** finalize records, mapping statuses, HTTP schemas and source
-   licensing inventory; add tiny synthetic provider fixtures and API contracts.
+1. **M1 — Contracts: implemented.** Frozen records, mapping identities/statuses
+   and reasoned absence, core protocols, HTTP DTOs/versioned schema, source
+   licensing inventory, tiny synthetic provider fixtures and offline API contract
+   harness. No operational `/v1` routes; see the evidence for scope and gaps.
 2. **M2 — Lookup:** implement clients, encoded queries, pagination, transport
    limits, cache/revalidation and reference pinning; document resource limits.
 3. **M3 — Structures:** discover only experimental candidates, import selected
@@ -182,5 +188,7 @@ UniProt terms and attribution requirements before shipping its client/export.
   needs new explicit reference selection and tests, not silent normalization.
 - **Structure size and assembly complexity:** set measured parse/download limits
   in M2; fail explicitly rather than silently extracting a convenient fragment.
-- **Source licensing:** persist reviewed license identifiers/notices in M1 and
-  recheck on upstream changes. No claim here relicenses UniProt content.
+- **Source licensing:** M1 records reviewed policy identifiers/attribution in the
+  [inventory](../source-licensing.md). Persist actual source notices in receipts
+  when clients land; recheck before shipping and on upstream changes. The
+  inventory and Apache-2.0 project license do not relicense UniProt content.

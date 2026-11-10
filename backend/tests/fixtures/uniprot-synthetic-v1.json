@@ -1,0 +1,8 @@
+{
+  "primaryAccession": "P00001",
+  "entryType": "UniProtKB reviewed (Swiss-Prot)",
+  "genes": [{"geneName": {"value": "SYNTH"}}],
+  "organism": {"scientificName": "Synthetic organism", "taxonId": 1},
+  "sequence": {"value": "ACDEFG", "length": 6},
+  "entryAudit": {"entryVersion": 2, "sequenceVersion": 1}
+}

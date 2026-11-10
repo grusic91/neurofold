@@ -6,10 +6,12 @@ and neurodegenerative disease research. Licensed under [Apache 2.0](LICENSE).
 NeuroFold aims to make prediction workflows modular, inspectable, and scientifically
 reproducible, and to support molecular exploration with Mol*.
 
-**Implemented: NF-01, NF-08 M1 shared provenance contracts, and NF-09 M1 test
-foundation.** The API exposes a tested health endpoint and the frontend displays
-service status. Shared immutable provenance contracts and offline backend,
-component and browser tests are present. NF-02 has not started. Prediction,
+**Implemented: NF-01, NF-08 M1 shared provenance contracts, NF-09 M1 test
+foundation, and NF-02 M1 biological data contracts.** The API exposes a tested
+health endpoint and the frontend displays service status. Shared immutable provenance contracts and offline backend,
+component and browser tests are present. [Biological contracts](docs/biological-contracts.md)
+and [source licensing inventory](docs/source-licensing.md) are implemented;
+lookup, pinning and structure imports await NF-02 M2–M4. Prediction,
 molecular visualization, complete manifests and exports remain future work.
 Boltz-2 is planned; it is not installed or executed.
 
@@ -28,7 +30,7 @@ Boltz-2 is planned; it is not installed or executed.
 backend/
   src/neurofold/
     api/            FastAPI application, routes, and HTTP schemas
-    core/           Standard-library-only prediction and provenance contracts
+    core/           Standard-library-only prediction, provenance and biological contracts
     adapters/       Future model adapter implementations
   tests/            Offline HTTP, core, fixture and architectural boundary tests
   pyproject.toml    Dependencies, lint, formatting, types, and test settings
@@ -126,7 +128,8 @@ uv run --locked mypy src tests
 uv run --locked pytest
 ```
 
-Pytest checks liveness/OpenAPI, core contracts/canonical hashes, fixture integrity,
+Pytest checks liveness/OpenAPI, core contracts/canonical hashes, biological/HTTP
+schemas, fixture integrity,
 offline guards and core importability without third-party packages. Internet
 sockets and DNS are blocked by default. Coverage must be at least 90%.
 To apply Python formatting, run `uv run --locked ruff format .`.

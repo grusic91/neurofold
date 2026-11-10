@@ -1,0 +1,17 @@
+{
+  "entry": {
+    "rcsb_id": "0SYN",
+    "rcsb_entry_info": {"structure_determination_methodology": "experimental"},
+    "exptl": [{"method": "SOLUTION NMR"}],
+    "pdbx_audit_revision_history": [{"major_revision": 1, "minor_revision": 0, "revision_date": "2026-01-01"}]
+  },
+  "polymer_entity": {
+    "rcsb_id": "0SYN_1",
+    "entity_poly": {"pdbx_seq_one_letter_code_can": "ASDHG"},
+    "rcsb_polymer_entity_container_identifiers": {"entity_id": "1", "asym_ids": ["A"], "auth_asym_ids": ["X"]}
+  },
+  "polymer_entity_instance": {
+    "rcsb_id": "0SYN.A",
+    "rcsb_polymer_entity_instance_container_identifiers": {"entity_id": "1", "asym_id": "A", "auth_asym_id": "X"}
+  }
+}

@@ -3,7 +3,8 @@
 Status: proposed roadmap; no application functionality is implemented by these
 documents. Planning baseline: NF-01, inspected 2026-11-10. NF-08 M1 shared
 [provenance contracts](provenance-contracts.md) and NF-09 M1
-[test foundation](testing/README.md) are now implemented; NF-02 has not started.
+[test foundation](testing/README.md) and NF-02 M1
+[biological contracts](biological-contracts.md) are implemented.
 Later milestones remain proposed.
 
 ## Objective and scientific motivation
@@ -23,7 +24,7 @@ diagnose disease, or establish causality from predicted structural differences.
 
 Read this plan with [AGENTS.md](../AGENTS.md), [README.md](../README.md), and
 [architecture.md](architecture.md). The architecture document describes the
-implemented foundation, NF-08 M1 contracts and NF-09 M1 tests and remains
+implemented foundation, NF-08/NF-02 M1 contracts and NF-09 M1 tests and remains
 authoritative for current behavior. Beyond that baseline and these M1 milestones,
 the roadmap below is proposed future work, including endpoint names and packages.
 
@@ -35,7 +36,10 @@ the roadmap below is proposed future work, including endpoint names and packages
   Browser `/api/*` requests are proxied to backend `/*` in development.
 - CI: locked uv/npm installs, Ruff, mypy strict, pytest with 90% coverage minimum,
   ESLint, TypeScript, frontend build, and Linux container smoke tests.
-- There is no biological client, variant service, viewer, inference runtime,
+- NF-02 M1 adds frozen biological records, protocols, HTTP DTO/schema contracts,
+  synthetic contract tests and a source licensing inventory; operational routes
+  remain deferred. There is no biological client, variant service, viewer,
+  inference runtime,
   job system, database, authentication, or export implementation.
 
 Preserve the Apache-2.0 LICENSE and attribution. No application code, dependency,

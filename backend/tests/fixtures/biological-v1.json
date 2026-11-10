@@ -1,0 +1,1285 @@
+{
+  "reference": {
+    "schema_version": "neurofold-biological/1",
+    "reference_id": "synthetic-reference",
+    "protein": {
+      "schema_version": "neurofold-biological/1",
+      "summary": {
+        "schema_version": "neurofold-biological/1",
+        "accession": "P00001",
+        "canonical": true,
+        "isoform": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "gene_names": {
+          "state": "present",
+          "values": [
+            "SYNTH"
+          ],
+          "reason": null
+        },
+        "organism_name": {
+          "state": "present",
+          "value": "Synthetic organism",
+          "reason": null
+        },
+        "taxon_id": {
+          "state": "present",
+          "value": 1,
+          "reason": null
+        },
+        "reviewed": {
+          "state": "present",
+          "value": true,
+          "reason": null
+        },
+        "sequence_length": 6,
+        "source_receipt_id": "synthetic-uniprot-receipt"
+      },
+      "sequence": "ACDEFG",
+      "sequence_hash": {
+        "sha256": "443c1c9d0b0605f650b20465b79e545d06dd27fc1cb01984a516aef66266a318",
+        "encoding": "sequence-ascii/1",
+        "algorithm": "sha256"
+      },
+      "source_receipt": {
+        "schema_version": "neurofold-research/1",
+        "receipt_id": "synthetic-uniprot-receipt",
+        "provider": "synthetic-uniprot",
+        "query": "fixture:uniprot-synthetic-v1.json",
+        "retrieved_at": "2026-11-10T00:00:00Z",
+        "raw_artifact": {
+          "schema_version": "neurofold-research/1",
+          "artifact_id": "synthetic-uniprot-receipt-raw",
+          "content_hash": {
+            "sha256": "ad0ba2a6e2d3cafa94cfe2b3e31d68fc6d1ce00e26cff90b0e34ed92aa225cc6",
+            "encoding": "raw-bytes/1",
+            "algorithm": "sha256"
+          },
+          "byte_size": 309,
+          "media_type": "application/json",
+          "evidence": "synthetic",
+          "rights": {
+            "license": {
+              "state": "present",
+              "value": "Apache-2.0",
+              "reason": null
+            },
+            "attribution": {
+              "state": "present",
+              "value": "NeuroFold contributors; authored synthetic fixtures.",
+              "reason": null
+            },
+            "redistribution": "allowed",
+            "basis": "Original synthetic test bytes authored under the repository license; no provider content."
+          },
+          "parents": [],
+          "transformation": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "record_kind": "artifact"
+        },
+        "accession": {
+          "state": "present",
+          "value": "P00001",
+          "reason": null
+        },
+        "isoform": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "taxon_id": {
+          "state": "present",
+          "value": 1,
+          "reason": null
+        },
+        "entry_version": {
+          "state": "present",
+          "value": 2,
+          "reason": null
+        },
+        "sequence_version": {
+          "state": "present",
+          "value": 1,
+          "reason": null
+        },
+        "release": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "release_date": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "etag": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "last_modified": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "license_references": {
+          "state": "present",
+          "values": [
+            "Apache-2.0"
+          ],
+          "reason": null
+        },
+        "citation_references": {
+          "state": "not_applicable",
+          "values": [],
+          "reason": "Synthetic records have no scientific publication."
+        },
+        "record_kind": "source_receipt"
+      },
+      "normalization": "Extract sequence.value verbatim; no case conversion or symbol substitution."
+    },
+    "captured_at": "2026-11-10T00:00:01Z"
+  },
+  "structure": {
+    "descriptor": {
+      "schema_version": "neurofold-biological/1",
+      "structure_id": "synthetic-structure",
+      "raw_artifact": {
+        "schema_version": "neurofold-research/1",
+        "artifact_id": "synthetic-mmcif",
+        "content_hash": {
+          "sha256": "bf34252f408c966a15a6c004e79a576de613cff1ca3e0a60f95704319ee84e9d",
+          "encoding": "raw-bytes/1",
+          "algorithm": "sha256"
+        },
+        "byte_size": 44,
+        "media_type": "chemical/x-mmcif",
+        "evidence": "synthetic",
+        "rights": {
+          "license": {
+            "state": "present",
+            "value": "Apache-2.0",
+            "reason": null
+          },
+          "attribution": {
+            "state": "present",
+            "value": "NeuroFold contributors; authored synthetic fixtures.",
+            "reason": null
+          },
+          "redistribution": "allowed",
+          "basis": "Original synthetic test bytes authored under the repository license; no provider content."
+        },
+        "parents": [],
+        "transformation": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "record_kind": "artifact"
+      },
+      "evidence": "synthetic",
+      "selection": {
+        "entity_id": "1",
+        "label_asym_id": "A",
+        "auth_asym_id": {
+          "state": "present",
+          "value": "X",
+          "reason": null
+        },
+        "model_id": "2",
+        "assembly_id": {
+          "state": "present",
+          "value": "1",
+          "reason": null
+        },
+        "operator_id": {
+          "state": "present",
+          "value": "2",
+          "reason": null
+        }
+      },
+      "source": {
+        "schema_version": "neurofold-biological/1",
+        "entry_id": "0SYN",
+        "entity_id": "1",
+        "label_asym_id": "A",
+        "auth_asym_id": {
+          "state": "present",
+          "value": "X",
+          "reason": null
+        },
+        "experimental_methods": [
+          "SOLUTION NMR"
+        ],
+        "resolutions": [
+          {
+            "value": {
+              "state": "not_applicable",
+              "value": null,
+              "reason": "No single resolution is reported for this synthetic NMR method."
+            },
+            "method": "SOLUTION NMR",
+            "unit": "angstrom"
+          }
+        ],
+        "source_revision": {
+          "state": "present",
+          "value": "1.0",
+          "reason": null
+        },
+        "revision_date": {
+          "state": "present",
+          "value": "2026-01-01",
+          "reason": null
+        },
+        "assembly_ids": {
+          "state": "present",
+          "values": [
+            "1"
+          ],
+          "reason": null
+        },
+        "polymer_sequence": {
+          "state": "present",
+          "value": "ASDHG",
+          "reason": null
+        },
+        "mapped_coverage": {
+          "mapped_positions": 3,
+          "reference_length": 6,
+          "definition": "unique-reference-positions/1"
+        },
+        "citations": {
+          "state": "not_applicable",
+          "values": [],
+          "reason": "Synthetic records have no scientific publication."
+        },
+        "source_receipt": {
+          "schema_version": "neurofold-research/1",
+          "receipt_id": "synthetic-rcsb-receipt",
+          "provider": "synthetic-rcsb",
+          "query": "fixture:rcsb-synthetic-v1.json",
+          "retrieved_at": "2026-11-10T00:00:00Z",
+          "raw_artifact": {
+            "schema_version": "neurofold-research/1",
+            "artifact_id": "synthetic-rcsb-receipt-raw",
+            "content_hash": {
+              "sha256": "d925d0948c293a6318d521f3c4a9f9a623083df91688340c29553ac1a7a6e5e4",
+              "encoding": "raw-bytes/1",
+              "algorithm": "sha256"
+            },
+            "byte_size": 678,
+            "media_type": "application/json",
+            "evidence": "synthetic",
+            "rights": {
+              "license": {
+                "state": "present",
+                "value": "Apache-2.0",
+                "reason": null
+              },
+              "attribution": {
+                "state": "present",
+                "value": "NeuroFold contributors; authored synthetic fixtures.",
+                "reason": null
+              },
+              "redistribution": "allowed",
+              "basis": "Original synthetic test bytes authored under the repository license; no provider content."
+            },
+            "parents": [],
+            "transformation": {
+              "state": "not_applicable",
+              "value": null,
+              "reason": "Not applicable to this synthetic record."
+            },
+            "record_kind": "artifact"
+          },
+          "accession": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "isoform": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "taxon_id": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "entry_version": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "sequence_version": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "release": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "release_date": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "etag": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "last_modified": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "license_references": {
+            "state": "present",
+            "values": [
+              "Apache-2.0"
+            ],
+            "reason": null
+          },
+          "citation_references": {
+            "state": "not_applicable",
+            "values": [],
+            "reason": "Synthetic records have no scientific publication."
+          },
+          "record_kind": "source_receipt"
+        },
+        "origin": "experimental"
+      },
+      "mapping": {
+        "record_id": "synthetic-mapping",
+        "content_hash": {
+          "sha256": "3304ce99d0a48db658c81a2681c1dd458752942b9709aa5d4868d02c7a6bc2c2",
+          "encoding": "neurofold-json/1",
+          "algorithm": "sha256"
+        }
+      },
+      "format": "mmcif"
+    },
+    "mapping": {
+      "schema_version": "neurofold-biological/1",
+      "mapping_id": "synthetic-mapping",
+      "identity": {
+        "reference": {
+          "record_id": "synthetic-reference",
+          "content_hash": {
+            "sha256": "443c1c9d0b0605f650b20465b79e545d06dd27fc1cb01984a516aef66266a318",
+            "encoding": "sequence-ascii/1",
+            "algorithm": "sha256"
+          }
+        },
+        "structure": {
+          "record_id": "synthetic-structure",
+          "content_hash": {
+            "sha256": "bf34252f408c966a15a6c004e79a576de613cff1ca3e0a60f95704319ee84e9d",
+            "encoding": "raw-bytes/1",
+            "algorithm": "sha256"
+          }
+        },
+        "selection": {
+          "entity_id": "1",
+          "label_asym_id": "A",
+          "auth_asym_id": {
+            "state": "present",
+            "value": "X",
+            "reason": null
+          },
+          "model_id": "2",
+          "assembly_id": {
+            "state": "present",
+            "value": "1",
+            "reason": null
+          },
+          "operator_id": {
+            "state": "present",
+            "value": "2",
+            "reason": null
+          }
+        }
+      },
+      "reference_length": 6,
+      "method": "hand-authored-synthetic-correspondence",
+      "method_version": "1",
+      "rows": [
+        {
+          "identity": {
+            "reference": {
+              "record_id": "synthetic-reference",
+              "content_hash": {
+                "sha256": "443c1c9d0b0605f650b20465b79e545d06dd27fc1cb01984a516aef66266a318",
+                "encoding": "sequence-ascii/1",
+                "algorithm": "sha256"
+              }
+            },
+            "structure": {
+              "record_id": "synthetic-structure",
+              "content_hash": {
+                "sha256": "bf34252f408c966a15a6c004e79a576de613cff1ca3e0a60f95704319ee84e9d",
+                "encoding": "raw-bytes/1",
+                "algorithm": "sha256"
+              }
+            },
+            "selection": {
+              "entity_id": "1",
+              "label_asym_id": "A",
+              "auth_asym_id": {
+                "state": "present",
+                "value": "X",
+                "reason": null
+              },
+              "model_id": "2",
+              "assembly_id": {
+                "state": "present",
+                "value": "1",
+                "reason": null
+              },
+              "operator_id": {
+                "state": "present",
+                "value": "2",
+                "reason": null
+              }
+            }
+          },
+          "reference_position": {
+            "state": "present",
+            "value": 1,
+            "reason": null
+          },
+          "reference_residue": {
+            "state": "present",
+            "value": "A",
+            "reason": null
+          },
+          "label_seq_id": {
+            "state": "present",
+            "value": 1,
+            "reason": null
+          },
+          "auth_seq_id": {
+            "state": "present",
+            "value": "-2",
+            "reason": null
+          },
+          "insertion_code": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "observed_residue": {
+            "state": "present",
+            "value": "A",
+            "reason": null
+          },
+          "coordinate_present": true,
+          "status": "exact",
+          "reason": null,
+          "candidate_reference_positions": []
+        },
+        {
+          "identity": {
+            "reference": {
+              "record_id": "synthetic-reference",
+              "content_hash": {
+                "sha256": "443c1c9d0b0605f650b20465b79e545d06dd27fc1cb01984a516aef66266a318",
+                "encoding": "sequence-ascii/1",
+                "algorithm": "sha256"
+              }
+            },
+            "structure": {
+              "record_id": "synthetic-structure",
+              "content_hash": {
+                "sha256": "bf34252f408c966a15a6c004e79a576de613cff1ca3e0a60f95704319ee84e9d",
+                "encoding": "raw-bytes/1",
+                "algorithm": "sha256"
+              }
+            },
+            "selection": {
+              "entity_id": "1",
+              "label_asym_id": "A",
+              "auth_asym_id": {
+                "state": "present",
+                "value": "X",
+                "reason": null
+              },
+              "model_id": "2",
+              "assembly_id": {
+                "state": "present",
+                "value": "1",
+                "reason": null
+              },
+              "operator_id": {
+                "state": "present",
+                "value": "2",
+                "reason": null
+              }
+            }
+          },
+          "reference_position": {
+            "state": "present",
+            "value": 2,
+            "reason": null
+          },
+          "reference_residue": {
+            "state": "present",
+            "value": "C",
+            "reason": null
+          },
+          "label_seq_id": {
+            "state": "present",
+            "value": 2,
+            "reason": null
+          },
+          "auth_seq_id": {
+            "state": "present",
+            "value": "-1",
+            "reason": null
+          },
+          "insertion_code": {
+            "state": "present",
+            "value": "A",
+            "reason": null
+          },
+          "observed_residue": {
+            "state": "present",
+            "value": "S",
+            "reason": null
+          },
+          "coordinate_present": true,
+          "status": "mismatch",
+          "reason": "Synthetic construct substitution.",
+          "candidate_reference_positions": []
+        },
+        {
+          "identity": {
+            "reference": {
+              "record_id": "synthetic-reference",
+              "content_hash": {
+                "sha256": "443c1c9d0b0605f650b20465b79e545d06dd27fc1cb01984a516aef66266a318",
+                "encoding": "sequence-ascii/1",
+                "algorithm": "sha256"
+              }
+            },
+            "structure": {
+              "record_id": "synthetic-structure",
+              "content_hash": {
+                "sha256": "bf34252f408c966a15a6c004e79a576de613cff1ca3e0a60f95704319ee84e9d",
+                "encoding": "raw-bytes/1",
+                "algorithm": "sha256"
+              }
+            },
+            "selection": {
+              "entity_id": "1",
+              "label_asym_id": "A",
+              "auth_asym_id": {
+                "state": "present",
+                "value": "X",
+                "reason": null
+              },
+              "model_id": "2",
+              "assembly_id": {
+                "state": "present",
+                "value": "1",
+                "reason": null
+              },
+              "operator_id": {
+                "state": "present",
+                "value": "2",
+                "reason": null
+              }
+            }
+          },
+          "reference_position": {
+            "state": "present",
+            "value": 3,
+            "reason": null
+          },
+          "reference_residue": {
+            "state": "present",
+            "value": "D",
+            "reason": null
+          },
+          "label_seq_id": {
+            "state": "present",
+            "value": 3,
+            "reason": null
+          },
+          "auth_seq_id": {
+            "state": "present",
+            "value": "0",
+            "reason": null
+          },
+          "insertion_code": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "observed_residue": {
+            "state": "present",
+            "value": "D",
+            "reason": null
+          },
+          "coordinate_present": false,
+          "status": "unobserved",
+          "reason": "Polymer residue has no coordinates.",
+          "candidate_reference_positions": []
+        },
+        {
+          "identity": {
+            "reference": {
+              "record_id": "synthetic-reference",
+              "content_hash": {
+                "sha256": "443c1c9d0b0605f650b20465b79e545d06dd27fc1cb01984a516aef66266a318",
+                "encoding": "sequence-ascii/1",
+                "algorithm": "sha256"
+              }
+            },
+            "structure": {
+              "record_id": "synthetic-structure",
+              "content_hash": {
+                "sha256": "bf34252f408c966a15a6c004e79a576de613cff1ca3e0a60f95704319ee84e9d",
+                "encoding": "raw-bytes/1",
+                "algorithm": "sha256"
+              }
+            },
+            "selection": {
+              "entity_id": "1",
+              "label_asym_id": "A",
+              "auth_asym_id": {
+                "state": "present",
+                "value": "X",
+                "reason": null
+              },
+              "model_id": "2",
+              "assembly_id": {
+                "state": "present",
+                "value": "1",
+                "reason": null
+              },
+              "operator_id": {
+                "state": "present",
+                "value": "2",
+                "reason": null
+              }
+            }
+          },
+          "reference_position": {
+            "state": "present",
+            "value": 4,
+            "reason": null
+          },
+          "reference_residue": {
+            "state": "present",
+            "value": "E",
+            "reason": null
+          },
+          "label_seq_id": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "auth_seq_id": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "insertion_code": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "observed_residue": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "coordinate_present": false,
+          "status": "unmapped",
+          "reason": "Reference gap; no corresponding polymer residue.",
+          "candidate_reference_positions": []
+        },
+        {
+          "identity": {
+            "reference": {
+              "record_id": "synthetic-reference",
+              "content_hash": {
+                "sha256": "443c1c9d0b0605f650b20465b79e545d06dd27fc1cb01984a516aef66266a318",
+                "encoding": "sequence-ascii/1",
+                "algorithm": "sha256"
+              }
+            },
+            "structure": {
+              "record_id": "synthetic-structure",
+              "content_hash": {
+                "sha256": "bf34252f408c966a15a6c004e79a576de613cff1ca3e0a60f95704319ee84e9d",
+                "encoding": "raw-bytes/1",
+                "algorithm": "sha256"
+              }
+            },
+            "selection": {
+              "entity_id": "1",
+              "label_asym_id": "A",
+              "auth_asym_id": {
+                "state": "present",
+                "value": "X",
+                "reason": null
+              },
+              "model_id": "2",
+              "assembly_id": {
+                "state": "present",
+                "value": "1",
+                "reason": null
+              },
+              "operator_id": {
+                "state": "present",
+                "value": "2",
+                "reason": null
+              }
+            }
+          },
+          "reference_position": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "reference_residue": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "label_seq_id": {
+            "state": "present",
+            "value": 4,
+            "reason": null
+          },
+          "auth_seq_id": {
+            "state": "present",
+            "value": "1",
+            "reason": null
+          },
+          "insertion_code": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "observed_residue": {
+            "state": "present",
+            "value": "H",
+            "reason": null
+          },
+          "coordinate_present": true,
+          "status": "unmapped",
+          "reason": "Construct tag; no reference position.",
+          "candidate_reference_positions": []
+        },
+        {
+          "identity": {
+            "reference": {
+              "record_id": "synthetic-reference",
+              "content_hash": {
+                "sha256": "443c1c9d0b0605f650b20465b79e545d06dd27fc1cb01984a516aef66266a318",
+                "encoding": "sequence-ascii/1",
+                "algorithm": "sha256"
+              }
+            },
+            "structure": {
+              "record_id": "synthetic-structure",
+              "content_hash": {
+                "sha256": "bf34252f408c966a15a6c004e79a576de613cff1ca3e0a60f95704319ee84e9d",
+                "encoding": "raw-bytes/1",
+                "algorithm": "sha256"
+              }
+            },
+            "selection": {
+              "entity_id": "1",
+              "label_asym_id": "A",
+              "auth_asym_id": {
+                "state": "present",
+                "value": "X",
+                "reason": null
+              },
+              "model_id": "2",
+              "assembly_id": {
+                "state": "present",
+                "value": "1",
+                "reason": null
+              },
+              "operator_id": {
+                "state": "present",
+                "value": "2",
+                "reason": null
+              }
+            }
+          },
+          "reference_position": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "reference_residue": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "label_seq_id": {
+            "state": "present",
+            "value": 5,
+            "reason": null
+          },
+          "auth_seq_id": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "insertion_code": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "observed_residue": {
+            "state": "present",
+            "value": "G",
+            "reason": null
+          },
+          "coordinate_present": true,
+          "status": "ambiguous",
+          "reason": "Two hypothetical alignment candidates; neither selected.",
+          "candidate_reference_positions": [
+            5,
+            6
+          ]
+        }
+      ]
+    },
+    "artifact_url": "/v1/artifacts/synthetic-mmcif"
+  },
+  "protein_page": {
+    "schema_version": "neurofold-biological/1",
+    "next_cursor": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Not applicable to this synthetic record."
+    },
+    "availability": "complete",
+    "warnings": [],
+    "source_receipts": [
+      {
+        "schema_version": "neurofold-research/1",
+        "receipt_id": "synthetic-uniprot-receipt",
+        "provider": "synthetic-uniprot",
+        "query": "fixture:uniprot-synthetic-v1.json",
+        "retrieved_at": "2026-11-10T00:00:00Z",
+        "raw_artifact": {
+          "schema_version": "neurofold-research/1",
+          "artifact_id": "synthetic-uniprot-receipt-raw",
+          "content_hash": {
+            "sha256": "ad0ba2a6e2d3cafa94cfe2b3e31d68fc6d1ce00e26cff90b0e34ed92aa225cc6",
+            "encoding": "raw-bytes/1",
+            "algorithm": "sha256"
+          },
+          "byte_size": 309,
+          "media_type": "application/json",
+          "evidence": "synthetic",
+          "rights": {
+            "license": {
+              "state": "present",
+              "value": "Apache-2.0",
+              "reason": null
+            },
+            "attribution": {
+              "state": "present",
+              "value": "NeuroFold contributors; authored synthetic fixtures.",
+              "reason": null
+            },
+            "redistribution": "allowed",
+            "basis": "Original synthetic test bytes authored under the repository license; no provider content."
+          },
+          "parents": [],
+          "transformation": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "record_kind": "artifact"
+        },
+        "accession": {
+          "state": "present",
+          "value": "P00001",
+          "reason": null
+        },
+        "isoform": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "taxon_id": {
+          "state": "present",
+          "value": 1,
+          "reason": null
+        },
+        "entry_version": {
+          "state": "present",
+          "value": 2,
+          "reason": null
+        },
+        "sequence_version": {
+          "state": "present",
+          "value": 1,
+          "reason": null
+        },
+        "release": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "release_date": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "etag": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "last_modified": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "license_references": {
+          "state": "present",
+          "values": [
+            "Apache-2.0"
+          ],
+          "reason": null
+        },
+        "citation_references": {
+          "state": "not_applicable",
+          "values": [],
+          "reason": "Synthetic records have no scientific publication."
+        },
+        "record_kind": "source_receipt"
+      }
+    ],
+    "items": [
+      {
+        "schema_version": "neurofold-biological/1",
+        "accession": "P00001",
+        "canonical": true,
+        "isoform": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "gene_names": {
+          "state": "present",
+          "values": [
+            "SYNTH"
+          ],
+          "reason": null
+        },
+        "organism_name": {
+          "state": "present",
+          "value": "Synthetic organism",
+          "reason": null
+        },
+        "taxon_id": {
+          "state": "present",
+          "value": 1,
+          "reason": null
+        },
+        "reviewed": {
+          "state": "present",
+          "value": true,
+          "reason": null
+        },
+        "sequence_length": 6,
+        "source_receipt_id": "synthetic-uniprot-receipt"
+      }
+    ]
+  },
+  "structure_page": {
+    "schema_version": "neurofold-biological/1",
+    "next_cursor": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Not applicable to this synthetic record."
+    },
+    "availability": "partial",
+    "warnings": [
+      "Synthetic discovery intentionally incomplete."
+    ],
+    "source_receipts": [
+      {
+        "schema_version": "neurofold-research/1",
+        "receipt_id": "synthetic-rcsb-receipt",
+        "provider": "synthetic-rcsb",
+        "query": "fixture:rcsb-synthetic-v1.json",
+        "retrieved_at": "2026-11-10T00:00:00Z",
+        "raw_artifact": {
+          "schema_version": "neurofold-research/1",
+          "artifact_id": "synthetic-rcsb-receipt-raw",
+          "content_hash": {
+            "sha256": "d925d0948c293a6318d521f3c4a9f9a623083df91688340c29553ac1a7a6e5e4",
+            "encoding": "raw-bytes/1",
+            "algorithm": "sha256"
+          },
+          "byte_size": 678,
+          "media_type": "application/json",
+          "evidence": "synthetic",
+          "rights": {
+            "license": {
+              "state": "present",
+              "value": "Apache-2.0",
+              "reason": null
+            },
+            "attribution": {
+              "state": "present",
+              "value": "NeuroFold contributors; authored synthetic fixtures.",
+              "reason": null
+            },
+            "redistribution": "allowed",
+            "basis": "Original synthetic test bytes authored under the repository license; no provider content."
+          },
+          "parents": [],
+          "transformation": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "record_kind": "artifact"
+        },
+        "accession": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "isoform": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "taxon_id": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "entry_version": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "sequence_version": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Not applicable to this synthetic record."
+        },
+        "release": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "release_date": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "etag": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "last_modified": {
+          "state": "unavailable",
+          "value": null,
+          "reason": "Not supplied in the synthetic source."
+        },
+        "license_references": {
+          "state": "present",
+          "values": [
+            "Apache-2.0"
+          ],
+          "reason": null
+        },
+        "citation_references": {
+          "state": "not_applicable",
+          "values": [],
+          "reason": "Synthetic records have no scientific publication."
+        },
+        "record_kind": "source_receipt"
+      }
+    ],
+    "items": [
+      {
+        "schema_version": "neurofold-biological/1",
+        "entry_id": "0SYN",
+        "entity_id": "1",
+        "label_asym_id": "A",
+        "auth_asym_id": {
+          "state": "present",
+          "value": "X",
+          "reason": null
+        },
+        "experimental_methods": [
+          "SOLUTION NMR"
+        ],
+        "resolutions": [
+          {
+            "value": {
+              "state": "not_applicable",
+              "value": null,
+              "reason": "No single resolution is reported for this synthetic NMR method."
+            },
+            "method": "SOLUTION NMR",
+            "unit": "angstrom"
+          }
+        ],
+        "source_revision": {
+          "state": "present",
+          "value": "1.0",
+          "reason": null
+        },
+        "revision_date": {
+          "state": "present",
+          "value": "2026-01-01",
+          "reason": null
+        },
+        "assembly_ids": {
+          "state": "present",
+          "values": [
+            "1"
+          ],
+          "reason": null
+        },
+        "polymer_sequence": {
+          "state": "present",
+          "value": "ASDHG",
+          "reason": null
+        },
+        "mapped_coverage": {
+          "mapped_positions": 3,
+          "reference_length": 6,
+          "definition": "unique-reference-positions/1"
+        },
+        "citations": {
+          "state": "not_applicable",
+          "values": [],
+          "reason": "Synthetic records have no scientific publication."
+        },
+        "source_receipt": {
+          "schema_version": "neurofold-research/1",
+          "receipt_id": "synthetic-rcsb-receipt",
+          "provider": "synthetic-rcsb",
+          "query": "fixture:rcsb-synthetic-v1.json",
+          "retrieved_at": "2026-11-10T00:00:00Z",
+          "raw_artifact": {
+            "schema_version": "neurofold-research/1",
+            "artifact_id": "synthetic-rcsb-receipt-raw",
+            "content_hash": {
+              "sha256": "d925d0948c293a6318d521f3c4a9f9a623083df91688340c29553ac1a7a6e5e4",
+              "encoding": "raw-bytes/1",
+              "algorithm": "sha256"
+            },
+            "byte_size": 678,
+            "media_type": "application/json",
+            "evidence": "synthetic",
+            "rights": {
+              "license": {
+                "state": "present",
+                "value": "Apache-2.0",
+                "reason": null
+              },
+              "attribution": {
+                "state": "present",
+                "value": "NeuroFold contributors; authored synthetic fixtures.",
+                "reason": null
+              },
+              "redistribution": "allowed",
+              "basis": "Original synthetic test bytes authored under the repository license; no provider content."
+            },
+            "parents": [],
+            "transformation": {
+              "state": "not_applicable",
+              "value": null,
+              "reason": "Not applicable to this synthetic record."
+            },
+            "record_kind": "artifact"
+          },
+          "accession": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "isoform": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "taxon_id": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "entry_version": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "sequence_version": {
+            "state": "not_applicable",
+            "value": null,
+            "reason": "Not applicable to this synthetic record."
+          },
+          "release": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "release_date": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "etag": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "last_modified": {
+            "state": "unavailable",
+            "value": null,
+            "reason": "Not supplied in the synthetic source."
+          },
+          "license_references": {
+            "state": "present",
+            "values": [
+              "Apache-2.0"
+            ],
+            "reason": null
+          },
+          "citation_references": {
+            "state": "not_applicable",
+            "values": [],
+            "reason": "Synthetic records have no scientific publication."
+          },
+          "record_kind": "source_receipt"
+        },
+        "origin": "experimental"
+      }
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+# Biological source licensing and attribution inventory — NF-02 M1
+
+Policy review date: 2026-11-10. This inventory records current primary-source
+statements and obligations for future NF-02 clients. It is not a receipt for
+retrieved research data or permission to relicense third-party content. The
+repository LICENSE and attribution remain unchanged. No external biological
+content is shipped in M1; all provider/contract fixtures are authored synthetic
+examples under Apache-2.0.
+
+| Source / scope | License / review basis | Attribution and preservation | Runtime decision |
+| --- | --- | --- | --- |
+| UniProtKB database content | CC-BY-4.0. The current [UniProt API documentation](https://www.uniprot.org/api-documentation/support-data) states that copyrightable database content uses CC BY 4.0; [UniProt's dataset declaration](https://sparql.uniprot.org/.well-known/void) independently identifies that license for the UniProt graph. The [help license page](https://www.uniprot.org/help/license) returned only a JavaScript fallback during this review. | Credit The UniProt Consortium; retain source/accession/version, license link, supplied notices and citations. Identify extraction/normalization/other changes, retain previous change notices and avoid implying endorsement, following the [CC BY 4.0 terms](https://creativecommons.org/licenses/by/4.0/). Recheck the help/citation pages before shipping the client/export. | No actual artifact reviewed or redistributed. Future artifact rights are decided from the applicable terms and retained attribution; they must not inherit Apache-2.0. |
+| RCSB programmatic APIs and PDB archive files | CC0-1.0, explicitly stated for archive files and API data by the [RCSB usage policy](https://www.rcsb.org/pages/usage-policy). | Retain RCSB/wwPDB source, entry/entity/revision and primary structure citations when supplied. RCSB encourages credit to original structure authors; follow the [citation policy](https://www.rcsb.org/pages/policies). Do not fabricate missing citations. | No actual artifact reviewed or redistributed. Origin must still be validated as experimental; license openness does not make computed models experimental. |
+| RCSB website articles, images and unrelated third-party resources | Scope-specific terms; no blanket CC0 assumption. The usage policy distinguishes website text and Molecule of the Month materials from API/archive data. | Retain each original notice and obtain separate applicable terms before reuse. | Outside NF-02 M1; rights unknown unless separately reviewed. |
+| NeuroFold synthetic provider JSON, contract records and inline adversarial inputs | Apache-2.0, authored for this repository by NeuroFold contributors. No downloaded sequence/structure, model output or patient data. | Keep project LICENSE and attribution, fixture inventory and synthetic labels. No provider scientific citation exists for fictional records; mark not applicable with a reason. | Synthetic fixture descriptors record allowed redistribution with authorship basis. This permission applies only to these authored bytes. |
+
+Future SourceReceipt records reuse NF-08 license/citation ReferenceCollections,
+retrieval time, raw ArtifactDescriptor and exact-byte hashes. Each artifact's
+ArtifactRights retains independent license and attribution Metadata,
+redistribution (`allowed`, `prohibited` or `unknown`) and a nonblank decision
+basis. This inventory is a review aid; adapters must populate actual received
+notices, citations and source versions, and exports must respect each artifact's
+rights. Missing terms/citations/versions stay unavailable with reasons rather
+than being filled from an unrelated source. Unknown rights stay `unknown` until
+a review establishes permission; an absent license cannot authorize export.
+
+No parser, alignment, transport, model, weight or external dataset dependency is
+added in M1. Review those artifacts independently when selected. Linked databases
+and third-party annotations require their own scope/terms review. NF-08 export
+work must retain source notices and transformation lineage, and explicitly list
+omitted/prohibited/unknown-rights artifacts. A checksum is byte identity, not a
+license or evidence of scientific validity.

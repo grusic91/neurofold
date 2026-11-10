@@ -1,0 +1,1249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:neurofold:biological-http:1",
+  "$defs": {
+    "ArtifactDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "neurofold-research/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "record_kind": {
+          "const": "artifact",
+          "title": "Record Kind",
+          "type": "string"
+        },
+        "artifact_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "content_hash": {
+          "$ref": "#/$defs/HashDTO"
+        },
+        "byte_size": {
+          "minimum": 0,
+          "title": "Byte Size",
+          "type": "integer"
+        },
+        "media_type": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Media Type",
+          "type": "string"
+        },
+        "evidence": {
+          "enum": [
+            "experimental",
+            "predicted",
+            "synthetic"
+          ],
+          "title": "Evidence",
+          "type": "string"
+        },
+        "rights": {
+          "$ref": "#/$defs/RightsDTO"
+        },
+        "parents": {
+          "items": {
+            "$ref": "#/$defs/HashDTO"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "transformation": {
+          "$ref": "#/$defs/MetadataDTO"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_kind",
+        "artifact_id",
+        "content_hash",
+        "byte_size",
+        "media_type",
+        "evidence",
+        "rights",
+        "parents",
+        "transformation"
+      ],
+      "title": "ArtifactDTO",
+      "type": "object"
+    },
+    "ContentReferenceDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "record_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "title": "Record Id",
+          "type": "string"
+        },
+        "content_hash": {
+          "$ref": "#/$defs/HashDTO"
+        }
+      },
+      "required": [
+        "record_id",
+        "content_hash"
+      ],
+      "title": "ContentReferenceDTO",
+      "type": "object"
+    },
+    "CoverageDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "mapped_positions": {
+          "minimum": 0,
+          "title": "Mapped Positions",
+          "type": "integer"
+        },
+        "reference_length": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "title": "Reference Length",
+          "type": "integer"
+        },
+        "definition": {
+          "const": "unique-reference-positions/1",
+          "title": "Definition",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mapped_positions",
+        "reference_length",
+        "definition"
+      ],
+      "title": "CoverageDTO",
+      "type": "object"
+    },
+    "ErrorDetail": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Message",
+          "type": "string"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        },
+        "details": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Details",
+          "type": "object"
+        },
+        "request_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "title": "Request Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable",
+        "details",
+        "request_id"
+      ],
+      "title": "ErrorDetail",
+      "type": "object"
+    },
+    "ErrorResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ErrorDetail"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "ErrorResponse",
+      "type": "object"
+    },
+    "HashDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "const": "sha256",
+          "title": "Algorithm",
+          "type": "string"
+        },
+        "encoding": {
+          "enum": [
+            "raw-bytes/1",
+            "sequence-ascii/1",
+            "neurofold-json/1"
+          ],
+          "title": "Encoding",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "algorithm",
+        "encoding",
+        "sha256"
+      ],
+      "title": "HashDTO",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "MapRowDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/MappingIdentityDTO"
+        },
+        "reference_position": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "reference_residue": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "label_seq_id": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "auth_seq_id": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "insertion_code": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "observed_residue": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "coordinate_present": {
+          "title": "Coordinate Present",
+          "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "exact",
+            "mismatch",
+            "unobserved",
+            "unmapped",
+            "ambiguous"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason"
+        },
+        "candidate_reference_positions": {
+          "items": {
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "type": "integer"
+          },
+          "title": "Candidate Reference Positions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "identity",
+        "reference_position",
+        "reference_residue",
+        "label_seq_id",
+        "auth_seq_id",
+        "insertion_code",
+        "observed_residue",
+        "coordinate_present",
+        "status",
+        "reason",
+        "candidate_reference_positions"
+      ],
+      "title": "MapRowDTO",
+      "type": "object"
+    },
+    "MappingIdentityDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "reference": {
+          "$ref": "#/$defs/ContentReferenceDTO"
+        },
+        "structure": {
+          "$ref": "#/$defs/ContentReferenceDTO"
+        },
+        "selection": {
+          "$ref": "#/$defs/SelectionDTO"
+        }
+      },
+      "required": [
+        "reference",
+        "structure",
+        "selection"
+      ],
+      "title": "MappingIdentityDTO",
+      "type": "object"
+    },
+    "MetadataDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "present",
+            "unavailable",
+            "not_applicable"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason"
+        }
+      },
+      "required": [
+        "state",
+        "value",
+        "reason"
+      ],
+      "title": "MetadataDTO",
+      "type": "object"
+    },
+    "PageQuery": {
+      "additionalProperties": false,
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "maxLength": 2048,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cursor"
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "title": "PageQuery",
+      "type": "object"
+    },
+    "ProteinPageResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "neurofold-biological/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/ProteinSummaryDTO"
+          },
+          "maxItems": 100,
+          "title": "Items",
+          "type": "array"
+        },
+        "next_cursor": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "availability": {
+          "enum": [
+            "complete",
+            "partial",
+            "unavailable"
+          ],
+          "title": "Availability",
+          "type": "string"
+        },
+        "warnings": {
+          "items": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        },
+        "source_receipts": {
+          "items": {
+            "$ref": "#/$defs/ReceiptDTO"
+          },
+          "title": "Source Receipts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "items",
+        "next_cursor",
+        "availability",
+        "warnings",
+        "source_receipts"
+      ],
+      "title": "ProteinPageResponse",
+      "type": "object"
+    },
+    "ProteinQuery": {
+      "additionalProperties": false,
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "maxLength": 2048,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cursor"
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "gene": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^\\S+$",
+          "title": "Gene",
+          "type": "string"
+        },
+        "taxon_id": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Taxon Id"
+        }
+      },
+      "required": [
+        "gene"
+      ],
+      "title": "ProteinQuery",
+      "type": "object"
+    },
+    "ProteinResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "neurofold-biological/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "summary": {
+          "$ref": "#/$defs/ProteinSummaryDTO"
+        },
+        "sequence": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Sequence",
+          "type": "string"
+        },
+        "sequence_hash": {
+          "$ref": "#/$defs/HashDTO"
+        },
+        "source_receipt": {
+          "$ref": "#/$defs/ReceiptDTO"
+        },
+        "normalization": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Normalization",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "summary",
+        "sequence",
+        "sequence_hash",
+        "source_receipt",
+        "normalization"
+      ],
+      "title": "ProteinResponse",
+      "type": "object"
+    },
+    "ProteinSummaryDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "neurofold-biological/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "accession": {
+          "pattern": "^(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-[1-9][0-9]*)?$",
+          "title": "Accession",
+          "type": "string"
+        },
+        "canonical": {
+          "title": "Canonical",
+          "type": "boolean"
+        },
+        "isoform": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "gene_names": {
+          "$ref": "#/$defs/ReferencesDTO"
+        },
+        "organism_name": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "taxon_id": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "reviewed": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "sequence_length": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "title": "Sequence Length",
+          "type": "integer"
+        },
+        "source_receipt_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Source Receipt Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "accession",
+        "canonical",
+        "isoform",
+        "gene_names",
+        "organism_name",
+        "taxon_id",
+        "reviewed",
+        "sequence_length",
+        "source_receipt_id"
+      ],
+      "title": "ProteinSummaryDTO",
+      "type": "object"
+    },
+    "ReceiptDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "neurofold-research/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "record_kind": {
+          "const": "source_receipt",
+          "title": "Record Kind",
+          "type": "string"
+        },
+        "receipt_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Receipt Id",
+          "type": "string"
+        },
+        "provider": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Provider",
+          "type": "string"
+        },
+        "query": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Query",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "raw_artifact": {
+          "$ref": "#/$defs/ArtifactDTO"
+        },
+        "accession": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "isoform": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "taxon_id": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "entry_version": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "sequence_version": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "release": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "release_date": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "etag": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "last_modified": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "license_references": {
+          "$ref": "#/$defs/ReferencesDTO"
+        },
+        "citation_references": {
+          "$ref": "#/$defs/ReferencesDTO"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_kind",
+        "receipt_id",
+        "provider",
+        "query",
+        "retrieved_at",
+        "raw_artifact",
+        "accession",
+        "isoform",
+        "taxon_id",
+        "entry_version",
+        "sequence_version",
+        "release",
+        "release_date",
+        "etag",
+        "last_modified",
+        "license_references",
+        "citation_references"
+      ],
+      "title": "ReceiptDTO",
+      "type": "object"
+    },
+    "ReferenceRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "accession": {
+          "pattern": "^(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})(?:-[1-9][0-9]*)?$",
+          "title": "Accession",
+          "type": "string"
+        },
+        "expected_sequence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Sequence Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "accession",
+        "expected_sequence_sha256"
+      ],
+      "title": "ReferenceRequest",
+      "type": "object"
+    },
+    "ReferenceResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "neurofold-biological/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "reference_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Reference Id",
+          "type": "string"
+        },
+        "protein": {
+          "$ref": "#/$defs/ProteinResponse"
+        },
+        "captured_at": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Captured At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "reference_id",
+        "protein",
+        "captured_at"
+      ],
+      "title": "ReferenceResponse",
+      "type": "object"
+    },
+    "ReferencesDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "present",
+            "unavailable",
+            "not_applicable"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Values",
+          "type": "array"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason"
+        }
+      },
+      "required": [
+        "state",
+        "values",
+        "reason"
+      ],
+      "title": "ReferencesDTO",
+      "type": "object"
+    },
+    "ResidueMapDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "neurofold-biological/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "mapping_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Mapping Id",
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/$defs/MappingIdentityDTO"
+        },
+        "reference_length": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "title": "Reference Length",
+          "type": "integer"
+        },
+        "method": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Method",
+          "type": "string"
+        },
+        "method_version": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Method Version",
+          "type": "string"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/MapRowDTO"
+          },
+          "title": "Rows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "mapping_id",
+        "identity",
+        "reference_length",
+        "method",
+        "method_version",
+        "rows"
+      ],
+      "title": "ResidueMapDTO",
+      "type": "object"
+    },
+    "ResolutionDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "method": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Method",
+          "type": "string"
+        },
+        "unit": {
+          "const": "angstrom",
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "method",
+        "unit"
+      ],
+      "title": "ResolutionDTO",
+      "type": "object"
+    },
+    "RightsDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "license": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "attribution": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "redistribution": {
+          "enum": [
+            "allowed",
+            "prohibited",
+            "unknown"
+          ],
+          "title": "Redistribution",
+          "type": "string"
+        },
+        "basis": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Basis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "license",
+        "attribution",
+        "redistribution",
+        "basis"
+      ],
+      "title": "RightsDTO",
+      "type": "object"
+    },
+    "SelectionDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "label_asym_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Label Asym Id",
+          "type": "string"
+        },
+        "auth_asym_id": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "model_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "assembly_id": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "operator_id": {
+          "$ref": "#/$defs/MetadataDTO"
+        }
+      },
+      "required": [
+        "entity_id",
+        "label_asym_id",
+        "auth_asym_id",
+        "model_id",
+        "assembly_id",
+        "operator_id"
+      ],
+      "title": "SelectionDTO",
+      "type": "object"
+    },
+    "StructureDescriptorDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "neurofold-biological/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "structure_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Structure Id",
+          "type": "string"
+        },
+        "raw_artifact": {
+          "$ref": "#/$defs/ArtifactDTO"
+        },
+        "evidence": {
+          "enum": [
+            "experimental",
+            "synthetic"
+          ],
+          "title": "Evidence",
+          "type": "string"
+        },
+        "selection": {
+          "$ref": "#/$defs/SelectionDTO"
+        },
+        "source": {
+          "$ref": "#/$defs/StructureSummaryDTO"
+        },
+        "mapping": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContentReferenceDTO"
+            },
+            {
+              "$ref": "#/$defs/MetadataDTO"
+            }
+          ],
+          "title": "Mapping"
+        },
+        "format": {
+          "const": "mmcif",
+          "title": "Format",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "structure_id",
+        "raw_artifact",
+        "evidence",
+        "selection",
+        "source",
+        "mapping",
+        "format"
+      ],
+      "title": "StructureDescriptorDTO",
+      "type": "object"
+    },
+    "StructurePageResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "neurofold-biological/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/StructureSummaryDTO"
+          },
+          "maxItems": 100,
+          "title": "Items",
+          "type": "array"
+        },
+        "next_cursor": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "availability": {
+          "enum": [
+            "complete",
+            "partial",
+            "unavailable"
+          ],
+          "title": "Availability",
+          "type": "string"
+        },
+        "warnings": {
+          "items": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        },
+        "source_receipts": {
+          "items": {
+            "$ref": "#/$defs/ReceiptDTO"
+          },
+          "title": "Source Receipts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "items",
+        "next_cursor",
+        "availability",
+        "warnings",
+        "source_receipts"
+      ],
+      "title": "StructurePageResponse",
+      "type": "object"
+    },
+    "StructureRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "reference_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "title": "Reference Id",
+          "type": "string"
+        },
+        "entry_id": {
+          "pattern": "^[A-Za-z0-9_]{4,32}$",
+          "title": "Entry Id",
+          "type": "string"
+        },
+        "entity_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "label_asym_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Label Asym Id",
+          "type": "string"
+        },
+        "model_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "assembly_id": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "operator_id": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "expected_source_revision": {
+          "$ref": "#/$defs/MetadataDTO"
+        }
+      },
+      "required": [
+        "reference_id",
+        "entry_id",
+        "entity_id",
+        "label_asym_id",
+        "model_id",
+        "assembly_id",
+        "operator_id",
+        "expected_source_revision"
+      ],
+      "title": "StructureRequest",
+      "type": "object"
+    },
+    "StructureResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "descriptor": {
+          "$ref": "#/$defs/StructureDescriptorDTO"
+        },
+        "mapping": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ResidueMapDTO"
+            },
+            {
+              "$ref": "#/$defs/MetadataDTO"
+            }
+          ],
+          "title": "Mapping"
+        },
+        "artifact_url": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Artifact Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "descriptor",
+        "mapping",
+        "artifact_url"
+      ],
+      "title": "StructureResponse",
+      "type": "object"
+    },
+    "StructureSummaryDTO": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "neurofold-biological/1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "entry_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Entry Id",
+          "type": "string"
+        },
+        "entity_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "label_asym_id": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Label Asym Id",
+          "type": "string"
+        },
+        "auth_asym_id": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "experimental_methods": {
+          "items": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "title": "Experimental Methods",
+          "type": "array"
+        },
+        "resolutions": {
+          "items": {
+            "$ref": "#/$defs/ResolutionDTO"
+          },
+          "title": "Resolutions",
+          "type": "array"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "revision_date": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "assembly_ids": {
+          "$ref": "#/$defs/ReferencesDTO"
+        },
+        "polymer_sequence": {
+          "$ref": "#/$defs/MetadataDTO"
+        },
+        "mapped_coverage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CoverageDTO"
+            },
+            {
+              "$ref": "#/$defs/MetadataDTO"
+            }
+          ],
+          "title": "Mapped Coverage"
+        },
+        "citations": {
+          "$ref": "#/$defs/ReferencesDTO"
+        },
+        "source_receipt": {
+          "$ref": "#/$defs/ReceiptDTO"
+        },
+        "origin": {
+          "const": "experimental",
+          "title": "Origin",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "entry_id",
+        "entity_id",
+        "label_asym_id",
+        "auth_asym_id",
+        "experimental_methods",
+        "resolutions",
+        "source_revision",
+        "revision_date",
+        "assembly_ids",
+        "polymer_sequence",
+        "mapped_coverage",
+        "citations",
+        "source_receipt",
+        "origin"
+      ],
+      "title": "StructureSummaryDTO",
+      "type": "object"
+    }
+  },
+  "title": "NeuroFold NF-02 M1 HTTP contracts (not operational routes)"
+}

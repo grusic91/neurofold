@@ -174,6 +174,151 @@
         "value": null,
         "reason": "No molecular coordinates are present."
       }
+    },
+    {
+      "fixture_id": "biological-v1",
+      "path": "backend/tests/fixtures/biological-v1.json",
+      "generation_method": "Hand-specified synthetic reference ACDEFG, polymer ASDHG, six correspondence rows and fictional 44-byte diagnostic artifact descriptor, serialized through NF-02/NF-08 records.",
+      "expected_invariants": [
+        "All five mapping statuses and reference/polymer/author/coordinate identities remain distinct",
+        "Provider fixture receipts hash actual JSON bytes; molecular descriptor is a synthetic placeholder, not an import"
+      ],
+      "purpose": "Frozen biological/HTTP wire compatibility and explicit absence.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 39729,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "0e73545e9362444c87b112ea986eb1ad978109fd9ad9d28edbdc00776dc456e2"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      }
+    },
+    {
+      "fixture_id": "uniprot-synthetic-v1",
+      "path": "backend/tests/fixtures/uniprot-synthetic-v1.json",
+      "generation_method": "Hand-authored provider-shaped JSON with fictional accession, organism, gene and six-letter sequence; no retrieval.",
+      "expected_invariants": [
+        "Exact sequence length and independent sequence SHA-256",
+        "Versions and actual raw response fixture checksum retained separately"
+      ],
+      "purpose": "UniProt-shaped contract example, not live adapter compatibility.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 309,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "ad0ba2a6e2d3cafa94cfe2b3e31d68fc6d1ce00e26cff90b0e34ed92aa225cc6"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      }
+    },
+    {
+      "fixture_id": "rcsb-synthetic-v1",
+      "path": "backend/tests/fixtures/rcsb-synthetic-v1.json",
+      "generation_method": "Hand-authored small combined entry/entity/instance examples with fictional IDs and polymer; no retrieval or coordinates.",
+      "expected_invariants": [
+        "Label chain A differs from author chain X",
+        "Experimental-origin declaration and polymer sequence are retained with synthetic evidence"
+      ],
+      "purpose": "RCSB-shaped metadata example, not discovery/import acceptance.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 678,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "d925d0948c293a6318d521f3c4a9f9a623083df91688340c29553ac1a7a6e5e4"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      }
+    },
+    {
+      "fixture_id": "biological-inline",
+      "path": "backend/tests/test_biological.py",
+      "generation_method": "Inline independently specified negative mutations and assertions against frozen synthetic records.",
+      "expected_invariants": [
+        "Strict versions/types/hashes, gap and ambiguity rules",
+        "Synthetic evidence cannot be upgraded; missing maps remain explicit"
+      ],
+      "purpose": "Biological invariant, absence and immutability validation.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 16575,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "85299a5aff93bc8af47981ae6fdfed5d39759bc72e5357bdf931a49298f88179"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      }
+    },
+    {
+      "fixture_id": "biological-http-inline",
+      "path": "backend/tests/test_biological_api.py",
+      "generation_method": "Fixed-response test-only ASGI harness, inline placeholder bytes, malformed DTOs and synthetic error envelopes; no orchestration.",
+      "expected_invariants": [
+        "Production application remains health-only",
+        "201/Location, original placeholder bytes/checksum/size, bounded query fields and error/status shapes"
+      ],
+      "purpose": "All proposed route exchange shapes, request/response validation and schema compatibility.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 13069,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "22d2a216ce2ebff96dc0d47b688dadc50293c0707e3b621aeb5dbdc5b9116e3b"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No physical coordinates or numeric scientific results are present."
+      }
     }
   ]
 }

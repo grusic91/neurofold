@@ -2,7 +2,10 @@
 
 Implemented scope: NF-01 health/status behavior and NF-08 M1 shared contracts,
 plus offline guards, fixture integrity and frontend test infrastructure. NF-02
-has not started. A passing foundation is neither an integrated synthetic preview
+M1 adds [biological contracts](../biological-contracts.md), synthetic provider
+examples and a separate ASGI HTTP-contract harness; no operational lookup/import
+or live provider compatibility is claimed. A passing foundation is neither an
+integrated synthetic preview
 nor a real scientific MVP. [The matrix](test-matrix.md) separates implemented
 coverage from planned work; [scientific review](scientific-review.md) and the
 [evidence template](evidence-template.md) define later acceptance.
@@ -95,7 +98,8 @@ provider probe or scientific runtime is added at M1.
 ## Fixture policy and inventory
 
 [`fixtures.json`](fixtures.json) inventories the two existing frozen NF-08 JSON
-files and source files containing inline synthetic inputs/responses. Each record
+files, NF-02 synthetic provider/biological files and source files containing
+inline synthetic inputs/responses. Each record
 includes ID, location, generation method, invariants, purpose, author/license,
 evidence, raw byte size/SHA-256, units and coordinate convention. Source-backed
 records hash the whole source file; update the inventory after editing a source
@@ -127,5 +131,7 @@ For a new fixture:
    compatibility review; do not rewrite expected outputs to conceal a failure.
 
 All present fixtures are authored for NeuroFold under Apache-2.0. This does not
-relicense future external source data. Analytic numeric/coordinate fixtures and
-provider response fixtures will be added with the features that consume them.
+relicense future external source data. NF-02 provider-shaped examples are
+authored synthetic records, not captured
+responses. Analytic coordinate fixtures and actual adapter transport behavior
+remain future work. See [NF-02 M1 evidence](nf02-m1-evidence.md).

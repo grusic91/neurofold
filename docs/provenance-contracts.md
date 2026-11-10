@@ -153,7 +153,7 @@ contracts do not sanitize arbitrary text automatically.
 
 | Consumer | Required use and remaining producer work |
 | --- | --- |
-| NF-02 | Capture exact sequence/raw hashes, source receipts, immutable references and experimental descriptors; implement biological adapters/storage separately. |
+| NF-02 | M1 reuses receipts, rights, absence and hash domains in [biological records/DTOs](biological-contracts.md). Actual source capture, adapters, imports and storage remain M2–M4. |
 | NF-03 | Hash the specified substitution document; keep creation receipts outside identity; verify mutated sequence hashes. Hypothesis interpretation stays separate from evidence. |
 | NF-04 | Resolve spec defaults; identify exact auxiliary artifacts or reasoned absence; define complete execution/model/weight/environment schemas and successful publication validation. Synthetic model/weights/GPU are not applicable with reasons, while fake adapter/software identity remains required. |
 | NF-05 | Consume registered bytes/evidence; expose absent confidence/mappings; viewing never changes scientific identity or raw coordinates. |

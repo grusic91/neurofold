@@ -1,4 +1,4 @@
-# Architecture: NF-01, NF-08 M1 and NF-09 M1
+# Architecture: NF-01, NF-08 M1, NF-09 M1 and NF-02 M1
 
 ## Current implementation
 
@@ -100,3 +100,21 @@ This crosses the upstream tools' minimatch 10 range, so validate lint configurat
 after updates and remove the override when the tools adopt the patched major.
 Node 24 meets the patched package's runtime requirement. No application runtime
 dependency relies on this override.
+
+## Biological contract foundation (NF-02 M1)
+
+`core/biological.py` owns frozen reference/structure records, residue identity and
+five mapping states, bounded page records and catalog/repository protocols. It
+reuses NF-08 receipts, rights, hashes and explicit Metadata absence; core remains
+standard-library-only. `api/biological.py` owns Pydantic request/response DTOs and
+conversion/response integrity checks. A frozen HTTP JSON Schema documents the
+exchange shape without changing the NF-08 schema. No dependency changes occur.
+
+The [biological guide](biological-contracts.md) specifies numbering, identity,
+coverage, absence, protocol/error semantics and the contract-only scope. The
+[source licensing inventory](source-licensing.md) records independently reviewed
+UniProt/RCSB terms and attribution. All fixtures are authored synthetic records.
+Tests use a separate ASGI contract harness for planned `/v1` operations; the
+production application remains health-only. No live clients, lookup, cache,
+imports, parsing/alignment, filesystem repositories or scientific runtime are
+implemented. These remain NF-02 M2–M4, with separate acceptance evidence.
