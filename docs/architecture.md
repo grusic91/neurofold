@@ -1,0 +1,76 @@
+# Architecture: NF-01
+
+## Current implementation
+
+The backend is a Python 3.12+ package with a `src` layout and a FastAPI application
+factory. `GET /health` returns HTTP 200 with `{"status":"ok"}`. It has no network,
+filesystem, database, GPU, or model dependency. HTTP response validation stays in
+`api/`; core types use only the Python standard library.
+
+The frontend is React/TypeScript with Vite, strict TypeScript checking, and ESLint.
+It requests `/api/health`, validates the response, and shows checking, online, or
+unavailable status. Requests are aborted on unmount and time out after five seconds.
+Vite proxies `/api/*` to the API during development; production routing is deferred.
+Mol* is an intended visualization integration, with no dependency or viewer yet.
+
+## Prediction boundary
+
+`core/prediction.py` defines immutable request/result dataclasses and a structural
+`PredictionAdapter` protocol. The initial request carries a single protein
+sequence and explicit seed. The result identifies a structure artifact and its
+provenance manifest. This is an initial Python interface, not a prediction API,
+validated input schema, or implemented inference service. Complexes, ligands,
+model-specific parameters, and a manifest schema require later design.
+
+Future orchestration will accept an adapter implementing this protocol. A Boltz-2
+adapter will translate domain inputs to model inputs, execute in an appropriate
+runtime, and translate outputs back into artifact references. Core must never
+import concrete adapters. Adapters must not use FastAPI request/response types.
+Optional runtime imports must occur only when explicitly selecting an adapter.
+The API must remain startable without scientific packages or weights installed.
+
+No model adapter, adapter registry, job scheduler, persistence layer, authentication,
+or inference endpoint is introduced in NF-01. Long-running GPU inference should
+eventually execute outside HTTP request handling; the execution mechanism remains
+an explicit future decision rather than an implicit API dependency.
+
+## Environments and reproducibility
+
+Local development targets macOS Apple Silicon using ordinary CPU-only Python and
+Node environments. Docker development uses Linux images compatible with host
+architecture. Future NVIDIA CUDA inference needs a separate Linux image,
+dependency set, and hardware validation; it must not inflate the API base image.
+
+Both ecosystems commit dependency lockfiles. CI uses locked installs; GitHub
+Actions are pinned to commits and uv is version-pinned. The Python build backend
+is constrained separately in `pyproject.toml`; its isolated build dependencies are
+not part of the runtime lock. Base image tags track updates and are not immutable
+digests. This foundation does not yet provide a fully immutable scientific runtime.
+
+Before producing scientific results, version the provenance format and record
+input hashes/sources, preprocessing, model/adapter versions, weight checksums,
+parameters, seeds, code revision, dependency locks, runtime/container identity,
+hardware, and CUDA versions. Preserve raw outputs and document nondeterminism.
+Define confidence metrics and validation criteria before making biological claims.
+The current adapter interface names a provenance artifact; no writer exists yet.
+
+## Validation boundaries
+
+Backend tests exercise HTTP behavior and verify that core imports with
+site-packages disabled. They require no GPU, weights, external services, or data.
+Frontend lint, type checking, and a production build validate the scaffold;
+component/browser behavior tests remain work for future interactive features.
+Container CI checks both services and Vite proxy connectivity on Linux. Neither
+health checks nor these foundation checks establish prediction accuracy or
+scientific validity.
+
+## Frontend tooling compatibility
+
+TypeScript is held on 6.0 while `typescript-eslint` supports versions below 6.1;
+the current Vite scaffold's TypeScript 7 is outside that supported range.
+An npm override selects `minimatch` 11.0.1+ for the lint toolchain to address
+[GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249).
+This crosses the upstream tools' minimatch 10 range, so validate lint configuration
+after updates and remove the override when the tools adopt the patched major.
+Node 24 meets the patched package's runtime requirement. No application runtime
+dependency relies on this override.
