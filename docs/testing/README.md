@@ -13,6 +13,14 @@ coverage from planned work; [scientific review](scientific-review.md) and the
 [evidence template](evidence-template.md) define later acceptance.
 The [M1 acceptance record](nf09-m1-evidence.md) records local results and gaps.
 
+[NF-03 M1](../variants.md) adds pure substitution/difference behavior under the
+same offline guards. [Its evidence](nf03-m1-evidence.md) covers strict notation,
+constructor/codec types, all twenty residues, generated exact one-change cases,
+whole-reference alphabet/error precedence, immutable reference/hash consistency,
+and a separately authored 142-residue numbering example with shorter hypothetical
+structural coverage. No live artifacts, structure/map, provider or model runtime
+is required. M2 persistence/identity and M3 HTTP tests remain future work.
+
 ## Commands and compatibility
 
 From `backend/`, using Python 3.12 (CI also uses 3.13):

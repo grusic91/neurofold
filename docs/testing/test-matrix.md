@@ -1,14 +1,14 @@
 # Test matrix
 
-Status covers NF-09 M1 and NF-02 M1–M4 integration. “Planned” means no
-implementation or acceptance
-evidence exists yet. Mandatory PR CI uses locked installs, Python 3.12/3.13 and
+Status covers NF-09 M1, NF-02 M1–M4 integration and NF-03 M1 pure domain.
+“Planned” means no implementation or acceptance evidence exists yet.
+Mandatory PR CI uses locked installs, Python 3.12/3.13 and
 Node 24. Backend coverage remains at least 90%; lint/types/build are additional
 checks and never replace behavior tests.
 
 | Layer / owner | Implemented now | Required additions / negative paths | Execution and gate |
 | --- | --- | --- | --- |
-| Pure core / NF-08 M1 | Canonical byte/hash golden vectors, immutability, strict wire/schema versions, explicit absence, evidence/lineage, failed/cancelled skeletons; all core imports without site-packages | NF-03 substitution syntax, bounds, reference mismatch, exact one-change/hash invariants; NF-04 lifecycle; NF-06 selections | `uv run --locked pytest`; offline CPU; mandatory |
+| Pure core / NF-08 M1, NF-03 M1 | Canonical byte/hash golden vectors, immutability, strict wire/schema versions, explicit absence, evidence/lineage, failed/cancelled skeletons; all core imports without site-packages; strict bounded substitutions, direct/codec invariants, entire reference alphabet/error precedence, exact one-change/hash construction, ordered zero/multiple differences and unequal-length rejection, full pinned numbering independent of structure | NF-03 M2 identity/storage and M3 HTTP contracts; NF-04 lifecycle; NF-06 selections | `uv run --locked pytest`; offline CPU; mandatory |
 | API / NF-01, NF-02 M1 | `/health` body/headers/OpenAPI, 405, unknown-route 404; in-process ASGI under network guard; separate NF-02 harness for eight proposed operations, DTO/frozen schema, envelope/status shapes, 201/Location, placeholder bytes/checksums and response validation | M2 implements Python lookup/source-change/storage behavior; operational `/v1` routes, HTTP translation and streaming remain M4; M3 imports are Python services; later idempotency/cancellation conflicts | Backend pytest; mandatory as each API lands |
 | Adapter contracts / NF-02 onward | Core catalog/repository protocols, authored provider-shaped JSON and NF-08 receipt/hash checks; M2 UniProt/storage implementations with fake transports/clocks and socket/DNS guards | M2 covers pagination, malformed upstream, retry/budget/size/concurrency, cache/304 and immutable offline pinning; M3 covers experimental-only RCSB/partial discovery, revisions/304, bounded CIF and residue mapping | Offline injected transports/temp files; backend pytest mandatory |
 | Biological contracts / NF-02 M1 | Frozen reference/structure/map records; canonical/raw/sequence hash separation; strict versions; five mapping states, author/label distinctions, insertion/negative numbering, gaps/tags, alternate selection identity, missing maps/rights/metadata | M2 tests immutable full-reference snapshots; M3 covers actual-reference map consistency, experimental origin/import, author/label/coordinate identities and all five states; no biological inference from fixtures | Backend pytest; offline CPU; mandatory |

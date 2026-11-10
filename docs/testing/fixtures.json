@@ -725,6 +725,37 @@
         "value": null,
         "reason": "Source fixture mutations; original authored CIF remains unchanged."
       }
+    },
+    {
+      "fixture_id": "variants-inline",
+      "path": "backend/tests/test_variants.py",
+      "generation_method": "Independently authored MACAG/A4V/MACVG literals, twenty-residue combinations, deterministic short sequences, strict invalid inputs, and M plus seven alphabet repeats plus A (142 residues); frozen synthetic metadata reused with a separate exact inline-byte receipt. No retrieval.",
+      "expected_invariants": [
+        "Complete pinned reference numbering including initial methionine, independent of 141-position hypothetical structural coverage",
+        "Exact single requested change, unchanged length and independent sequence-byte hashes with original snapshot/provenance preserved",
+        "Strict notation/types/versions/codecs; whole-reference alphabet before bounds, mismatch and no-op errors with complete ordered details",
+        "Immutable ordered zero/one/multiple differences; unequal lengths fail without alignment"
+      ],
+      "purpose": "NF-03 M1 pure sequence-hypothesis behavior and adversarial domain validation.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 20894,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "2aacd203bbe65078ca3eb892ae0e636b2f5544a1ddb1bce8d9886a094aa3df5d"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Sequence positions are 1-based indices, not physical measurements."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No molecular coordinates; hypothetical polymer coverage does not number the pinned reference."
+      }
     }
   ]
 }

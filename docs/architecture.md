@@ -1,4 +1,4 @@
-# Architecture: NF-01, NF-08 M1, NF-09 M1 and NF-02 M1–M4
+# Architecture: NF-01, NF-08 M1, NF-09 M1, NF-02 M1–M4 and NF-03 M1
 
 ## Current implementation
 
@@ -14,6 +14,24 @@ with explicit candidate/organism/model/assembly selections, runtime DTO readers,
 retained audits, accessible mapping tables and registered original downloads. Requests are aborted on unmount and time out after five seconds.
 Vite proxies `/api/*` to the API during development; production routing is deferred.
 Mol* is an intended visualization integration, with no dependency or viewer yet.
+
+## Pure substitution domain (NF-03 M1)
+
+`core/variants.py` provides frozen `Substitution`, `SequenceDifference` and
+`SubstitutionResult` records and pure parse/validate/apply/difference functions.
+Strict bounded NeuroFold notation and exact positive safe-integer positions are
+validated at construction/codec boundaries. Whole-reference alphabet validation
+precedes bounds, reference match and no-op checks. Typed domain errors retain
+stable codes/details without HTTP dependencies.
+
+Results retain the entire immutable `ReferenceSnapshot`, using its actual nested
+`protein.sequence` and sequence/source identities. Positions include the initial
+methionine and ignore structural coverage/numbering. Exact construction preserves
+length and changes one residue; hashes use NF-08 `sequence_sha256`. Hypothesis
+interpretation stays separate from evidence labels. See [domain rules](variants.md).
+M1 adds no application service, repository, ID, storage adapter, HTTP schema/route
+or frontend. M2 defines the persisted `VariantDefinition` and identity/storage;
+M3 owns HTTP translation. Existing frozen NF-02/NF-08 contracts stay unchanged.
 
 ## Prediction boundary
 

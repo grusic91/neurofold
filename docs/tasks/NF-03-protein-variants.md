@@ -1,6 +1,8 @@
 # NF-03 — Protein Variant Management
 
-Status: proposed. Parent: [NF-EPIC-001](../EPIC.md).
+Status: **M1 implemented**; M2 identity/storage and M3 HTTP integration proposed.
+Parent: [NF-EPIC-001](../EPIC.md). See [M1 domain decisions](../variants.md) and
+[M1 evidence](../testing/nf03-m1-evidence.md).
 
 ## 1. Objective and scientific motivation
 
@@ -35,8 +37,8 @@ Use frozen standard-library dataclasses in `core/variants.py` and pure functions
 `apply_substitution(reference, substitution)`, and `sequence_difference(...)`.
 Return typed domain errors; no HTTP exceptions or source fetches in core.
 
-An application `VariantService` loads the immutable reference through its
-repository, validates and constructs the variant, then atomically writes a
+In future M2, an application `VariantService` loads the immutable reference through
+its repository, validates and constructs the variant, then atomically writes a
 content-addressed record through an injected `VariantRepository`. The filesystem
 adapter stores records under ignored `data/`; fake repositories support tests.
 API handlers perform schema conversion only. No new database or queue is needed.
@@ -48,23 +50,40 @@ API handlers perform schema conversion only. No new database or queue is needed.
 `ACDEFGHIKLMNPQRSTVWY`. For this MVP, strict ASCII uppercase notation matches
 `^([ACDEFGHIKLMNPQRSTVWY])([1-9][0-9]*)([ACDEFGHIKLMNPQRSTVWY])$`.
 Reject whitespace, lowercase, leading zeros, signs, decimal positions and Unicode
-lookalikes with actionable 422 errors. Do not silently reinterpret notation.
+lookalikes. M1 raises typed domain errors; M3 will translate them to actionable
+422 responses. Do not silently reinterpret notation. Use full-string matching,
+including rejection of trailing newlines. Bound input to 18 characters before
+integer conversion; positions must be exact positive integers through NF-08's
+maximum safe integer, 9007199254740991. Bool and implicit conversions are rejected
+by direct construction and supported codecs as well as notation parsing.
 
 Validation order:
 
 1. Parse syntax with a bounded notation length; reject noncanonical symbols.
-2. Require `1 <= position <= len(reference.sequence)`.
-3. Require reference residue at Python index `position - 1` to equal `reference_aa`.
-4. Require `reference_aa != alternate_aa`.
-5. Construct `reference[:position-1] + alternate_aa + reference[position:]`.
+2. Check the entire pinned `reference.protein.sequence` for noncanonical residues.
+   Unsupported alphabet takes precedence over bounds, mismatch and no-op checks;
+   report every affected 1-based position/symbol in increasing order.
+3. Require `1 <= position <= len(reference.protein.sequence)`.
+4. Require reference residue at Python index `position - 1` to equal `reference_aa`.
+5. Require `reference_aa != alternate_aa` (mismatch takes precedence over no-op).
+6. Construct `reference[:position-1] + alternate_aa + reference[position:]`.
    Assert unchanged length and exactly one differing position before persisting.
 
 Reference snapshots containing noncanonical residues remain inspectable, but MVP
 variant creation returns `UNSUPPORTED_REFERENCE_ALPHABET` with affected positions;
 it does not replace unknown residues. Document this conservative restriction.
 
-`VariantDefinition` includes schema version, content-derived variant ID,
-reference ID/accession/taxon/sequence version/hash, the structured substitution,
+M1 returns a frozen `SubstitutionResult` retaining the complete pinned snapshot,
+substitution, exact sequence and its NF-08 sequence hash, an ordered immutable
+difference tuple and `interpretation_kind="hypothesis"`. It has no variant ID or
+persisted schema. `sequence_difference` returns zero/all exact differences for
+equal-length strings and fails explicitly on unequal lengths; applying a
+substitution separately enforces exactly one requested change. See the
+[domain guide](../variants.md) for signatures, strict codecs and additional narrow
+input/difference/result failure codes.
+
+The proposed M2 `VariantDefinition` includes schema version, content-derived
+variant ID, reference ID/accession/taxon/sequence version/hash, the substitution,
 canonical notation, mutated sequence/hash, sequence length and interpretation kind
 `hypothesis` for the proposed substitution. This interpretation is separate from
 the shared `experimental`/`predicted`/`synthetic` evidence kinds of structure
@@ -91,17 +110,18 @@ synthetic reference `MACAG`, the mutated sequence is `MACVG`, and the difference
 is `{position: 4, reference_aa: "A", alternate_aa: "V"}`. Placeholder hashes/IDs
 are illustrative, not actual stored records.
 
-Errors follow the epic envelope: 404 `REFERENCE_NOT_FOUND`; 409
+Proposed M3 errors follow the epic envelope: 404 `REFERENCE_NOT_FOUND`; 409
 `REFERENCE_HASH_MISMATCH`; 422 `INVALID_NOTATION`, `POSITION_OUT_OF_RANGE`,
 `REFERENCE_MISMATCH`, `NO_OP_SUBSTITUTION`, or `UNSUPPORTED_REFERENCE_ALPHABET`.
-Reference mismatch details include expected/observed residue and the 1-based
-position. No `PATCH` endpoint: editing creates a new definition. Do not persist
+M1 reference mismatch details explicitly name `requested_reference_aa`,
+`actual_reference_aa` and the 1-based `position`; M3 owns HTTP translation.
+No `PATCH` endpoint: editing creates a new definition. Do not persist
 invalid records, partially mutated sequences or silently refreshed references.
 
 ## 6. Implementation milestones
 
-1. **M1 — Pure domain:** records, syntax/position/alphabet validation, construction,
-   difference output, error codes and synthetic tests.
+1. **M1 — Pure domain (complete):** records, syntax/position/alphabet validation,
+   construction, difference output, error codes and synthetic tests.
 2. **M2 — Identity/storage:** canonical content identity, atomic immutable writes,
    integrity verification, duplicate semantics and reference linkage.
 3. **M3 — HTTP integration:** request/response schemas, routes, OpenAPI examples,
@@ -138,7 +158,9 @@ for preview/error display and confirmation of the inspected reference.
 
 Number positions against the entire pinned canonical sequence, including its
 initial methionine. Do not renumber to match a publication, mature peptide, PDB
-author numbering or processing event. A familiar disease-associated notation may
+author/label numbering, coordinate count, alignment or processing event. No
+structure/map is required; unknown/absent coordinates do not remove reference
+positions. A familiar disease-associated notation may
 use a different convention: the UI must show the actual reference residue and
 nearby sequence, and explain a mismatch rather than force acceptance.
 
