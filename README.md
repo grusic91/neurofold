@@ -140,7 +140,7 @@ From `backend/`, after `uv sync --locked`:
 ```sh
 uv run --locked ruff check .
 uv run --locked ruff format --check .
-uv run --locked mypy src tests
+uv run --locked mypy src tests scripts
 uv run --locked pytest
 ```
 
@@ -179,6 +179,10 @@ See the [test foundation guide](docs/testing/README.md),
 GitHub Actions runs these checks on pushes and pull requests, with Python 3.12
 and 3.13 and Node 24. A separate job builds and smoke-tests the development
 containers and proxy on Linux. It does not publish images or deploy anything.
+See [operational checks](docs/testing/operational-checks.md) for a disposable Linux
+runner, container retention checks and the separate explicitly enabled public
+provider probe. [Executed evidence](docs/testing/nf02-operational-evidence.md)
+records the bounded compatibility scope; independent scientific review remains open.
 
 For dependency changes, edit the Python manifest and run `uv lock` / `uv sync`,
 or use `npm install <package>` in `frontend/`. Review and commit the corresponding

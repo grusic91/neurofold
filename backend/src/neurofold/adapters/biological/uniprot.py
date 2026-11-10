@@ -62,7 +62,7 @@ from neurofold.core.provenance import (
 )
 
 BASE = "https://rest.uniprot.org/uniprotkb/"
-VERSION = "uniprot-rest/2"
+VERSION = "uniprot-rest/3"
 CACHE_VERSION = VERSION + ":neurofold-biological/1:neurofold-research/1"
 LICENSE = "https://creativecommons.org/licenses/by/4.0/"
 # Shared across instances in this process; workers must not multiply this limit.
@@ -267,7 +267,10 @@ class UniProtCatalog:
                 and cached.expires > self.clock.monotonic()
             ):
                 return cached, 0, {}, self.clock.stamp()
-            headers = {"accept": "application/json", "accept-encoding": "gzip"}
+            # Prefer identity: observed UniProt gzip negotiation can wrap an
+            # already-compressed entity without declaring the second layer.
+            # Never guess/decode an undeclared layer; retain exact received bytes.
+            headers = {"accept": "application/json", "accept-encoding": "identity"}
             if cached is not None and cached.receipt is not None:
                 for key in ("etag", "last-modified"):
                     if key in cached.headers:

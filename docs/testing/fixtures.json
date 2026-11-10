@@ -622,11 +622,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 3354,
+      "byte_size": 3619,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "c9289c5b6eb65f2f90bf0640890f78fe6f71209b226f57f59ae9383d4414abd9"
+        "sha256": "e2c9010db04fe3dfe6d1a74974faafc3a864845feb3fb3030781bb892302dacc"
       },
       "units": {
         "state": "not_applicable",
@@ -666,6 +666,64 @@
         "state": "not_applicable",
         "value": null,
         "reason": "Source assertions; original authored CIF coordinates remain unchanged."
+      }
+    },
+    {
+      "fixture_id": "provider-compatibility-regressions",
+      "path": "backend/tests/test_provider_compatibility.py",
+      "generation_method": "Authored mutations of existing six-residue JSON/CIF fixtures; injected synthetic transports only.",
+      "expected_invariants": [
+        "Authored nested-gzip negotiation and entry-versus-CCD optional-parent regressions; original raw bytes and unknown-parent ambiguity preserved.",
+        "No downloaded biological records or structures in test source."
+      ],
+      "purpose": "Authored nested-gzip negotiation and entry-versus-CCD optional-parent regressions; original raw bytes and unknown-parent ambiguity preserved.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 5311,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "640a0254ed51e05c46a7c87398d9b62da4ca355f5a50e2b77b6401f04469f499"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations; original authored CIF remains unchanged."
+      }
+    },
+    {
+      "fixture_id": "live-probe-offline-tests",
+      "path": "backend/tests/test_live_probe.py",
+      "generation_method": "Authored mutations of existing six-residue JSON/CIF fixtures; injected synthetic transports only.",
+      "expected_invariants": [
+        "Opt-in safety, synthetic end-to-end probe, retained inventory and bounded failed request recording; no live provider use.",
+        "No downloaded biological records or structures in test source."
+      ],
+      "purpose": "Opt-in safety, synthetic end-to-end probe, retained inventory and bounded failed request recording; no live provider use.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 3870,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "f78babd4b523543f5a82a747cdfed8bb5cb1bc22ff95c66ff5819630d46308b4"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations; physical CIF conventions are inventoried separately."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Source fixture mutations; original authored CIF remains unchanged."
       }
     }
   ]

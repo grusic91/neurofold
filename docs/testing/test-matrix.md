@@ -39,10 +39,13 @@ remains a separate M4/M5 gate even after the synthetic workflow passes.
 | Blocking execution | Responsive health, zero-queue admission, timeout/cancellation accounting, eventual recovery/drain, mutation uncertainty and completion logging | Work-count limits; threads/native parsing cannot be preempted; one process |
 | Frontend/backend contract | Guarded Python child produces actual route/service/parser/archive responses consumed by TypeScript runtime readers and UI tests | In-process backend; no listening server/proxy in this layer |
 | Component/browser | Explicit disambiguation and pagination, inspected hash/revision, model/assembly entry, partial/unavailable/error recovery, retained IDs, stale aborts, ambiguity/missingness, coordinate text and original downloads | Browser HTTP is mocked; no viewer/WebGL rendering or scientific claims |
-| Actual local browser/API | Unmocked Chromium -> real Vite proxy -> production routes -> injected synthetic services/parser/archive; original gzip headers/bytes/hash and retained reopening | macOS local HTTP acceptance; no live providers or Linux claim |
-| Containers/proxy | Named-volume ownership/configuration, explicit offline composition and restart/original-byte smoke wired in CI; in-process profile test | Linux/daemon execution remains open until separately observed; see M4 evidence |
+| Actual local browser/API | Unmocked Chromium -> real Vite proxy -> production routes -> injected synthetic services/parser/archive; original gzip headers/bytes/hash and retained reopening | Passed on macOS and Linux ARM64; no live providers or scientific claim |
+| Containers/proxy | Non-root Linux ARM64 service builds, health/page/proxy, biological/original-byte smoke and named-volume reads after forced backend recreation | Passed on isolated development stack; no production or other-architecture claim |
+| Explicit live probe | Public P69905 / 1A3N entity 1, chain A, model 1, asymmetric unit; lookup/pin/discovery/import/audits/original and provider-forbidden retained reopening | Opt-in separate command; one source pair and page, not biological accuracy or general compatibility |
 
 The earlier rows describe historical foundation ownership. M4 supersedes the
 health-only/operational-route/UI gaps in those rows; NF-05/NF-06, real inference,
-live probes, complete scientific manifests/exports and independent scientific
+broader live compatibility, complete scientific manifests/exports and independent scientific
 release gates remain open. Frontend performs no scientific canonical hashing.
+See [operational commands](operational-checks.md) and
+[executed evidence](nf02-operational-evidence.md) for versions, artifacts and limits.

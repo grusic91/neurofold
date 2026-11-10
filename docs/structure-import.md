@@ -218,7 +218,15 @@ Local parsing/mapping/serialization/fsync remain outside network deadlines.
 
 Offline tests and exact local acceptance identities are in
 [M3 evidence](testing/nf02-m3-evidence.md). The official entry/entity/instance
-schemas were reviewed as documentation only; neither live provider compatibility
-nor independent scientific approval is claimed. Selected version/chemistry and
+schemas were reviewed as documentation only at M3. The later
+[operational probe](testing/nf02-operational-evidence.md) exercises one public pair;
+independent scientific approval remains open. Current adapter/parser identities
+are `rcsb-rest/2`, `neurofold-mmcif/2` and unchanged
+`affine-semiglobal-consensus/1`. The parser accepts entries without the optional
+CCD parent column, recording `component_parent_column` and per-modification
+`component_parents` metadata explicitly. Missing parents never establish a known
+residue or unique correspondence; existing `modified_residues` item fields remain
+compatible. RCSB `chemical/x-cif` responses still undergo the full mmCIF identity,
+revision and bounded parsing checks. Selected version/chemistry and
 resource profiles intentionally reject unsupported cases; expanding support needs
 new fixtures, reviewed policies and versioned method changes.

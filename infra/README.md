@@ -41,3 +41,5 @@ volumes need compatible ownership. Normal `docker compose down` retains records;
 See [configuration and offline smoke commands](../docs/integration.md).
 `compose.offline.yaml` is only for deterministic authored-fixture acceptance;
 normal Compose uses HTTPX and contacts providers only on requested operations.
+The [operational check guide](../docs/testing/operational-checks.md) also documents
+the disposable locked Linux runner and opt-in provider probe.

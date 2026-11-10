@@ -8,9 +8,14 @@ from pathlib import Path
 from typing import Any
 
 
-def call(path: str, body: dict[str, Any] | None = None) -> tuple[Any, Any]:
+def call(
+    path: str,
+    body: dict[str, Any] | None = None,
+    *,
+    base_url: str = "http://127.0.0.1:5173/api",
+) -> tuple[Any, Any]:
     request = urllib.request.Request(
-        "http://127.0.0.1:5173/api" + path,
+        base_url + path,
         data=json.dumps(body).encode() if body else None,
         headers={"Content-Type": "application/json"} if body else {},
     )
@@ -23,11 +28,16 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=["create", "read"])
     parser.add_argument("records", type=Path)
+    parser.add_argument("--base-url", default="http://127.0.0.1:5173/api")
     args = parser.parse_args()
-    assert call("/health")[0] == {"status": "ok"}
+
+    def invoke(path: str, body: dict[str, Any] | None = None) -> tuple[Any, Any]:
+        return call(path, body, base_url=args.base_url)
+
+    assert invoke("/health")[0] == {"status": "ok"}
     if args.mode == "create":
-        protein, _ = call("/v1/proteins/P00001")
-        reference, headers = call(
+        protein, _ = invoke("/v1/proteins/P00001")
+        reference, headers = invoke(
             "/v1/references",
             {
                 "accession": "P00001",
@@ -35,9 +45,9 @@ def main() -> None:
             },
         )
         assert headers["Location"] == "/v1/references/" + reference["reference_id"]
-        page, _ = call(headers["Location"] + "/structures")
+        page, _ = invoke(headers["Location"] + "/structures")
         selected = page["items"][0]
-        structure, headers = call(
+        structure, headers = invoke(
             "/v1/structures",
             {
                 "reference_id": reference["reference_id"],
@@ -59,20 +69,20 @@ def main() -> None:
         )
     saved = json.loads(args.records.read_text())
     assert (
-        call("/v1/references/" + saved["reference"]["reference_id"])[0]
+        invoke("/v1/references/" + saved["reference"]["reference_id"])[0]
         == saved["reference"]
     )
     structure = saved["structure"]
     assert (
-        call("/v1/structures/" + structure["descriptor"]["structure_id"])[0]
+        invoke("/v1/structures/" + structure["descriptor"]["structure_id"])[0]
         == structure
     )
-    audit, _ = call(
+    audit, _ = invoke(
         "/v1/structures/" + structure["descriptor"]["structure_id"] + "/audit"
     )
     assert audit["parsing"]["transform_applied"] is False
     with urllib.request.urlopen(
-        "http://127.0.0.1:5173/api" + structure["artifact_url"], timeout=10
+        args.base_url + structure["artifact_url"], timeout=10
     ) as response:
         raw = response.read()
         assert "Content-Encoding" not in response.headers

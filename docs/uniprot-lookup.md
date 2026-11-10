@@ -1,5 +1,11 @@
 # UniProt lookup and immutable pinning — NF-02 M2
 
+The later [operational probe](testing/nf02-operational-evidence.md) validates one
+public UniProt/RCSB pair. Current `uniprot-rest/3` requests identity encoding after
+observing a misdeclared nested gzip response on the network path. The bounded
+single-gzip decoder remains strict when servers supply gzip; it does not guess
+undeclared extra layers. Source receipts retain original bytes and actual headers.
+
 Current integration: [NF-02 M4](integration.md) now exposes production routes,
 a frontend workflow and retained audit projections. Health-only statements below
 describe the original milestone boundary. Frozen v1 records/schemas are unchanged;

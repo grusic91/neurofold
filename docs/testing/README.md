@@ -190,7 +190,10 @@ The test covers pin/import, retained reopening and exact original gzip delivery
 through the proxy, including independent decoding/checksum checks. Required
 ordinary ASGI/unit tests retain their unchanged socket/DNS guards. This narrow
 local-server layer does not permit live-provider or external traffic and does
-not establish Linux/container or scientific acceptance.
+not itself establish Linux/container or scientific acceptance. The later
+[operational evidence](nf02-operational-evidence.md) records its Linux ARM64 run
+and separate container retention checks. [Operational commands](operational-checks.md)
+also document the explicitly enabled public probe; ordinary tests stay offline.
 
 The explicit local/container synthetic server also installs outbound-connection
 and DNS guards (`infra/testing/offline_server.py`), while allowing its incoming

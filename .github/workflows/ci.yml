@@ -36,7 +36,7 @@ jobs:
       - run: uv sync --locked
       - run: uv run --locked ruff check . ../infra/testing
       - run: uv run --locked ruff format --check . ../infra/testing
-      - run: uv run --locked mypy src tests ../infra/testing
+      - run: uv run --locked mypy src tests scripts ../infra/testing
       - run: uv run --locked pytest
 
   frontend:

@@ -8,8 +8,11 @@ Production biological routes and frontend workflow are operational; see
 [M4 integration/configuration](../integration.md) and [M4 evidence](../testing/nf02-m4-evidence.md). [M2 Python lookup/pinning](../uniprot-lookup.md)
 and [acceptance evidence](../testing/nf02-m2-evidence.md) are available.
 [M3 structures](../structure-import.md) and [M3 evidence](../testing/nf02-m3-evidence.md)
-cover Python discovery/import/mapping. Live-provider compatibility, Linux/container
-execution and scientific validation need independent evidence.
+cover Python discovery/import/mapping. Later [operational evidence](../testing/nf02-operational-evidence.md)
+records Linux ARM64 checks, container builds/retention and one explicit public
+provider pair. Broader compatibility and independent scientific validation remain
+open; [release gates](../testing/scientific-review.md) apply before accepting real
+prediction/comparison results.
 
 ## 1. Objective and scientific motivation
 

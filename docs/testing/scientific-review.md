@@ -5,6 +5,28 @@ comparison exists. No target panel, model version, weights, hardware limits or
 numerical tolerances are approved at M1. Record reviews with the
 [evidence template](evidence-template.md); unresolved requirements stay incomplete.
 
+## Release gates and current plan
+
+The NF-02 operational probe is deployment/upstream compatibility evidence only.
+Independent scientific validation remains **incomplete**. A domain reviewer and
+run operator are **unassigned**; appoint and record them before the relevant gate.
+No real prediction/comparison result may be accepted while its required gate is
+incomplete. The implementing agent cannot supply independent scientific sign-off.
+
+| Gate | Required review and acceptance evidence | Timing |
+| --- | --- | --- |
+| Biological foundation | Independent inspection of a predeclared public panel, canonical/isoform/taxon identities, source versions, experimental method/context, chain/model/copy selection, modifications/unknowns, insertion/gap/alternate-location handling and all mapping/coverage denominators. Include poorly covered/disordered cases and disagreement handling; retain an independently checked mapping/identity worksheet. | Before using imported structures/maps to accept real prediction or comparison results; revisit at NF-02 scientific release. |
+| NF-04 real prediction | Reviewer accepts panel and protocol before execution; verify model/weights/licenses, complete successful provenance, measured hardware limits, replicates and nondeterminism. Review all attempted outputs and uncertainty. | Before real prediction acceptance or release. |
+| NF-06 real comparison | Independently verify atom correspondences, declared fit/evaluation selections, transformations/units, analytic controls, numerical tolerances and coverage; assess applicability before interpreting differences. | Before real comparison acceptance or release. |
+| NF-08/NF-09 scientific release | Independent offline export verification, complete attempted-target inventory, reviewed interpretation/limitations, resolved comments and named dated decisions for every applicable gate. | Before scientific release; reopen on relevant input/method/runtime/schema changes. |
+
+For each gate, the operator assembles the protocol and immutable evidence, the
+independent domain reviewer records `pass`, `fail` or `incomplete` with reasons,
+and the release owner verifies that all required reviews are complete. Numerical
+tolerances and panel selection remain to be justified and approved; this plan
+does not invent thresholds or imply completed review. Pure NF-03 domain logic
+may proceed, but downstream acceptance remains subject to these gates.
+
 ## Before any real run
 
 Name a run operator and a domain reviewer, recording their roles, dates and any

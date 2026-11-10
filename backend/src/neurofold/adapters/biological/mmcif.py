@@ -268,11 +268,16 @@ class MmcifParser:
                 "Polymer numbering must be complete positive contiguous labels"
             )
         components = self._rows(
-            block, "_chem_comp", ("id", "mon_nstd_parent_comp_id"), optional=True
+            block,
+            "_chem_comp",
+            ("id", "mon_nstd_parent_comp_id"),
+            optional=True,
+            missing=("mon_nstd_parent_comp_id",),
         )
         parents = {r["id"]: r["mon_nstd_parent_comp_id"] for r in components}
         codes: list[str] = []
         modifications: list[dict[str, object]] = []
+        component_parents: list[dict[str, object]] = []
         for row in selected:
             component = row["mon_id"]
             parent = component if component in AMINO else parents.get(component, "?")
@@ -285,6 +290,19 @@ class MmcifParser:
                         "component": component,
                         "parent": parent,
                         "normalized": code,
+                    }
+                )
+                component_parents.append(
+                    {
+                        "label_seq_id": int(row["num"]),
+                        "component": component,
+                        "metadata": (
+                            metadata(parents[component], "component parent")
+                            if component in parents
+                            else absent(
+                                "Entry does not supply a local component parent"
+                            )
+                        ).to_dict(),
                     }
                 )
         sequence = "".join(codes)
@@ -528,7 +546,7 @@ class MmcifParser:
                 {
                     "parser": "gemmi",
                     "version": version,
-                    "profile": "neurofold-mmcif/1",
+                    "profile": "neurofold-mmcif/2",
                     "limits": vars(limits),
                     "coordinate_unit": "angstrom",
                     "coordinate_frame": "original-deposited-cartesian",
@@ -536,7 +554,15 @@ class MmcifParser:
                     "models": models,
                     "chains": chains,
                     "assemblies": assembly_details,
+                    "component_parent_column": (
+                        present(True)
+                        if block.find_values("_chem_comp.mon_nstd_parent_comp_id")
+                        else absent(
+                            "Entry does not supply optional component parent column"
+                        )
+                    ).to_dict(),
                     "modified_residues": modifications,
+                    "component_parents": component_parents,
                     "selected_residues": selected_details,
                     "atom_count": len(atoms),
                     "decompression": (

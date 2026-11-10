@@ -76,7 +76,7 @@ from neurofold.core.structures import (
     UnsupportedStructure,
 )
 
-VERSION = "rcsb-rest/1"
+VERSION = "rcsb-rest/2"
 BINDING = VERSION + ":neurofold-biological/1:neurofold-research/1:structure-import/1"
 DATA = "https://data.rcsb.org/rest/v1/core/"
 SEARCH = "https://search.rcsb.org/rcsbsearch/v2/query"
@@ -385,7 +385,12 @@ class RcsbCatalog:
                 response.headers.get("content-type", "").split(";")[0].lower()
             )
             if content_type not in (
-                {"chemical/x-mmcif", "text/plain", "application/octet-stream"}
+                {
+                    "chemical/x-mmcif",
+                    "chemical/x-cif",
+                    "text/plain",
+                    "application/octet-stream",
+                }
                 if url.endswith(".cif")
                 else {"application/json"}
             ):

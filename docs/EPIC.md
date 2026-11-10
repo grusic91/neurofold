@@ -6,8 +6,11 @@ integration are implemented. [M2 lookup/pinning](uniprot-lookup.md) and
 [M3 structure imports/maps](structure-import.md) are composed into operational
 biological routes and a frontend workflow by [M4 integration](integration.md).
 [M4 acceptance evidence](testing/nf02-m4-evidence.md) covers the local offline
-synthetic profile; Linux/container execution, live-provider compatibility and
-independent scientific validation remain open. Later milestones below remain
+synthetic profile. [Operational evidence](testing/nf02-operational-evidence.md)
+adds Linux ARM64 locked checks, development container execution/retention and one
+explicit public UniProt/RCSB pair. Broader upstream/platform compatibility and
+[independent scientific validation](testing/scientific-review.md) remain open.
+Later milestones below remain
 proposed. Original planning baseline: NF-01, inspected 2026-11-10.
 
 ## Objective and scientific motivation
@@ -44,7 +47,7 @@ names and packages for later tasks below remain proposed future work.
 - CI: locked uv/npm installs, Ruff, mypy strict, pytest with 90% coverage minimum,
   ESLint, TypeScript, frontend build, component/browser tests, local synthetic
   API/proxy integration and Linux container smoke configuration. See the M4
-  evidence for executed checks and remaining environment gates.
+  and operational evidence for executed checks and remaining scientific gates.
 - Milestone history: NF-02 M1 introduced frozen biological records, protocols,
   HTTP DTO/schema contracts, synthetic contract tests and a source licensing
   inventory. Production was intentionally health-only through M3: M2 added

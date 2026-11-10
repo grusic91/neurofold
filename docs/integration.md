@@ -179,7 +179,9 @@ python3 infra/testing/smoke.py read /tmp/neurofold-smoke-records.json
 This exercises representative biological routes, selections, exact original
 bytes, the browser proxy and retained volume after container recreation. Local in-process
 tests also exercise that composition but do not establish Linux/container
-execution. See [M4 evidence](testing/nf02-m4-evidence.md) for the actual results.
+execution. [M4 evidence](testing/nf02-m4-evidence.md) records historical local
+results; [operational evidence](testing/nf02-operational-evidence.md) records later
+Linux ARM64 execution, both service builds and verified named-volume retention.
 
 
 ## Actual local browser integration
@@ -193,8 +195,10 @@ bytes, verifies SHA-256/length/type/absence of Content-Encoding and independentl
 decodes them to the unchanged authored CIF. Only the exact local application
 HTTP/HMR origin is allowed; unmatched external traffic fails. This complements
 the socket-guarded ASGI exchange and mocked UI suites. It demonstrates local
-macOS proxy/application integration, not Linux/container execution, provider
-compatibility or scientific validity. CI runs it with the locked environments.
+proxy/application integration. It has passed on macOS and Linux ARM64, as recorded
+in the operational evidence; the separate container smoke verifies volume
+retention. It does not establish provider compatibility or scientific validity.
+CI runs it with the locked environments.
 
 
 Configuration bounds: `NEUROFOLD_WORKERS` defaults to 4 (1–8 supported),
