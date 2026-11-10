@@ -227,3 +227,47 @@ entry/instance requests); they are distinct from missing required fields in a
 malformed 200 body, which remain 502. Candidate-specific 404/failures produce a
 partial discovery page preserving usable candidates, rather than invalidating
 the page or pretending it is complete empty.
+
+
+## NF-03 M3 offline variant HTTP
+
+`POST /v1/variants` accepts exactly `{reference_id, expected_reference_sha256,
+notation}` with strict strings and no normalization. It returns the complete
+`neurofold-variant/1` definition: pinned metadata/hashes, structured/versioned
+substitution, canonical notation, exact sequence/hash/length, ordered 1-based
+differences and hypothesis interpretation. The HTTP projection has no wrapper
+or additional version. First publication returns 201; a verified identical
+repeat returns 200. Both include the same `Location: /v1/variants/{variant_id}`.
+GET of that resource verifies the entire retained graph every time, entirely
+offline. HTTP schema errors precede unchanged service/domain validation.
+
+The [variant HTTP contract](variants.md#m3-http-contract) specifies complete
+schemas, exact synthetic examples and error/status mappings. Unknown variants
+return 404 NOT_FOUND; known variants with damaged/missing dependencies return
+500 ARCHIVE_INTEGRITY. Creation distinguishes absent references (404), expected
+hash mismatch (409), domain validation (422), immutable conflict (409) and
+publication I/O uncertainty (503 ARCHIVE_PUBLICATION_FAILED). No update endpoint
+exists; unsupported methods use 405 HTTP_ERROR with Allow.
+
+Variant operations reuse lazy services, the shared archive and the same bounded
+executor as biological routes. Reference reads/verification and substantial
+DTO conversion/serialization run in admitted workers. No provider calls are made,
+even with unrelated catalogs configured. Health remains responsive while work
+blocks. Timeout/cancellation never frees capacity before actual completion;
+shutdown drains workers and completion/failure logging retains request correlation.
+
+Publication failures can happen after the atomic link; response timeout or caller
+cancellation can leave publication running. Mutation errors do not authorize
+automatic retries or assert rollback/absence. Publication I/O responses include
+an already derived recovery ID/URL as transient application metadata; timeout
+responses invent none. Verify a known ID or deliberately repeat the identical
+request. Unlike reference/import re-submission above, identical variant
+re-submission converges on the same immutable content identity. Never delete,
+overwrite or repair retained content to retry.
+
+Frontend variant interaction is not implemented. Structured fields support later
+NF-07 interaction without parsing notation in the browser. Existing biological
+contracts, source provenance, frozen schemas/fixtures and archive bytes remain
+unchanged. Prediction, comparison, export and independent scientific acceptance
+remain separate gates; a sequence hypothesis is no disease-effect claim.
+See [executed M3 evidence](testing/nf03-m3-evidence.md).

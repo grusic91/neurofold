@@ -12,10 +12,12 @@ from neurofold.adapters.biological.storage import FilesystemStore
 from neurofold.adapters.biological.structure_storage import FilesystemStructures
 from neurofold.adapters.biological.transport import HttpxTransport
 from neurofold.adapters.biological.uniprot import UniProtCatalog
+from neurofold.adapters.variant_storage import FilesystemVariants
 from neurofold.api.configuration import ConfigurationError, Settings
 from neurofold.application.biological import BiologicalService
 from neurofold.application.references import ReferenceService
 from neurofold.application.structures import StructureService
+from neurofold.application.variants import VariantService
 from neurofold.core.biological import ExperimentalStructureCatalog, ProteinCatalog
 from neurofold.core.lookup import PinReceipt
 from neurofold.core.provenance import ArtifactStore
@@ -33,6 +35,7 @@ class Services:
     structures: StructureService
     artifacts: ArtifactStore
     pins: PinAudits
+    variants: VariantService
 
     @property
     def biological(self) -> BiologicalService:
@@ -63,6 +66,7 @@ def compose(settings: Settings) -> Services:
         ),
         archive.artifact_store,
         archive,
+        VariantService(archive, FilesystemVariants(archive, archive)),
     )
 
 

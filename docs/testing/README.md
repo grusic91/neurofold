@@ -24,7 +24,12 @@ identity bytes/ID, expected-hash/reference resolution precedence, offline archiv
 round trips, synchronized thread/process duplicates, failed/abrupt publication,
 strict codecs, dependency damage and self-consistent checksum tampering with
 independent M1 derivation checks. Child processes deny sockets/DNS and run without
-site-packages. M3 HTTP tests remain future work.
+site-packages. [M3 evidence](nf03-m3-evidence.md) adds production POST/GET
+acceptance with real temporary archives, exact strict DTOs/OpenAPI, stable errors,
+offline reopening, deterministic overlapping duplicate publications, damaged
+dependencies, publication I/O phases and timeout/cancellation recovery. Worker
+admission, late outcomes, safe logging, serialization and shutdown draining are
+exercised under unchanged socket/DNS guards.
 
 ## Commands and compatibility
 

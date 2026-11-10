@@ -2,9 +2,9 @@
 
 Status: NF-01, NF-08 M1 shared [provenance contracts](provenance-contracts.md),
 NF-09 M1 [test foundation](testing/README.md), and NF-02 M1–M4 biological data
-integration, plus [NF-03 M1/M2 substitutions and identity/storage](variants.md),
+integration, plus [NF-03 M1–M3 substitutions, identity/storage and HTTP](variants.md),
 are implemented.
-NF-03 M3 HTTP integration remains proposed.
+NF-03 M3 HTTP integration is implemented; variant interaction remains NF-07 work.
 [M2 lookup/pinning](uniprot-lookup.md) and
 [M3 structure imports/maps](structure-import.md) are composed into operational
 biological routes and a frontend workflow by [M4 integration](integration.md).
@@ -38,7 +38,8 @@ names and packages for later tasks below remain proposed future work.
 
 - Backend: Python 3.12+, FastAPI application factory, the unchanged `GET /health`
   liveness contract, eight operational biological `/v1` routes and two retained
-  audit subresources. Injected application services use bounded blocking workers
+  audit subresources, plus NF-03 variant POST/GET. Injected application services
+  use bounded blocking workers
   and a shared immutable filesystem archive. `core/prediction.py` retains frozen
   `PredictionRequest(sequence, seed)`,
   `PredictionResult(structure_path, provenance_path)`, and a synchronous
@@ -56,18 +57,23 @@ names and packages for later tasks below remain proposed future work.
   inventory. Production was intentionally health-only through M3: M2 added
   UniProt lookup/pinning and M3 added experimental discovery, mmCIF import and
   explicit maps as Python services. M4 now composes these services into the
-  operational API/UI. The offline NF-03 M2 variant service is separate from HTTP.
+  operational API/UI. NF-03 M3 now exposes the offline M2 variant service through strict HTTP routes.
   There is no viewer, inference runtime,
   job system, database, authentication or export implementation.
 - NF-03 M1: frozen standard-library substitution/result/difference records,
   strict notation and whole-reference alphabet validation, exact sequence/hash
   construction and synthetic offline tests. Full pinned sequence numbering is
   independent of structural coverage. Results are sequence hypotheses; persisted
-  variant IDs/definitions are implemented by M2 below; HTTP routes remain M3.
+  variant IDs/definitions are implemented by M2 below and HTTP routes by M3.
 - NF-03 M2: versioned reference-aware variant IDs, expected sequence hash checks,
   injected offline service/repositories, checksummed atomic immutable publication,
   concurrent idempotency and complete load-time derivation/reference verification.
-  No creation timestamps enter definitions; HTTP/UI integration remains proposed.
+  No creation timestamps enter definitions. M3 adds HTTP integration; UI remains later work.
+- NF-03 M3: strict POST/GET, 201 winner / 200 verified duplicate with the same
+  usable Location, faithful versioned definition/differences, safe typed failures,
+  uncertainty recovery and bounded offline worker integration. See
+  [executed evidence](testing/nf03-m3-evidence.md); prediction/comparison/export and
+  independent scientific gates remain incomplete.
 
 Preserve the Apache-2.0 LICENSE and attribution. The remaining roadmap extends
 this implemented baseline; it does not imply completion of later task or
@@ -105,7 +111,7 @@ Record rejected inputs rather than silently approximating them.
 | Task | Deliverable | Dependencies |
 | --- | --- | --- |
 | [NF-02 Biological data](tasks/NF-02-biological-data.md) | UniProt/RCSB adapters, immutable reference snapshots and structure imports | NF-01; NF-08 M1 contracts |
-| [NF-03 Protein variants](tasks/NF-03-protein-variants.md) | M1 pure domain and M2 immutable identity/storage complete; M3 HTTP proposed | NF-02 snapshots; NF-08 M1 |
+| [NF-03 Protein variants](tasks/NF-03-protein-variants.md) | M1 pure domain, M2 immutable identity/storage and M3 HTTP complete; interaction later | NF-02 snapshots; NF-08 M1 |
 | [NF-04 Prediction engine](tasks/NF-04-prediction-engine.md) | Durable jobs, fake adapter, isolated Boltz-2 worker | NF-03; NF-08 M1 |
 | [NF-05 Molecular viewer](tasks/NF-05-molecular-viewer.md) | Mol* viewing, mapped selection and confidence display | NF-02 imports/mapping; NF-08 M1; NF-04 for predicted artifacts |
 | [NF-06 Structure comparison](tasks/NF-06-structure-comparison.md) | Explicit mapping, alignment and reproducible metrics | NF-03; NF-04; NF-08 M1; NF-05 for overlays |
@@ -207,7 +213,7 @@ design before exposure.
 ## Shared identifiers, schemas and HTTP conventions
 
 NF-02 biological `/v1` routes and their audit subresources are operational since
-M4; routes belonging to later tasks remain proposed. Browsers use `/api/v1`
+M4; NF-03 M3 adds operational variant POST/GET. Other later routes remain proposed. Browsers use `/api/v1`
 through existing development routing. `GET /health` retains its NF-01 liveness
 contract. Production must configure equivalent API routing before a deployed
 workflow is supported.

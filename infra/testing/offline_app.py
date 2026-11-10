@@ -19,10 +19,12 @@ from neurofold.adapters.biological.storage import FilesystemStore
 from neurofold.adapters.biological.structure_storage import FilesystemStructures
 from neurofold.adapters.biological.transport import Response
 from neurofold.adapters.biological.uniprot import UniProtCatalog
+from neurofold.adapters.variant_storage import FilesystemVariants
 from neurofold.api.composition import Services
 from neurofold.api.configuration import Settings
 from neurofold.application.references import ReferenceService
 from neurofold.application.structures import StructureService
+from neurofold.application.variants import VariantService
 from neurofold.core.provenance import EvidenceKind
 
 FIXTURES = Path(__file__).resolve().parents[2] / "backend/tests/fixtures"
@@ -159,4 +161,5 @@ def services(
         ),
         store.artifact_store,
         store,
+        VariantService(store, FilesystemVariants(store, store)),
     )

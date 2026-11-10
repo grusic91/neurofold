@@ -307,7 +307,7 @@
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "0051b9459bd6f8ab106b06443be8f30953df7db3fef1dcad8df8ed62e543a688"
+        "sha256": "e255365b8ccc0569b0fa9ffd9f54c00ec8d49028f4936be33ce86d186df6427f"
       },
       "units": {
         "state": "not_applicable",
@@ -423,7 +423,7 @@
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "b4ffd07bcc470d0e76a32c26f7bf537fc3793f2a6f258d1ea8015d204cf1b04b"
+        "sha256": "d4a2268152710bcbb292cd976fba47b16706e63f31ee1f8ee03329a8a2d4a695"
       },
       "units": {
         "state": "not_applicable",
@@ -593,11 +593,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 6162,
+      "byte_size": 6351,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "1558e6b61ba08a5b35faaa62b862d7d503cd1560728de161d0bdda68157b8704"
+        "sha256": "4f417cdc5ca1299b51f19e7bcc969eeb6a8ebd35afff4900530135f2fe997b55"
       },
       "units": {
         "state": "not_applicable",
@@ -786,6 +786,66 @@
         "state": "not_applicable",
         "value": null,
         "reason": "No molecular coordinates are present."
+      }
+    },
+    {
+      "fixture_id": "variant-api-inline",
+      "path": "backend/tests/test_variant_api.py",
+      "generation_method": "Authored synthetic MACAG/A4V/MACVG example reusing unchanged M1/M2 reference metadata and independently specified M2 ID/hash golden values; no retrieval. Temporary archives, injected failures and event/barrier-synchronized HTTP workers.",
+      "expected_invariants": [
+        "Exact M2 persisted identity and verified hypothesis definition, all fields required; no source/provenance byte changes",
+        "One concurrent 201 winner and verified 200 duplicates with usable Location; offline reopening",
+        "Strict validation precedence and typed errors; damage never becomes absence or repair; publication uncertainty and bounded-worker recovery"
+      ],
+      "purpose": "NF-03 M3 production-route HTTP validation, real temporary archive integrity, concurrent publication and uncertain late outcomes.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Sequence positions and hashes have no physical units."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No molecular coordinates are present."
+      },
+      "byte_size": 28752,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "4bda50ec371a9157f8dcb4eea5b32f5dfeccf7b0326ccf39c337610411e298d2"
+      }
+    },
+    {
+      "fixture_id": "variant-http-examples",
+      "path": "backend/src/neurofold/api/variants.py",
+      "generation_method": "Authored synthetic MACAG/A4V/MACVG example reusing unchanged M1/M2 reference metadata and independently specified M2 ID/hash golden values; no retrieval. Temporary archives, injected failures and event/barrier-synchronized HTTP workers.",
+      "expected_invariants": [
+        "Exact M2 persisted identity and verified hypothesis definition, all fields required; no source/provenance byte changes",
+        "One concurrent 201 winner and verified 200 duplicates with usable Location; offline reopening",
+        "Strict validation precedence and typed errors; damage never becomes absence or repair; publication uncertainty and bounded-worker recovery"
+      ],
+      "purpose": "Exact authored MACAG/A4V/MACVG OpenAPI request/response and representative safe error examples; strict HTTP projections.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Sequence positions and hashes have no physical units."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "No molecular coordinates are present."
+      },
+      "byte_size": 9135,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "2db4096090b1b7c865c453adabea0d1eea3ae8fc35c1c6b57fbff2347a315602"
       }
     }
   ]

@@ -7,8 +7,8 @@ NeuroFold aims to make prediction workflows modular, inspectable, and scientific
 reproducible, and to support molecular exploration with Mol*.
 
 **Implemented: NF-01, NF-08 M1 provenance contracts, NF-09 M1 test foundation,
-NF-02 M1–M4 biological data integration, and NF-03 M1/M2 substitutions and
-immutable variant storage.**
+NF-02 M1–M4 biological data integration, and NF-03 M1–M3 substitutions,
+immutable variant storage and HTTP integration.**
 The API serves canonical protein
 lookup, immutable reference pinning, experimental structure discovery/import,
 retained residue maps/audits and registered original artifacts. The frontend
@@ -24,8 +24,11 @@ The [substitution domain](docs/variants.md) parses and validates one substitutio
 against the complete pinned reference, constructs the exact sequence/hash and
 reports immutable differences. NF-03 M2 adds reference-aware content IDs, an
 injected offline variant service and atomic immutable archives with load-time
-derivation checks. Results are sequence hypotheses; variant HTTP routes and
-interaction remain future NF-03 M3 and NF-07 work.
+derivation checks. M3 exposes strict `POST /v1/variants` (201 winner / 200
+verified duplicate, both with Location) and `GET /v1/variants/{variant_id}`.
+Results are sequence hypotheses; frontend variant interaction remains NF-07 work.
+See [HTTP contracts and recovery](docs/variants.md#m3-http-contract) and
+[executed M3 evidence](docs/testing/nf03-m3-evidence.md).
 Prediction, molecular visualization, comparisons, complete scientific manifests
 and exports remain future work. Boltz-2 is not installed or executed.
 

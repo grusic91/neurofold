@@ -21,8 +21,8 @@ any future creation receipt must be append-only and separate from the definition
 
 M1 implements pure standard-library substitution logic in `core/variants.py`.
 M2 adds immutable identity/storage through injected application repositories.
-M3 HTTP integration remains proposed; frontend interaction and model execution
-remain later work.
+M3 adds strict offline HTTP integration below; frontend interaction and model
+execution remain later work.
 
 ## Numbering and interpretation
 
@@ -234,10 +234,154 @@ Invalid/truncated/oversized bundles, symlinks, unreadable final records and
 self-consistent checksum tampering fail explicitly. Nothing is normalized,
 rewritten or repaired on read.
 
-See [M2 evidence](testing/nf03-m2-evidence.md) for executed offline checks. M3 must
-still add strict HTTP DTOs/routes, 201/200 and Location behavior, error/status
-translation and OpenAPI contracts. UI, predictions, comparisons and exports are
-later milestones. Independent biological review, reviewed model/weight/data
+See [M2 evidence](testing/nf03-m2-evidence.md) for storage checks and
+[M3 evidence](testing/nf03-m3-evidence.md) for HTTP acceptance. M3 adds strict
+DTOs/routes, 201/200 and Location behavior, typed errors and OpenAPI examples.
+UI, predictions, comparisons and exports are later milestones. Independent biological review, reviewed model/weight/data
 licenses, complete execution provenance, measured Linux/NVIDIA limits and
 independent scientific/export validation remain open release gates. A stored
 sequence hypothesis establishes no disease effect or prediction accuracy.
+
+## M3 HTTP contract
+
+`POST /v1/variants` accepts exactly three required strict strings:
+`reference_id` (existing opaque ID convention, 1–128 ASCII identifier characters),
+`expected_reference_sha256` (64 lowercase hexadecimal characters), and `notation`
+(verbatim text). Unknown fields and coercion are rejected. HTTP representation
+validation runs first; it returns 422 `INVALID_INPUT`, including malformed JSON,
+invalid path IDs, duplicate JSON keys and missing fields. No normalization occurs.
+Once admitted, service validation retains M2 precedence: ID/hash representation,
+notation syntax, reference resolution, expected hash, then M1 alphabet, bounds,
+reference residue and no-op. Reached typed domain codes/details remain intact.
+
+The success body is a faithful strict projection of every `VariantDefinition`
+field in the table above, with JSON arrays for differences. There is no HTTP
+wrapper or new schema version. All fields, including nested versions and explicit
+metadata absence, are required. Conversion, core invariants and serialization are
+validated inside the admitted worker. Persisted bytes/identity remain unchanged.
+Only `VariantPublication.created=True` returns 201; verified duplicates return
+200 with the identical definition. Both return `Location: /v1/variants/{variant_id}`.
+`GET` of this relative resource returns 200 after full repository verification on
+every call, including reference dependencies and exact derivation. Clients using
+a proxy resolve this path against their configured API base. No update endpoint
+exists: unsupported methods return 405 `HTTP_ERROR` with `Allow`.
+
+| Status | Code | Meaning/details |
+| --- | --- | --- |
+| 400 | INVALID_QUERY | Unknown/duplicate query parameters |
+| 404 | REFERENCE_NOT_FOUND | Creation's pinned reference is absent; `reference_id` |
+| 404 | NOT_FOUND | Requested variant itself is absent |
+| 409 | REFERENCE_HASH_MISMATCH | `expected_reference_sha256`, `actual_reference_sha256` |
+| 409 | ARCHIVE_CONFLICT | Valid immutable content conflict; no overwrite |
+| 413 | SIZE_LIMIT | Existing 16 KiB request boundary |
+| 422 | INVALID_INPUT | HTTP schema/JSON/path validation, before domain work |
+| 422 | VariantErrorCode | Reached M1/M2 errors (all codes listed above); safe domain details preserved |
+| 429 | ADMISSION_LIMIT | Zero-queue worker admission; retryable, Retry-After: 1 |
+| 500 | ARCHIVE_INTEGRITY | Damaged known records or missing/corrupt dependencies |
+| 500 | INTERNAL_ERROR | Unexpected failure or invalid outgoing DTO; sanitized |
+| 503 | ARCHIVE_PUBLICATION_FAILED | Publication I/O failure; uncertain outcome, no automatic retry |
+| 503 | ARCHIVE_UNAVAILABLE / CONFIGURATION_ERROR | Existing archive/configuration failures |
+| 504 | OPERATION_TIMEOUT | Response budget expired; underlying work may continue |
+
+Every error uses `{error: {code, message, retryable, details, request_id}}` and a
+matching `X-Request-ID`. Raw exception text, paths and sequences are excluded.
+An unknown variant is distinct from a retained variant whose reference is gone:
+the latter returns 500 integrity. A missing top-level reference during creation
+is 404; damage within a known reference's graph is 500. Corruption is never repaired
+or accepted as a duplicate. Typed failures precede generic exception handling.
+
+Publication I/O failure may occur after the atomic link. Its response is
+nonretryable with `publication_may_complete: true`, `automatic_retry: false` and
+recovery instructions. The application attaches the already derived variant ID
+as transient error context, allowing a recovery ID/URL without changing archived
+bytes or claiming verification succeeded. A mutating timeout has the same
+uncertainty, but no ID/URL is invented. A cancelled/disconnected caller may receive
+no envelope. Capacity stays occupied until the worker finishes; completion/failure
+is observed and logged safely with request correlation. Verify a known ID using
+GET or deliberately repeat the identical request under the idempotency contract.
+There is no rollback, guaranteed absence, deletion or automatic retry.
+
+Variant services are lazily composed against the shared archive/reference
+repository. Create/get call no providers, even when unrelated catalogs are
+configured. The existing executor admits all archive work, verification, DTO
+conversion and serialization; no additional pool/queue is introduced. Health and
+startup do no archive readiness/scientific work. Shutdown drains actual workers.
+
+These fields are frontend-ready; mutation entry, confirmation and highlighting
+remain NF-07 work. Prediction, comparison, export and independent scientific
+acceptance remain separate gates. The synthetic OpenAPI example MACAG/A4V/MACVG
+is a sequence hypothesis using complete-reference 1-based numbering.
+
+### Exact authored synthetic HTTP example
+
+This example assumes the authored M1/M2 `synthetic-variant-reference` has been
+retained in the test archive. It is not a public provider record; IDs and hashes
+are exact for that fixture. OpenAPI publishes and tests this same complete body.
+
+```http
+POST /v1/variants
+Content-Type: application/json
+
+{
+  "expected_reference_sha256": "c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e",
+  "notation": "A4V",
+  "reference_id": "synthetic-variant-reference"
+}
+```
+
+The winner returns 201 and a verified identical repeat returns 200. Both use
+`Content-Type: application/json`, a request correlation `X-Request-ID`, and:
+
+```http
+Location: /v1/variants/variant-4f0a7366f1a3a152596ba4337b0f2050b7b06e70640cc77ef54aafa84143f165
+```
+
+Both success bodies, and a verified GET of that Location, are exactly:
+
+```json
+{
+  "differences": [
+    {
+      "alternate_aa": "V",
+      "position": 4,
+      "reference_aa": "A"
+    }
+  ],
+  "interpretation_kind": "hypothesis",
+  "notation": "A4V",
+  "reference_accession": "P00001",
+  "reference_content_hash": {
+    "algorithm": "sha256",
+    "encoding": "neurofold-json/1",
+    "sha256": "a36dc032d7baa24bf2d1a3a30f67491826fb4f702626b308df6d80c685a77bdb"
+  },
+  "reference_entry_version": {
+    "reason": null,
+    "state": "present",
+    "value": 2
+  },
+  "reference_id": "synthetic-variant-reference",
+  "reference_sequence_sha256": "c88582ee0f845de56779787b8447097ae3330a816d1656b2808e0d439206226e",
+  "reference_sequence_version": {
+    "reason": null,
+    "state": "present",
+    "value": 1
+  },
+  "reference_taxon_id": 1,
+  "schema_version": "neurofold-variant/1",
+  "sequence": "MACVG",
+  "sequence_hash": {
+    "algorithm": "sha256",
+    "encoding": "sequence-ascii/1",
+    "sha256": "938b2b382d01f18f15d8d909f926f1b02c94bd5ad7527a057a91733787060315"
+  },
+  "sequence_length": 5,
+  "substitution": {
+    "alternate_aa": "V",
+    "notation_version": "nf-substitution/1",
+    "position": 4,
+    "reference_aa": "A"
+  },
+  "variant_id": "variant-4f0a7366f1a3a152596ba4337b0f2050b7b06e70640cc77ef54aafa84143f165"
+}
+```

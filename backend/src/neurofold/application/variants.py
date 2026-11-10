@@ -1,7 +1,7 @@
 """Offline pinned-reference orchestration; no HTTP, providers or concrete stores."""
 
 from neurofold.core.biological import ReferenceRepository
-from neurofold.core.errors import ArchiveIntegrityError
+from neurofold.core.errors import ArchiveIntegrityError, ArchivePublicationError
 from neurofold.core.provenance import ContentHash, HashEncoding
 from neurofold.core.variants import (
     VariantDefinition,
@@ -12,6 +12,14 @@ from neurofold.core.variants import (
     define_variant,
     parse_substitution,
 )
+
+
+class VariantPublicationFailure(ArchivePublicationError):
+    """Transient recovery context; does not assert that publication succeeded."""
+
+    def __init__(self, variant_id: str) -> None:
+        super().__init__("Variant publication I/O failed")
+        self.variant_id = variant_id
 
 
 class VariantService:
@@ -68,7 +76,11 @@ class VariantService:
                     "actual_reference_sha256": reference.protein.sequence_hash.sha256,
                 },
             )
-        return self.variants.publish(define_variant(reference, substitution))
+        definition = define_variant(reference, substitution)
+        try:
+            return self.variants.publish(definition)
+        except ArchivePublicationError as exc:
+            raise VariantPublicationFailure(definition.variant_id) from exc
 
     def get(self, variant_id: str) -> VariantDefinition:
         return self.variants.get(variant_id)

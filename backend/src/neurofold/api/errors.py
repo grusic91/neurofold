@@ -7,7 +7,13 @@ from starlette.exceptions import HTTPException
 
 from neurofold.api.configuration import ConfigurationError
 from neurofold.api.execution import AdmissionLimit, OperationTimeout
-from neurofold.core.errors import ArchiveConflict, ArchiveIntegrityError, ResourceLimit
+from neurofold.application.variants import VariantPublicationFailure
+from neurofold.core.errors import (
+    ArchiveConflict,
+    ArchiveIntegrityError,
+    ArchivePublicationError,
+    ResourceLimit,
+)
 from neurofold.core.lookup import (
     CursorError,
     ProviderError,
@@ -22,6 +28,7 @@ from neurofold.core.structures import (
     StructureSourceChanged,
     UnsupportedStructure,
 )
+from neurofold.core.variants import VariantError, VariantErrorCode
 
 
 def error_response(
@@ -52,8 +59,44 @@ def error_response(
 
 
 def translate(
-    exc: Exception, request_id: str, *, mutating: bool = False
+    exc: Exception,
+    request_id: str,
+    *,
+    mutating: bool = False,
+    variant_operation: bool = False,
 ) -> JSONResponse:
+    if isinstance(exc, VariantError):
+        status = {
+            VariantErrorCode.REFERENCE_NOT_FOUND: 404,
+            VariantErrorCode.REFERENCE_HASH_MISMATCH: 409,
+        }.get(exc.code, 422)
+        return error_response(
+            request_id,
+            status,
+            exc.code,
+            "Variant validation failed. Inspect the pinned reference and substitution.",
+            details=exc.details,
+        )
+    if isinstance(exc, ArchivePublicationError) and variant_operation:
+        details: dict[str, object] = {
+            "publication_may_complete": True,
+            "automatic_retry": False,
+            "recovery": (
+                "Verify a known variant ID with GET or deliberately "
+                "repeat the identical request."
+            ),
+        }
+        if isinstance(exc, VariantPublicationFailure):
+            details.update(
+                variant_id=exc.variant_id, resource_url=f"/v1/variants/{exc.variant_id}"
+            )
+        return error_response(
+            request_id,
+            503,
+            "ARCHIVE_PUBLICATION_FAILED",
+            "Publication I/O failed. The publication outcome is uncertain.",
+            details=details,
+        )
     if isinstance(exc, CursorError):
         return error_response(
             request_id,
@@ -126,7 +169,20 @@ def translate(
             "OPERATION_TIMEOUT",
             "Response budget expired. Work may still finish.",
             retryable=not mutating,
-            details={"publication_may_complete": mutating, "automatic_retry": False},
+            details={
+                "publication_may_complete": mutating,
+                "automatic_retry": False,
+                **(
+                    {
+                        "recovery": (
+                            "Verify a known variant ID with GET or deliberately "
+                            "repeat the identical request."
+                        )
+                    }
+                    if variant_operation and mutating
+                    else {}
+                ),
+            },
         )
     if isinstance(exc, ProviderTimeout):
         return error_response(

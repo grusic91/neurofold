@@ -5,10 +5,11 @@ from collections.abc import Callable
 from typing import Annotated, Literal
 from uuid import uuid4
 
-from fastapi import APIRouter, Query, Request, Response
-from pydantic import JsonValue
+from fastapi import APIRouter, Body, Query, Request, Response
+from pydantic import BaseModel, JsonValue
 
 from neurofold.api import biological as dto
+from neurofold.api import variants as variant_dto
 from neurofold.api.composition import LazyServices, Services
 from neurofold.api.errors import translate
 from neurofold.api.execution import BlockingExecutor
@@ -97,14 +98,17 @@ def structure_audit_response(record: StructureImport) -> StructureAuditResponse:
 
 
 def json_response(
-    value: dto.DTO | dto.StructureResponse | PinAuditResponse | StructureAuditResponse,
+    value: BaseModel,
     *,
     location: str | None = None,
+    status_code: int | None = None,
 ) -> Response:
     # Validation and JSON serialization run inside the admitted blocking worker.
     return Response(
         value.model_dump_json(),
-        status_code=201 if location else 200,
+        status_code=status_code
+        if status_code is not None
+        else (201 if location else 200),
         media_type="application/json",
         headers={"Location": location} if location else {},
     )
@@ -159,7 +163,95 @@ def biological_router(services: LazyServices, executor: BlockingExecutor) -> API
         try:
             return await executor.run(execute)
         except Exception as exc:
-            return translate(exc, request_id, mutating=mutating)
+            return translate(
+                exc,
+                request_id,
+                mutating=mutating,
+                variant_operation=request.url.path.startswith("/v1/variants"),
+            )
+
+    @router.post(
+        "/variants",
+        status_code=201,
+        response_model=variant_dto.VariantResponse,
+        summary="Define an immutable single-substitution sequence hypothesis",
+        description=(
+            "Strict input without normalization. Identical "
+            "requests are idempotent. "
+            "201 means publication winner; 200 means fully verified duplicate. "
+            "Errors/timeouts may leave a complete publication; verify a known ID or "
+            "deliberately repeat the identical request. Never retry automatically."
+        ),
+        responses={
+            **variant_dto.ERROR_RESPONSES,
+            **{
+                status: {
+                    "model": variant_dto.VariantResponse,
+                    "description": description,
+                    "headers": variant_dto.LOCATION_HEADER,
+                    "content": {
+                        "application/json": {"example": variant_dto.EXAMPLE_RESPONSE}
+                    },
+                }
+                for status, description in (
+                    (201, "Publication winner"),
+                    (200, "Verified duplicate"),
+                )
+            },
+        },
+    )
+    async def create_variant(
+        request: Request,
+        body: Annotated[
+            variant_dto.VariantRequest,
+            Body(
+                openapi_examples={
+                    "synthetic": {
+                        "summary": "Authored MACAG / A4V / MACVG",
+                        "value": variant_dto.EXAMPLE_REQUEST,
+                    }
+                }
+            ),
+        ],
+    ) -> Response:
+        def operation(s: Services) -> Response:
+            result = s.variants.create(**body.model_dump())
+            return json_response(
+                variant_dto.VariantResponse.from_core(result.definition),
+                status_code=201 if result.created else 200,
+                location=f"/v1/variants/{result.definition.variant_id}",
+            )
+
+        return await invoke(request, operation)
+
+    @router.get(
+        "/variants/{variant_id}",
+        response_model=variant_dto.VariantResponse,
+        description=(
+            "Verify the retained definition and complete "
+            "reference dependencies on every read. "
+            "Only an absent variant returns NOT_FOUND; damaged "
+            "dependencies return ARCHIVE_INTEGRITY."
+        ),
+        responses={
+            **variant_dto.ERROR_RESPONSES,
+            200: {
+                "headers": variant_dto.REQUEST_ID_HEADER,
+                "content": {
+                    "application/json": {"example": variant_dto.EXAMPLE_RESPONSE}
+                },
+            },
+        },
+    )
+    async def get_variant(
+        request: Request, variant_id: variant_dto.VariantID
+    ) -> Response:
+        return await invoke(
+            request,
+            lambda s: json_response(
+                variant_dto.VariantResponse.from_core(s.variants.get(variant_id))
+            ),
+        )
 
     @router.get("/proteins", response_model=dto.ProteinPageResponse)
     async def proteins(

@@ -1,4 +1,4 @@
-# Architecture: NF-01, NF-08 M1, NF-09 M1, NF-02 M1–M4 and NF-03 M1/M2
+# Architecture: NF-01, NF-08 M1, NF-09 M1, NF-02 M1–M4 and NF-03 M1–M3
 
 ## Current implementation
 
@@ -37,8 +37,15 @@ checks the caller's expected sequence hash and uses M1 before publication.
 fsynced, no-clobber archive primitive and verifies the full definition/actual
 reference derivation on every load. Duplicate outcomes expose a transient
 `created` boolean; corruption is never repaired or treated as absence. No clock,
-provider, API startup wiring or new runtime dependency is introduced. M3 owns
-HTTP DTOs/routes/status translation; frontend interaction remains later work.
+provider or new runtime dependency is introduced. M3 lazily composes this service
+against the shared archive and reference repository. Strict `api/variants.py`
+DTOs project the complete persisted definition without a wrapper; `routes.py`
+converts/invokes through the existing zero-queue executor. Creation distinguishes
+201 winners from verified 200 duplicates; both provide the GET Location. Typed
+errors preserve integrity/conflict/publication semantics. Transient application
+publication failures carry a known ID for recovery without changing identity or
+archive bytes. Timeout/cancellation retains capacity until actual completion;
+health and startup remain independent. Frontend interaction remains later work.
 See [identity, failures and atomicity limits](variants.md). Existing frozen
 NF-02/NF-08 contracts stay unchanged.
 

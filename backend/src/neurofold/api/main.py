@@ -3,6 +3,7 @@
 import json
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
+from typing import Any
 from uuid import uuid4
 
 from fastapi import FastAPI, Request
@@ -16,6 +17,7 @@ from neurofold.api.errors import error_response, http_error, invalid_request
 from neurofold.api.execution import BlockingExecutor
 from neurofold.api.health import router as health_router
 from neurofold.api.routes import biological_router
+from neurofold.api.variants import EXAMPLE_RESPONSE
 
 
 def unique_fields(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -125,6 +127,24 @@ def create_app(
     application.add_exception_handler(HTTPException, http_error)  # type: ignore[arg-type]
     application.include_router(health_router)
     application.include_router(biological_router(services, executor))
+    original_openapi = application.openapi
+
+    def openapi() -> dict[str, Any]:
+        schema = original_openapi()
+        # FastAPI's OpenAPI encoding drops None recursively, including required
+        # explicit absence fields in arbitrary example dictionaries. Restore the
+        # exact strict variant examples after that encoding step.
+        for path, method, statuses in (
+            ("/v1/variants", "post", ("200", "201")),
+            ("/v1/variants/{variant_id}", "get", ("200",)),
+        ):
+            for status in statuses:
+                schema["paths"][path][method]["responses"][status]["content"][
+                    "application/json"
+                ]["example"] = EXAMPLE_RESPONSE
+        return schema
+
+    application.openapi = openapi  # type: ignore[method-assign]
     return application
 
 

@@ -1,9 +1,11 @@
 # NF-03 — Protein Variant Management
 
-Status: **M1 and M2 implemented**; M3 HTTP integration proposed.
+Status: **M1, M2 and M3 implemented**; frontend interaction and scientific
+acceptance remain separate gates.
 Parent: [NF-EPIC-001](../EPIC.md). See [domain/storage decisions](../variants.md),
-[M1 evidence](../testing/nf03-m1-evidence.md) and
-[M2 evidence](../testing/nf03-m2-evidence.md).
+[M1 evidence](../testing/nf03-m1-evidence.md),
+[M2 evidence](../testing/nf03-m2-evidence.md) and
+[M3 executed evidence](../testing/nf03-m3-evidence.md).
 
 ## 1. Objective and scientific motivation
 
@@ -51,7 +53,7 @@ API handlers perform schema conversion only. No new database or queue is needed.
 `ACDEFGHIKLMNPQRSTVWY`. For this MVP, strict ASCII uppercase notation matches
 `^([ACDEFGHIKLMNPQRSTVWY])([1-9][0-9]*)([ACDEFGHIKLMNPQRSTVWY])$`.
 Reject whitespace, lowercase, leading zeros, signs, decimal positions and Unicode
-lookalikes. M1 raises typed domain errors; M3 will translate them to actionable
+lookalikes. M1 raises typed domain errors; M3 translates them to actionable
 422 responses. Do not silently reinterpret notation. Use full-string matching,
 including rejection of trailing newlines. Bound input to 18 characters before
 integer conversion; positions must be exact positive integers through NF-08's
@@ -102,27 +104,38 @@ M2 uses schema version `neurofold-variant/1` and ID `variant-<64 lowercase hex>`
 The [domain/storage guide](../variants.md) specifies exact canonical bytes,
 retained fields, injected public interfaces, input/hash/reference/M1 error
 precedence, concurrency outcomes, archive verification and interruption limits.
-This adds no HTTP contract or migration of frozen NF-02/NF-08 v1 records.
+M2 added no HTTP contract or migration of frozen NF-02/NF-08 v1 records.
+M3 now projects the complete versioned definition without changing persisted bytes.
 
-Proposed routes:
+Implemented M3 routes:
 
 | Method/path | Input | Result |
 | --- | --- | --- |
 | `POST /v1/variants` | `{reference_id, expected_reference_sha256, notation}` | 201 record and `Location` on first creation; 200 same record on duplicate |
 | `GET /v1/variants/{variant_id}` | content ID | 200 immutable record and difference; 404 unknown |
 
-Example request: `{ "reference_id": "ref-example", "expected_reference_sha256":
-"<64 lowercase hex characters>", "notation": "A4V" }`. For the explicitly
-synthetic reference `MACAG`, the mutated sequence is `MACVG`, and the difference
-is `{position: 4, reference_aa: "A", alternate_aa: "V"}`. Placeholder hashes/IDs
-are illustrative, not actual stored records.
+The [HTTP contract guide](../variants.md#m3-http-contract) documents strict field
+schemas, full exact authored MACAG/A4V/MACVG request/response examples and accurate
+IDs/hashes. Every response field is required. Both POST outcomes provide the same
+usable GET Location; conversion/serialization runs inside the admitted worker.
+HTTP schema validation precedes unchanged deterministic M2/M1 validation.
 
-Proposed M3 errors follow the epic envelope: 404 `REFERENCE_NOT_FOUND`; 409
+M3 errors follow the epic envelope: 404 `REFERENCE_NOT_FOUND`; 409
 `REFERENCE_HASH_MISMATCH`; 422 `INVALID_NOTATION`, `POSITION_OUT_OF_RANGE`,
 `REFERENCE_MISMATCH`, `NO_OP_SUBSTITUTION`, or `UNSUPPORTED_REFERENCE_ALPHABET`.
 M1 reference mismatch details explicitly name `requested_reference_aa`,
 `actual_reference_aa` and the 1-based `position`; M3 owns HTTP translation.
-No `PATCH` endpoint: editing creates a new definition. Do not persist
+Unknown variants use 404 `NOT_FOUND`; missing/corrupt dependencies of retained
+variants use 500 `ARCHIVE_INTEGRITY`. Publication conflict is 409
+`ARCHIVE_CONFLICT`; publication I/O failure is nonretryable 503
+`ARCHIVE_PUBLICATION_FAILED`, with uncertain-outcome details and an already known
+recovery ID/URL. Mutating 504 timeout and caller cancellation may leave work
+running and publication can finish later. Never claim rollback/absence or retry
+automatically: verify a known ID or deliberately repeat the identical request.
+Existing 429 admission, 16 KiB boundary, request IDs and error envelopes apply.
+See the guide for the complete mapping and precedence.
+No `PATCH` endpoint: unsupported methods return 405 `HTTP_ERROR` with `Allow`.
+Editing creates a new definition. Do not persist
 invalid records, partially mutated sequences or silently refreshed references.
 
 ## 6. Implementation milestones
@@ -131,8 +144,13 @@ invalid records, partially mutated sequences or silently refreshed references.
    construction, difference output, error codes and synthetic tests.
 2. **M2 — Identity/storage (complete):** canonical content identity, atomic
    immutable writes, integrity verification, duplicate semantics and reference linkage.
-3. **M3 — HTTP integration:** request/response schemas, routes, OpenAPI examples,
-   and frontend-ready difference records; document notation and indexing.
+3. **M3 — HTTP integration (complete):** request/response schemas, routes, OpenAPI examples,
+   and frontend-ready difference records; document notation and indexing. Lazy
+   shared archive composition and existing bounded-worker accounting are verified
+   with production offline routes, deterministic concurrent publication, integrity
+   damage, I/O phases, timeout/cancellation, late recovery and shutdown draining.
+   Python 3.12/3.13 full checkpoints are executed in the linked M3 evidence.
+   NF-07 interaction, prediction/comparison/export and scientific acceptance remain open.
 
 ## 7. Acceptance criteria
 
