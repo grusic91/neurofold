@@ -1,0 +1,102 @@
+[
+  {
+    "name": "sorted_keys",
+    "value": {
+      "z": 2,
+      "a": 1
+    },
+    "canonical": "{\"a\":1,\"z\":2}",
+    "sha256": "99168216144c7fed5d4c54916cf98d9c66096280c04a499822a99b6658bd177a"
+  },
+  {
+    "name": "nested_order",
+    "value": {
+      "z": {
+        "b": 2,
+        "a": 1
+      },
+      "a": [
+        3,
+        1,
+        2
+      ]
+    },
+    "canonical": "{\"a\":[3,1,2],\"z\":{\"a\":1,\"b\":2}}",
+    "sha256": "aa5acc11e864cec3b7c7462948bf081ba8843dbd798f17a53dbeff9c896dcc04"
+  },
+  {
+    "name": "unicode_composed",
+    "value": {
+      "label": "é 🧬"
+    },
+    "canonical": "{\"label\":\"é 🧬\"}",
+    "sha256": "9b57295b7e89b40ed30748b6a999bcee1283564114f0ac2798a1b35bfe852b3c"
+  },
+  {
+    "name": "unicode_decomposed",
+    "value": {
+      "label": "é 🧬"
+    },
+    "canonical": "{\"label\":\"é 🧬\"}",
+    "sha256": "ae4d2d13b102f38ee9e9da651147c90f047d0ac0efd430a07b6e16ad37009b50"
+  },
+  {
+    "name": "escapes",
+    "value": {
+      "text": "line\n\"quote\"\\\t\u0000"
+    },
+    "canonical": "{\"text\":\"line\\n\\\"quote\\\"\\\\\\t\\u0000\"}",
+    "sha256": "3f5d68d41d55fe975cae61ebb6b325de15ac28ee1f7eb49c7cc48208ee2f4433"
+  },
+  {
+    "name": "scalars",
+    "value": [
+      null,
+      true,
+      false,
+      1,
+      0,
+      -1
+    ],
+    "canonical": "[null,true,false,1,0,-1]",
+    "sha256": "dc2bd396ae3ed6824969d6f912bc1206d8fae31b0bae7e7eafb0336957c816ab"
+  },
+  {
+    "name": "integer_limits",
+    "value": [
+      -9007199254740991,
+      9007199254740991
+    ],
+    "canonical": "[-9007199254740991,9007199254740991]",
+    "sha256": "cbad3dd0e71e92fb3519919946bde0ab3086ddacce65983bddec595cb27c19da"
+  },
+  {
+    "name": "decimal_settings",
+    "value": {
+      "temperature": "0.5",
+      "offset": "-0.125"
+    },
+    "canonical": "{\"offset\":\"-0.125\",\"temperature\":\"0.5\"}",
+    "sha256": "83ed98a1a00df55ae4dce3057fadad4d7cebc24690697bfbaaddf504af5b4f06"
+  },
+  {
+    "name": "resolved_defaults",
+    "value": {
+      "schema_version": "fixture/1",
+      "seed": 0,
+      "samples": 1
+    },
+    "canonical": "{\"samples\":1,\"schema_version\":\"fixture/1\",\"seed\":0}",
+    "sha256": "37e3dabe85805bb0b40d6d67f4e065f10afb466915e7a414229f7a61cd4e1d19"
+  },
+  {
+    "name": "empty",
+    "value": {
+      "object": {},
+      "array": [],
+      "text": ""
+    },
+    "canonical": "{\"array\":[],\"object\":{},\"text\":\"\"}",
+    "sha256": "393fa1f8e0b63625829df4ed36cb09a25ba3e52a2ddd1dcef8e3d0563f6532c1"
+  }
+]

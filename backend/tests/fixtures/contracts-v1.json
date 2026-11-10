@@ -1,0 +1,251 @@
+[
+  {
+    "schema_version": "neurofold-research/1",
+    "input_schema": "synthetic-example/1",
+    "payload": {
+      "parameters": {
+        "samples": 1,
+        "temperature": "0.5"
+      },
+      "seed": 0,
+      "sequence": "ACDX"
+    },
+    "record_kind": "scientific_input",
+    "canonicalization_version": "neurofold-json/1"
+  },
+  {
+    "schema_version": "neurofold-research/1",
+    "artifact_id": "fixture-artifact",
+    "content_hash": {
+      "sha256": "8e2ccf269f3b6e0e712b45df58e78c7894082e7086efd1c398c98c605f00ed9f",
+      "encoding": "raw-bytes/1",
+      "algorithm": "sha256"
+    },
+    "byte_size": 21,
+    "media_type": "text/plain",
+    "evidence": "synthetic",
+    "rights": {
+      "license": {
+        "state": "present",
+        "value": "Apache-2.0",
+        "reason": null
+      },
+      "attribution": {
+        "state": "present",
+        "value": "NeuroFold synthetic fixture",
+        "reason": null
+      },
+      "redistribution": "allowed",
+      "basis": "Authored for tests under the repository license."
+    },
+    "parents": [],
+    "transformation": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Synthetic fixture has no upstream source."
+    },
+    "record_kind": "artifact"
+  },
+  {
+    "schema_version": "neurofold-research/1",
+    "receipt_id": "fixture-receipt",
+    "provider": "synthetic-fixture",
+    "query": "fixture:1",
+    "retrieved_at": "2026-11-10T00:00:00Z",
+    "raw_artifact": {
+      "schema_version": "neurofold-research/1",
+      "artifact_id": "fixture-artifact",
+      "content_hash": {
+        "sha256": "8e2ccf269f3b6e0e712b45df58e78c7894082e7086efd1c398c98c605f00ed9f",
+        "encoding": "raw-bytes/1",
+        "algorithm": "sha256"
+      },
+      "byte_size": 21,
+      "media_type": "text/plain",
+      "evidence": "synthetic",
+      "rights": {
+        "license": {
+          "state": "present",
+          "value": "Apache-2.0",
+          "reason": null
+        },
+        "attribution": {
+          "state": "present",
+          "value": "NeuroFold synthetic fixture",
+          "reason": null
+        },
+        "redistribution": "allowed",
+        "basis": "Authored for tests under the repository license."
+      },
+      "parents": [],
+      "transformation": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Synthetic fixture has no upstream source."
+      },
+      "record_kind": "artifact"
+    },
+    "accession": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Synthetic fixture has no upstream source."
+    },
+    "isoform": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Synthetic fixture has no upstream source."
+    },
+    "taxon_id": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Synthetic fixture has no upstream source."
+    },
+    "entry_version": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Synthetic fixture has no upstream source."
+    },
+    "sequence_version": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Synthetic fixture has no upstream source."
+    },
+    "release": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Synthetic fixture has no upstream source."
+    },
+    "release_date": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Synthetic fixture has no upstream source."
+    },
+    "etag": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Synthetic fixture has no upstream source."
+    },
+    "last_modified": {
+      "state": "not_applicable",
+      "value": null,
+      "reason": "Synthetic fixture has no upstream source."
+    },
+    "license_references": {
+      "state": "present",
+      "values": [
+        "Apache-2.0"
+      ],
+      "reason": null
+    },
+    "citation_references": {
+      "state": "not_applicable",
+      "values": [],
+      "reason": "Synthetic fixture has no publication."
+    },
+    "record_kind": "source_receipt"
+  },
+  {
+    "schema_version": "neurofold-research/1",
+    "record_id": "fixture-record",
+    "subject_kind": "prediction",
+    "created_at": "2026-11-10T00:00:01.123456Z",
+    "producer_version": "neurofold-fixture/1",
+    "status": "failed",
+    "evidence": "synthetic",
+    "inputs": [
+      {
+        "record_id": "fixture-input",
+        "content_hash": {
+          "sha256": "cc35ff5cc6700f1cc2bb73509cc63a37564af3cb008ac750c240ddcad1f9a715",
+          "encoding": "neurofold-json/1",
+          "algorithm": "sha256"
+        }
+      }
+    ],
+    "source_receipt_ids": [
+      "fixture-receipt"
+    ],
+    "artifacts": [
+      {
+        "schema_version": "neurofold-research/1",
+        "artifact_id": "fixture-artifact",
+        "content_hash": {
+          "sha256": "8e2ccf269f3b6e0e712b45df58e78c7894082e7086efd1c398c98c605f00ed9f",
+          "encoding": "raw-bytes/1",
+          "algorithm": "sha256"
+        },
+        "byte_size": 21,
+        "media_type": "text/plain",
+        "evidence": "synthetic",
+        "rights": {
+          "license": {
+            "state": "present",
+            "value": "Apache-2.0",
+            "reason": null
+          },
+          "attribution": {
+            "state": "present",
+            "value": "NeuroFold synthetic fixture",
+            "reason": null
+          },
+          "redistribution": "allowed",
+          "basis": "Authored for tests under the repository license."
+        },
+        "parents": [],
+        "transformation": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "Synthetic fixture has no upstream source."
+        },
+        "record_kind": "artifact"
+      }
+    ],
+    "sections": {
+      "preprocessing": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Synthetic fixture has no upstream source."
+      },
+      "model": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Synthetic fixture has no upstream source."
+      },
+      "execution": {
+        "state": "present",
+        "value": {
+          "adapter": "synthetic-fixture/1",
+          "message": "Deliberate fixture failure.",
+          "outcome": "failed",
+          "seed": 0
+        },
+        "reason": null
+      },
+      "environment": {
+        "state": "unavailable",
+        "value": null,
+        "reason": "Not collected in this M1 fixture."
+      },
+      "comparison": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Synthetic fixture has no upstream source."
+      },
+      "interpretation": {
+        "state": "present",
+        "value": "Synthetic test only; no biological interpretation.",
+        "reason": null
+      },
+      "rights_privacy": {
+        "state": "present",
+        "value": "Only synthetic public fixtures; no disclosures.",
+        "reason": null
+      }
+    },
+    "warnings": [
+      "Deliberate fixture failure; artifact is diagnostic text, not coordinates."
+    ],
+    "record_kind": "provenance",
+    "canonicalization_version": "neurofold-json/1"
+  }
+]

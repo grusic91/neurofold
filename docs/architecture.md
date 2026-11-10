@@ -1,4 +1,4 @@
-# Architecture: NF-01
+# Architecture: NF-01 and NF-08 M1
 
 ## Current implementation
 
@@ -20,7 +20,8 @@ Mol* is an intended visualization integration, with no dependency or viewer yet.
 sequence and explicit seed. The result identifies a structure artifact and its
 provenance manifest. This is an initial Python interface, not a prediction API,
 validated input schema, or implemented inference service. Complexes, ligands,
-model-specific parameters, and a manifest schema require later design.
+model-specific parameters, and execution-specific manifest schemas require later
+design. NF-08 M1 supplies shared provenance contracts without changing this seam.
 
 Future orchestration will accept an adapter implementing this protocol. A Boltz-2
 adapter will translate domain inputs to model inputs, execute in an appropriate
@@ -47,12 +48,27 @@ is constrained separately in `pyproject.toml`; its isolated build dependencies a
 not part of the runtime lock. Base image tags track updates and are not immutable
 digests. This foundation does not yet provide a fully immutable scientific runtime.
 
-Before producing scientific results, version the provenance format and record
+Before producing scientific results, extend the shared provenance foundation to record
 input hashes/sources, preprocessing, model/adapter versions, weight checksums,
 parameters, seeds, code revision, dependency locks, runtime/container identity,
 hardware, and CUDA versions. Preserve raw outputs and document nondeterminism.
 Define confidence metrics and validation criteria before making biological claims.
 The current adapter interface names a provenance artifact; no writer exists yet.
+
+## Shared provenance foundation (NF-08 M1)
+
+`core/canonical.py` defines canonical JSON v1, immutable structured input snapshots,
+canonical decimal validation and exact-byte/sequence SHA-256 functions.
+`core/provenance.py` defines frozen versioned inputs, source receipts, artifact
+descriptors, evidence/absence labels, a provenance skeleton and storage protocols.
+`core/_contracts.py` provides strict standard-library serialization. Core imports
+remain usable with site-packages disabled.
+
+The [contract guide](provenance-contracts.md) records M1 decisions, identity rules,
+compatibility policy and ownership by NF-02 through NF-08. A checked-in JSON Schema
+and synthetic compatibility/golden fixtures are tested with a development-only
+validator. Capture, persistence, complete successful prediction manifests, runtime
+inspection and exports remain future milestones; M1 adds no routes or startup work.
 
 ## Validation boundaries
 

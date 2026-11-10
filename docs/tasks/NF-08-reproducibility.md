@@ -1,6 +1,8 @@
 # NF-08 — Reproducibility and Export
 
-Status: proposed; M1 is an early prerequisite, not end-of-epic cleanup. Parent:
+Status: M1 implemented; M2–M4 proposed. M1 is an early prerequisite, not
+end-of-epic cleanup. Contracts and decisions:
+[Shared provenance contracts](../provenance-contracts.md). Parent:
 [NF-EPIC-001](../EPIC.md).
 
 ## 1. Objective and scientific motivation
@@ -38,9 +40,10 @@ A checksum detects changed bytes; it does not prove authorship or scientific tru
 
 Core contains frozen manifest records, schema version constants, hash/
 canonicalization rules and `ArtifactStore`/manifest repository protocols, all
-standard-library-only. API owns transport schemas; a checked-in versioned JSON
-Schema is a future cross-language exchange artifact, not a core dependency on
-Pydantic. Contract tests prevent drift among records, schemas and frontend DTOs.
+standard-library-only. API owns transport schemas. The checked-in versioned JSON
+Schema is a cross-language exchange artifact, not a core dependency on Pydantic.
+M1 tests records against the schema and compatibility fixtures; API schemas and
+frontend DTO contract tests accompany their future producers.
 
 Application provenance builders compose receipts as work happens. They do not
 guess missing metadata after execution. Storage adapters stage, checksum and

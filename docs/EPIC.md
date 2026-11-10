@@ -1,7 +1,9 @@
 # NF-EPIC-001 — NeuroFold Protein Variant Explorer
 
 Status: proposed roadmap; no application functionality is implemented by these
-documents. Planning baseline: NF-01, inspected 2026-11-10. NF-02 has not started.
+documents. Planning baseline: NF-01, inspected 2026-11-10. NF-08 M1 shared
+[provenance contracts](provenance-contracts.md) are now implemented; NF-02 has not
+started. Later milestones remain proposed.
 
 ## Objective and scientific motivation
 
@@ -20,8 +22,10 @@ diagnose disease, or establish causality from predicted structural differences.
 
 Read this plan with [AGENTS.md](../AGENTS.md), [README.md](../README.md), and
 [architecture.md](architecture.md). The architecture document describes the
-implemented NF-01 foundation and remains authoritative for current behavior.
-Everything below is proposed future work, including endpoint names and packages.
+implemented foundation and NF-08 M1 contracts and remains authoritative for current
+behavior.
+Beyond that baseline and NF-08 M1, the roadmap below is proposed future work,
+including endpoint names and packages.
 
 - Backend: Python 3.12+, FastAPI application factory, and `GET /health` only.
   `core/prediction.py` contains frozen `PredictionRequest(sequence, seed)`,
