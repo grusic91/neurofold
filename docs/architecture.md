@@ -11,7 +11,9 @@ The frontend is React/TypeScript with Vite, strict TypeScript checking, and ESLi
 It requests `/api/health`, validates the response, and shows checking, online, or
 unavailable status. NF-02 M4 adds the HTTP protein/reference/structure workflow
 with explicit candidate/organism/model/assembly selections, runtime DTO readers,
-retained audits, accessible mapping tables and registered original downloads. Requests are aborted on unmount and time out after five seconds.
+retained audits, accessible mapping tables and registered original downloads. Biological workflow requests have a 95-second budget; only health uses five
+seconds. Mutations may finish after a caller aborts; the M6 UX correction remains
+a gate for M3.
 Vite proxies `/api/*` to the API during development; production routing is deferred.
 Mol* is an intended visualization integration, with no dependency or viewer yet.
 
@@ -93,8 +95,7 @@ The API must remain startable without scientific packages or weights installed.
 
 NF-01 introduced no model adapter, scheduler, persistence or authentication.
 NF-04 M2 now supplies local durable orchestration without model execution. Long-running GPU inference should
-eventually execute outside HTTP request handling; the execution mechanism remains
-an explicit future decision rather than an implicit API dependency.
+eventually execute outside HTTP request handling; local process supervision is implemented; remote dispatch remains a future decision.
 
 ## Environments and reproducibility
 
@@ -129,8 +130,9 @@ The [contract guide](provenance-contracts.md) records M1 decisions, identity rul
 compatibility policy and ownership by NF-02 through NF-08. A checked-in JSON Schema
 and synthetic compatibility/golden fixtures are tested with a development-only
 validator. NF-04 M1 separately defines complete successful prediction contracts;
-actual capture, prediction persistence, runtime inspection and exports remain future
-milestones. The contract work adds no routes or startup work.
+actual runtime capture, inspection and exports remain future milestones. NF-04 M2
+already supplies SQLite persistence, separate supervision and prediction routes;
+M1 alone added no routes or startup work.
 
 ## Validation boundaries
 
@@ -264,3 +266,9 @@ HTTP interactions are mocked separately. An additional unmocked local browser su
 production API against synthetic providers, including exact gzip downloads.
 Container execution, live upstream
 compatibility and independent scientific validation require their own evidence.
+
+The [M2 hardening checkpoint](testing/nf04-m2-hardening-evidence.md) adds fail-closed
+database validation, consistent status snapshots, lock-free immutable graph reads,
+bounded child-output handling and owned publication identities. Checksummed
+operational-failure extensions preserve frozen M1 history; see the orchestration
+guide for migration and failure-export requirements. No executable adapter exists.

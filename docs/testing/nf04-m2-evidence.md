@@ -1,5 +1,9 @@
 # NF-04 M2 — Durable orchestration evidence
 
+Historical implementing-agent evidence for the named source state below. The
+independent review found additional blockers; this document is not current approval.
+See the [separate hardening checkpoint](nf04-m2-hardening-evidence.md).
+
 Date: 2026-11-10. Initially clean checkout
 `ca74e9e0c0d291a7f1ec6822e65aec3bf7888878`. **M2 implementation and required
 native/Linux acceptance are complete.**

@@ -90,6 +90,8 @@ def main() -> None:
         assert json.load(response) == {"status": "ok"}
     with urllib.request.urlopen(FRONT, timeout=10) as response:
         assert response.status == 200
+    # Proxy acceptance is complete; release the Vite process before CPU supervision.
+    compose("stop", "frontend")
     compose(
         "exec",
         "-T",
@@ -109,6 +111,34 @@ def main() -> None:
     assert submit(prefix + "-success") == job
     assert request("/v1/prediction-jobs/" + job + "/result") == result
     print("PASS retained success/idempotency after backend recreation", flush=True)
+    reference = request("/v1/references/" + BODY["reference_id"])
+    variant_body = {
+        "reference_id": BODY["reference_id"],
+        "expected_reference_sha256": reference["protein"]["sequence_hash"]["sha256"],
+        "notation": "A4V",
+    }
+    variant = request("/v1/variants", body=variant_body)
+    assert request("/v1/variants", body=variant_body) == variant
+    variant_job = request(
+        "/v1/prediction-jobs",
+        body=BODY | {"variant_id": variant["variant_id"]},
+        key=prefix + "-variant",
+    )["job"]["job_id"]
+    wait(variant_job, "succeeded")
+    variant_result = request("/v1/prediction-jobs/" + variant_job + "/result")
+    variant_manifest = request("/v1/prediction-jobs/" + variant_job + "/manifest")
+    assert variant_manifest["spec"]["variant"]["record_id"] == variant["variant_id"]
+    assert (
+        variant_result["samples"][0]["mapping"]["sequence_hash"]
+        == variant["sequence_hash"]
+    )
+    compose("up", "--detach", "--force-recreate", "--no-deps", "--wait", "backend")
+    assert request("/v1/variants/" + variant["variant_id"]) == variant
+    assert request("/v1/prediction-jobs/" + variant_job + "/result") == variant_result
+    print(
+        "PASS variant POST/GET, publication and retained reference/variant linkage",
+        flush=True,
+    )
     worker("wait")
     cancel = submit(prefix + "-cancel")
     wait(cancel, "running")
@@ -138,6 +168,8 @@ def main() -> None:
         "--no-deps",
         "controlled-worker",
         "pytest",
+        "tests/test_prediction_hardening.py",
+        "tests/test_prediction_rereview.py",
         "tests/test_prediction_durable.py",
         "tests/test_prediction_worker.py",
         "tests/test_prediction_http.py",

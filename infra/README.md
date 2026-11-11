@@ -57,7 +57,9 @@ Native equivalent from `backend/`: `uv run --locked python -m neurofold.worker`.
 Use the API’s same absolute NEUROFOLD_ARCHIVE_ROOT. The worker lifetime lock rejects
 a second local supervisor. One active job blocks other claims until confirmed
 exit or expired-owner fencing. API restart does not affect it. SIGTERM/SIGINT stop
-admission and terminate/reap active children before exit. A killed supervisor’s
+admission and attempt bounded termination/reaping before exit. Unconfirmed cleanup
+blocks further work, attempts bounded outcome recording and exits 78; it does not
+claim successful termination. A killed supervisor’s
 parent-death pipe kills its child process group; Docker `init: true` reaps orphans.
 The default 5-second heartbeat/60-second lease uses a stable UTC host clock;
 monotonic time supervises deadlines. macOS has no reliable RLIMIT_AS enforcement;
@@ -77,7 +79,8 @@ marker to bypass a missing database error. Preserve damaged files for inspection
 and restore a verified consistent backup deliberately. A known corrupt success
 returns integrity failure, not an absent job or a newly generated replacement.
 Pending intents/orphan registrations after interruption are safe to retain.
-Restart the worker to fence expired running/cancelling attempts as WORKER_LOST;
+If no worker-block.json is retained, restart the worker to fence expired
+running/cancelling attempts as WORKER_LOST;
 reads alone do not perform recovery. Explicit retries create new linked jobs and
 never automatically rerun possibly completed inference.
 
@@ -86,3 +89,47 @@ See [transaction and crash boundaries](../docs/prediction-orchestration.md) and
 `compose.prediction-test.yaml` with its own disposable project and named volume;
 the driver is documented in the testing guide. Its optional cleanup retains the
 volume unless `--volumes` is deliberately supplied for that disposable project.
+
+
+### Unconfirmed cleanup and manual recovery
+
+`UNCONFIRMED_CLEANUP` and exit **78** require operator action, not an automatic
+restart. Both production and controlled workers honor this status. Normal
+requested shutdown exits 0. Keep restart disabled for this condition; M3's future
+restart/readiness policy must preserve the manual gate.
+
+A private `staging/worker-block.json` under the prediction worker root records
+worker/job/attempt IDs, PID/PGID when available, error class and blocked reason.
+It contains no sequences, proposal bytes or raw exception messages. The production
+path is `$NEUROFOLD_ARCHIVE_ROOT/predictions/staging/worker-block.json`; the explicit
+controlled-test composition uses `$NEUROFOLD_ARCHIVE_ROOT/staging/worker-block.json`.
+The final log also reports `outcome_recorded` and `block_retained`. A partial,
+corrupt, symlinked or otherwise present marker blocks startup before recovery or
+claim; deleting it is not routine retry handling. Include it with archive backups.
+
+1. Stop admission and the worker; disable any external automatic restart for exit
+   78. Preserve logs, the marker, staging, DB/WAL/identity and registered artifacts.
+2. Inspect the recorded job and attempt and the owning host/container process
+   namespace. Verify process identity and start time before acting on PID/PGID;
+   numbers can be reused. Establish that the owned group and helpers have exited,
+   or deliberately stop the owning container/processes. API health is not proof of
+   termination. Do not kill an unrelated process based only on a stale number.
+3. Check whether the specific SUPERVISION_FAILED outcome was retained. When it was
+   not, leave the job unchanged until its owner lease expires and reconcile it by
+   normal worker recovery only after resolving termination uncertainty. Recovery
+   will record WORKER_LOST for an expired active attempt, never invent cancelled.
+   Inspect storage/permissions if `block_retained=false` or recording failed.
+4. After confirming cleanup and storage consistency, retain a private copy of the
+   block in ignored operator evidence and deliberately remove only the blocking
+   marker. Do not edit terminal rows, drop triggers, delete DB identity or remove
+   staging/registered evidence. Start a **new** worker manually; a blocked instance
+   cannot be resumed by clearing its stop Event.
+5. Verify the retained outcome/recovery and the queued work before restoring
+   admission. Explicit retries are new linked jobs; never silently rerun an
+   uncertain attempt or fabricate a scientific result.
+
+This procedure closes the M2 uncertainty gate. General readiness/restart policy,
+rolling schema compatibility, terminal-write retries outside this cleanup path,
+mutation recovery, dependency naming and harness conditions remain M3 work. H1
+mapping correction and biological-foundation review remain separate prerequisites
+before scientific interpretation or NF-05/NF-06 acceptance.

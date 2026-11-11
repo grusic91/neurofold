@@ -96,6 +96,7 @@ else:
         cwd=root / "infra/testing",
         capture_output=True,
         text=True,
-        timeout=10,
+        # Import independence is the contract, not cold-start speed under emulation.
+        timeout=30,
     )
     assert result.returncode == 0, result.stderr

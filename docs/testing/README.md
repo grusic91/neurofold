@@ -266,3 +266,17 @@ NF04_FRONTEND_URL plus Compose port variables when using other ports. Do not run
 this composition against a production archive. It checks non-root writes,
 retained jobs/idempotency, separate workers, cancellation/timeout/shutdown/loss,
 and Linux race/crash tests. M3 fake execution/UI and real runtime gates stay open.
+
+The current authoritative check list is [AGENTS.md](../../AGENTS.md#required-checks).
+NF-04 M2 review hardening is recorded separately in
+[the checkpoint](nf04-m2-hardening-evidence.md), including guard sensitivity and
+newly executed platform checks. Historical milestone evidence is not current approval.
+
+NF-04 M2 [second-review hardening evidence](nf04-m2-hardening-pass2-evidence.md)
+supersedes first-pass completeness claims; independent acceptance and remote CI
+remain separate gates.
+
+The current NF-04 M2 [focused cleanup closure](nf04-m2-cleanup-closure-evidence.md)
+implements the five conditions for the authorized hardening commit. Verification
+is targeted by user instruction; the first hosted CI gate still requires push
+authorization before M3. H1 and scientific acceptance remain separate.

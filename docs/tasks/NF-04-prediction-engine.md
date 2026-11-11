@@ -1,6 +1,11 @@
 # NF-04 — Molecular Prediction Engine
 
-Status: **M1 and M2 implemented and verified; M3–M5 open.**
+Status: **M1/M2 implemented; focused cleanup closure under conditional approval; first hosted CI gate pending; M3–M5 open.**
+[First-pass evidence](../testing/nf04-m2-hardening-evidence.md);
+[second-review hardening checkpoint](../testing/nf04-m2-hardening-pass2-evidence.md);
+[round-3 macOS cleanup correction](../testing/nf04-m2-macos-cleanup-evidence.md);
+[exit-transition follow-up](../testing/nf04-m2-exit-transition-evidence.md);
+[focused closure checkpoint](../testing/nf04-m2-cleanup-closure-evidence.md).
 [M2 orchestration decisions](../prediction-orchestration.md) and
 [M2 execution evidence](../testing/nf04-m2-evidence.md).
 [Contract decisions](../prediction-contracts.md) and
@@ -41,11 +46,13 @@ not a guarantee that all neurodegeneration-relevant systems can be modeled well.
 - NF-09 defines CPU tests and the opt-in real-runtime validation gate. NF-05/06
   consume descriptors and metric definitions rather than runtime-specific files.
 
-## 4. Proposed architecture and interfaces
+## 4. Architecture and interfaces
 
-`PredictionService.submit/get/cancel` lives in a proposed `application/` package
-and depends on core `JobRepository`, `ArtifactStore`, `WorkerDispatcher` and
-adapter capability records. HTTP handlers validate/submit/return; they do not
+`PredictionService.submit/get/cancel` is implemented in `application/` and uses
+core `DurableJobs`/`PublicationArchive` in `core/orchestration.py`, reference/variant
+repositories, and capability records. The older M1 `JobRepository` protocol is an
+unused proposal, retained for compatibility; it is not the transactional M2 seam.
+`PredictionWorker` uses the injected `ChildLauncher`; no dispatcher/runtime is registered. HTTP handlers validate/submit/return; they do not
 import or invoke a model. Composition selects storage/dispatch implementations.
 
 Preserve the synchronous worker seam:
@@ -60,7 +67,7 @@ validation. Paths are worker-internal, never public artifact URLs.
 
 Introduce SQLite **only here**, for durable job metadata and transactional
 claim/status/idempotency operations; use the standard-library adapter behind
-`JobRepository`. Immutable scientific inputs/outputs remain in ignored filesystem
+`DurableJobs`. Immutable scientific inputs/outputs remain in ignored filesystem
 stores. Initial topology: one API process and one separately launched worker on
 one host, one running job at a time. Atomic claim/version checks prevent duplicate
 execution; worker/API mutations use short transactions, never locks held through
@@ -187,7 +194,7 @@ causality. Affinity outputs are outside this single-chain MVP.
    samples/maps/confidence and complete successful-provenance contracts; pure
    publication validation, safe typed errors, schemas and offline synthetic tests.
    No execution/storage implementation. See the linked guide/evidence above.
-2. **M2 — Durable orchestration (complete):** SQLite
+2. **M2 — Durable orchestration (implemented; hardening re-review pending):** SQLite
    jobs/attempts/idempotency, fenced atomic transitions, separate child supervisor,
    leases/deadlines/cancellation, verified graph publication, retained reads and
    strict HTTP routes. Test-only controlled children copy authored M1 bundles;
@@ -272,7 +279,7 @@ not replace those terms.
   assembly/disorder limitations; failure on a target is reportable, not replaceable
   by a plausible synthetic result.
 
-## M1 boundary and carried gates
+## Historical M1 boundary and carried gates
 
 The public interfaces/identity documents and exact versions are specified in
 [the prediction guide](../prediction-contracts.md). NF-02/NF-03/NF-08 frozen
@@ -284,7 +291,36 @@ M2 owns SQLite/idempotency, transactional final fencing/state checks, staging an
 publication, supervisors and routes; M3 owns executable synthetic inference and
 its vertical slice; M4 chooses reviewed pinned real releases/licenses/weights and
 measures named hardware; M5 integrates real Boltz-2 execution. Independent review
-remains required at the real prediction/comparison gates. The NF-03 M3 container
-gap is carried forward: Compose configuration passed historically, but the stopped
-daemon prevented builds/smokes. Contract design is not blocked; close that gap
-when execution infrastructure changes, without relabeling historical evidence.
+remains required at the real prediction/comparison gates. The historical NF-03 M3
+stopped-daemon gap is superseded by newly executed variant route/publication and
+retained-linkage checks in the hardening checkpoint. Current acceptance gaps are
+listed there; historical reports are not relabeled as fresh execution.
+
+## Independent-review hardening gate
+
+The [separate checkpoint](../testing/nf04-m2-hardening-evidence.md) records H2/H3,
+M1–M5/M7–M10 and supervision findings, compatibility decisions, regression sensitivity,
+platform checks and deferred triggers. M3 begins only after independent re-review of
+this checkpoint. H1 and reference ambiguity are separately required corrections
+before scientific use of biological mappings; no alignment policy changes belong here.
+
+
+The second pass addresses O1 mapping lineage, W1 failure classification, missing
+failure-extension routing, sensitive regressions and W2 bounded controlled-child
+startup. Subsequent review conditionally approves moving forward after the five
+focused cleanup closure items; the closure checkpoint records their targeted
+verification. An authorized first hosted CI run remains required. M3 must
+include the [explicit entry conditions](../prediction-orchestration.md#second-review-hardening-and-m3-entry-conditions):
+worker readiness/restart policy, upgrade order and schema-version guard, terminal
+write retries, M6 mutation recovery UX and child-staged dependency naming. These
+are tracked requirements, not completed features.
+
+
+The focused closure includes EXIT-R5-01 bounded Darwin signal retries,
+EXIT-R5-02 bounded uncertain-outcome recording, EXIT-R5-03 persistent blocking and
+exit diagnostics, EXIT-R5-04 launcher ownership transfer, and DOC-R5 manual
+recovery. These narrow protections must remain in M3. General readiness/restart,
+schema compatibility, remaining terminal/publication retries, mutation recovery,
+dependency naming and W6/H-01 harness conditions are still explicit M3 scope.
+H1 mapping correction and biological-foundation review remain separate required
+work before scientific interpretation or NF-05/NF-06 acceptance.

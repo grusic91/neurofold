@@ -20,6 +20,7 @@ from test_variants import snapshot
 from neurofold.adapters.biological.storage import FilesystemStore
 from neurofold.api.composition import Services, compose
 from neurofold.api.configuration import Settings
+from neurofold.api.execution import BlockingExecutor
 from neurofold.api.main import create_app
 from neurofold.api.variants import EXAMPLE_REQUEST, EXAMPLE_RESPONSE, VariantResponse
 from neurofold.core.variants import (
@@ -30,6 +31,20 @@ from neurofold.core.variants import (
 
 URL = "/v1/variants/" + VARIANT_ID
 BODY = dict(EXAMPLE_REQUEST)
+
+
+@pytest.fixture
+def captured_executors(monkeypatch: pytest.MonkeyPatch) -> list[BlockingExecutor]:
+    """Keep the timeout trigger separate from later capacity/result verification."""
+    captured: list[BlockingExecutor] = []
+
+    def create(workers: int, seconds: float) -> BlockingExecutor:
+        executor = BlockingExecutor(workers, seconds)
+        captured.append(executor)
+        return executor
+
+    monkeypatch.setattr("neurofold.api.main.BlockingExecutor", create)
+    return captured
 
 
 def setup(
@@ -354,12 +369,12 @@ def test_publication_io_uncertainty_and_verified_recovery(
 def test_concurrent_http_contenders_overlap_at_atomic_publication(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    settings, services, store = setup(tmp_path, workers=4)
+    settings, services, store = setup(tmp_path, workers=4, seconds=30)
     contenders = Barrier(4)
     original_link = os.link
 
     def concurrent_link(*args: Any, **kwargs: Any) -> None:
-        contenders.wait(timeout=5)
+        contenders.wait(timeout=30)
         original_link(*args, **kwargs)
 
     monkeypatch.setattr(os, "link", concurrent_link)
@@ -395,9 +410,10 @@ def test_http_worker_accounting_late_publication_and_recovery(
     monkeypatch: pytest.MonkeyPatch,
     caplog: pytest.LogCaptureFixture,
     outcome: str,
+    captured_executors: list[BlockingExecutor],
 ) -> None:
     settings, services, _ = setup(
-        tmp_path, workers=1, seconds=0.1 if outcome == "timeout" else 5
+        tmp_path, workers=1, seconds=0.1 if outcome == "timeout" else 30
     )
     entered, release = Event(), Event()
     original_link = os.link
@@ -405,7 +421,7 @@ def test_http_worker_accounting_late_publication_and_recovery(
 
     def blocked_link(*args: Any, **kwargs: Any) -> None:
         entered.set()
-        assert release.wait(5)
+        assert release.wait(30)
         original_link(*args, **kwargs)
 
     monkeypatch.setattr(os, "link", blocked_link)
@@ -419,7 +435,7 @@ def test_http_worker_accounting_late_publication_and_recovery(
         ):
             task = asyncio.create_task(client.post("/v1/variants", json=BODY))
             try:
-                assert await asyncio.to_thread(entered.wait, 5)
+                assert await asyncio.to_thread(entered.wait, 30)
                 assert (await client.get("/health")).json() == {"status": "ok"}
                 if outcome == "timeout":
                     failure = error(await task, 504, "OPERATION_TIMEOUT")
@@ -432,6 +448,9 @@ def test_http_worker_accounting_late_publication_and_recovery(
                     task.cancel()
                     with pytest.raises(asyncio.CancelledError):
                         await task
+                # The 100 ms budget deliberately expires only the held mutation.
+                # Successful recovery reads are not latency benchmarks.
+                captured_executors[0].seconds = 30
                 rejected = error(await client.get(URL), 429, "ADMISSION_LIMIT")
                 assert rejected["retryable"] is True
                 release.set()
@@ -439,7 +458,7 @@ def test_http_worker_accounting_late_publication_and_recovery(
                     assert (await task).status_code == 201
                 # Poll the actual admission boundary, bounded; success proves capacity
                 # recovery after completion; events synchronize the race.
-                async with asyncio.timeout(5):
+                async with asyncio.timeout(30):
                     while True:
                         recovered = await client.get(URL)
                         if recovered.status_code != 429:
@@ -669,12 +688,12 @@ def test_late_failure_is_observed_logged_and_shutdown_drains(
     caplog: pytest.LogCaptureFixture,
     cancel: bool,
 ) -> None:
-    settings, services, _ = setup(tmp_path, workers=1, seconds=0.1)
+    settings, services, _ = setup(tmp_path, workers=1, seconds=30 if cancel else 0.1)
     entered, release, finished = Event(), Event(), Event()
 
     def failure(*args: Any, **kwargs: Any) -> None:
         entered.set()
-        assert release.wait(5)
+        assert release.wait(30)
         try:
             raise OSError("secret /private/archive MACAG")
         finally:
@@ -691,7 +710,7 @@ def test_late_failure_is_observed_logged_and_shutdown_drains(
         ) as client:
             task = asyncio.create_task(client.post("/v1/variants", json=BODY))
             try:
-                assert await asyncio.to_thread(entered.wait, 5)
+                assert await asyncio.to_thread(entered.wait, 30)
                 if cancel:
                     task.cancel()
                     with pytest.raises(asyncio.CancelledError):

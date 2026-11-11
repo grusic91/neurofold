@@ -5,10 +5,12 @@ from collections.abc import Callable
 from contextlib import AbstractContextManager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, Protocol
+from typing import Literal, Protocol, runtime_checkable
 
 from neurofold.core.biological import ReferenceSnapshot
 from neurofold.core.prediction_bundle import ChildBundle
+from neurofold.core.prediction_failure import FailureReason as FailureReason
+from neurofold.core.prediction_failure import OperationalFailure
 from neurofold.core.prediction_inputs import PredictionSpec
 from neurofold.core.prediction_jobs import PredictionJob
 from neurofold.core.prediction_outputs import (
@@ -17,16 +19,6 @@ from neurofold.core.prediction_outputs import (
 )
 from neurofold.core.provenance import ContentReference
 from neurofold.core.variants import VariantDefinition
-
-FailureReason = Literal[
-    "WORKER_LOST",
-    "TIMEOUT",
-    "SHUTDOWN",
-    "CHILD_FAILED",
-    "INVALID_OUTPUT",
-    "PUBLICATION_FAILED",
-    "SUPERVISION_FAILED",
-]
 
 
 class OrchestrationError(RuntimeError):
@@ -38,6 +30,8 @@ class OrchestrationError(RuntimeError):
             "JOB_CONFLICT",
             "PROFILE_UNAVAILABLE",
             "PREDICTION_BUSY",
+            "PREDICTION_QUEUE_FULL",
+            "PREDICTION_MUTATION_UNCERTAIN",
             "PREDICTION_UNAVAILABLE",
             "CODE_IDENTITY_REQUIRED",
         ],
@@ -66,6 +60,8 @@ class Publication:
 
 class DurableJobs(Protocol):
     def get(self, job_id: str) -> PredictionJob: ...
+    def failure(self, job_id: str) -> OperationalFailure: ...
+    def snapshot(self, job_id: str) -> tuple[PredictionJob, FailureReason | None]: ...
     def reason(self, job_id: str) -> FailureReason | None: ...
     def submit(
         self, spec: PredictionSpec, key: str, retry: str | None, *, available: bool
@@ -93,7 +89,28 @@ class Child(Protocol):
     def reap(self) -> int: ...
 
 
+@runtime_checkable
+class IdentifiedChild(Protocol):
+    @property
+    def process_id(self) -> int: ...
+
+    @property
+    def process_group_id(self) -> int: ...
+
+
+class LaunchCleanupError(RuntimeError):
+    """Launch failed after spawning; transfer the unconfirmed child to the caller."""
+
+    def __init__(self, child: Child) -> None:
+        self.child = child
+        super().__init__("Launch cleanup unconfirmed")
+
+
 class ChildLauncher(Protocol):
+    """Own a spawned child until return. Ordinary errors guarantee cleanup;
+    LaunchCleanupError explicitly transfers uncertain cleanup to the caller.
+    """
+
     def launch(self, directory: Path, job: PredictionJob) -> Child: ...
 
 
@@ -110,6 +127,7 @@ class PublicationArchive(Protocol):
         reference: ReferenceSnapshot,
         variant: VariantDefinition | None,
         now: str,
+        checkpoint: Callable[[], None] = lambda: None,
     ) -> Publication: ...
     def verify(
         self, job: PredictionJob

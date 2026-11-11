@@ -55,7 +55,11 @@ def error_response(
         status_code=status,
         headers={
             "X-Request-ID": request_id,
-            **({"Retry-After": "1"} if status == 429 else {}),
+            **(
+                {"Retry-After": "1"}
+                if status == 429 or (status == 503 and retryable)
+                else {}
+            ),
         },
     )
 
@@ -72,20 +76,22 @@ def translate(
             "INVALID_IDEMPOTENCY_KEY": 422,
             "IDEMPOTENCY_CONFLICT": 409,
             "JOB_CONFLICT": 409,
+            "PREDICTION_QUEUE_FULL": 429,
         }.get(exc.code, 503)
         return error_response(
             request_id,
             status,
             exc.code,
             "Prediction operation could not be completed.",
+            retryable=exc.code in ("PREDICTION_BUSY", "PREDICTION_QUEUE_FULL"),
             details={
                 "publication_may_complete": True,
                 "automatic_retry": False,
                 "recovery": (
-                    "Read the job or deliberately repeat the same idempotency key."
+                    "Read the known job or deliberately repeat the same submission key."
                 ),
             }
-            if mutating and status == 503
+            if exc.code == "PREDICTION_MUTATION_UNCERTAIN"
             else {},
         )
     if isinstance(exc, PredictionError):

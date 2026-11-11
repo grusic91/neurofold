@@ -5,12 +5,14 @@ from collections.abc import Callable
 from dataclasses import replace
 from typing import Any
 
+from neurofold.application.prediction_identity import scope_outputs
 from neurofold.core.biological import ReferenceRepository
 from neurofold.core.canonical import sequence_sha256, sha256_bytes
-from neurofold.core.errors import ArchiveIntegrityError
+from neurofold.core.errors import ArchiveIntegrityError, InvalidChildOutput
 from neurofold.core.orchestration import (
     Clock,
     DurableJobs,
+    FailureReason,
     OrchestrationError,
     PublicationArchive,
 )
@@ -42,6 +44,7 @@ class PredictionService:
         *,
         profiles: tuple[PredictionProfile, ...],
         code: CodeIdentity | None,
+        code_invalid: bool = False,
         clock: Clock,
         worker_available: Callable[[], bool] = lambda: False,
     ) -> None:
@@ -51,6 +54,7 @@ class PredictionService:
             references,
             variants,
         )
+        self.code_invalid = code_invalid
         self.profiles, self.code, self.clock, self.worker_available = (
             profiles,
             code,
@@ -70,14 +74,19 @@ class PredictionService:
         msa_artifact_id: str | None,
         retry_of_job_id: str | None,
     ) -> PredictionJob:
+        if self.code_invalid:
+            raise OrchestrationError("CODE_IDENTITY_REQUIRED")
         if re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", key) is None:
             raise OrchestrationError("INVALID_IDEMPOTENCY_KEY")
-        reference = self.references.get(reference_id)
-        if reference.reference_id != reference_id:
-            raise ArchiveIntegrityError("Reference repository identity mismatch")
-        variant = self.variants.get(variant_id) if variant_id is not None else None
-        if variant is not None and variant.variant_id != variant_id:
-            raise ArchiveIntegrityError("Variant repository identity mismatch")
+        try:
+            reference = self.references.get(reference_id)
+            if reference.reference_id != reference_id:
+                raise ArchiveIntegrityError("Reference repository identity mismatch")
+            variant = self.variants.get(variant_id) if variant_id is not None else None
+            if variant is not None and variant.variant_id != variant_id:
+                raise ArchiveIntegrityError("Variant repository identity mismatch")
+        except OSError as exc:
+            raise OrchestrationError("PREDICTION_UNAVAILABLE") from exc
         profile = next(
             (p for p in self.profiles if p.profile.name == adapter_profile_id), None
         )
@@ -121,11 +130,15 @@ class PredictionService:
             transformations=(),
         )
         validate_inputs(spec, reference=reference, variant=variant, profile=profile)
+        try:
+            available = profile.availability == "available" and self.worker_available()
+        except OSError as exc:
+            raise OrchestrationError("PREDICTION_UNAVAILABLE") from exc
         job = self.jobs.submit(
             spec,
             key,
             retry_of_job_id,
-            available=profile.availability == "available" and self.worker_available(),
+            available=available,
         )
 
         if job.state == "succeeded":
@@ -137,6 +150,12 @@ class PredictionService:
         if job.state == "succeeded":
             self.archive.verify(job)
         return job
+
+    def snapshot(self, job_id: str) -> tuple[PredictionJob, FailureReason | None]:
+        job, reason = self.jobs.snapshot(job_id)
+        if job.state == "succeeded":
+            self.archive.verify(job)
+        return job, reason
 
     def cancel(self, job_id: str) -> PredictionJob:
         return self.jobs.cancel(job_id)
@@ -150,7 +169,12 @@ class PredictionService:
         return self.archive.verify(job)
 
     def publish(
-        self, owner: PredictionJob, bundle: ChildBundle, launch: PredictionJob
+        self,
+        owner: PredictionJob,
+        bundle: ChildBundle,
+        launch: PredictionJob,
+        *,
+        checkpoint: Callable[[], None] = lambda: None,
     ) -> PredictionJob:
         # Validate original linkage before sealing only operational attempt fields.
         if (
@@ -166,7 +190,8 @@ class PredictionService:
             or bundle.manifest.execution.job_id != owner.job_id
             or bundle.manifest.execution.started_at != launch.started_at
         ):
-            raise ArchiveIntegrityError("Child proposal ownership mismatch")
+            raise InvalidChildOutput("Child proposal ownership mismatch")
+        checkpoint()
         reference = self.references.get(owner.spec.reference.record_id)
         variant = (
             self.variants.get(owner.spec.variant.record_id)
@@ -188,10 +213,13 @@ class PredictionService:
             ),
         )
         bundle = replace(bundle, result=result, manifest=manifest)
+        bundle = scope_outputs(owner, bundle)
         intent_id = self.jobs.begin_publication(owner)
         with self.archive.lock():
             publication = self.archive.register(
-                intent_id, owner, bundle, reference, variant, now
+                intent_id, owner, bundle, reference, variant, now, checkpoint
             )
+            checkpoint()
             self.jobs.ready(publication)
+            checkpoint()
             return self.jobs.succeed(publication)

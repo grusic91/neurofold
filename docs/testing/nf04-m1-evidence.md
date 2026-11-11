@@ -1,5 +1,9 @@
 # NF-04 M1 — Contracts/capabilities acceptance evidence
 
+Historical implementing-agent evidence for the named source state below. The
+independent review found additional blockers; this document is not current approval.
+See the [separate hardening checkpoint](nf04-m2-hardening-evidence.md).
+
 Date: 2026-11-10. Implementing-agent software validation against initially clean
 `df4c6960bb16e9095e1c24498b5b1481b50e7045`. **M1 complete; M2–M5 remain open.**
 Existing NF-02, NF-03 and NF-08 work was inspected and preserved. Changes remain

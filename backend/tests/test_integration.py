@@ -272,7 +272,7 @@ def test_validation_health_openapi_and_lazy_composition() -> None:
         assert client.get("/v1/unknown").json()["error"]["code"] == "NOT_FOUND"
         method = client.post("/v1/proteins")
         assert method.status_code == 405 and method.headers["Allow"] == "GET"
-        assert len(client.get("/openapi.json").json()["paths"]) == 20
+        assert len(client.get("/openapi.json").json()["paths"]) == 21
         assert client.get("/v1/proteins/invalid").status_code == 422
         assert client.get("/v1/proteins/P00001?extra=1").status_code == 400
         assert (
@@ -751,7 +751,7 @@ import sys
 assert not any(name in sys.modules for name in ("gemmi", "Bio", "numpy"))
 """
     result = subprocess.run(
-        [sys.executable, "-c", script], capture_output=True, text=True, timeout=10
+        [sys.executable, "-c", script], capture_output=True, text=True, timeout=30
     )
     assert result.returncode == 0, result.stderr
 

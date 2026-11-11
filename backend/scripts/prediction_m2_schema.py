@@ -3,10 +3,10 @@
 import json
 from pathlib import Path
 
-from prediction_schema import schema_for
-
 from neurofold.core.prediction_bundle import ChildBundle
+from neurofold.core.prediction_failure import OperationalFailure
 from neurofold.core.prediction_jobs import PredictionJob
+from scripts.prediction_schema import schema_for
 
 
 def schemas() -> dict[str, dict[str, object]]:
@@ -36,7 +36,11 @@ def schemas() -> dict[str, dict[str, object]]:
             },
         }
     )
-    return {"child-proposal": child, "prediction-status": status}
+    return {
+        "child-proposal": child,
+        "prediction-status": status,
+        "prediction-failure": schema_for((OperationalFailure,), "prediction-failure"),
+    }
 
 
 def main() -> None:

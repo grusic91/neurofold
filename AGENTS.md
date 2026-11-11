@@ -47,12 +47,16 @@ task requires it. NF-01 must not install or execute Boltz-2.
 
 ## Required checks
 
+The authoritative current checklist is this section; README, task guidance and CI
+must match it. Install with `uv sync --locked` and `npm ci` first. CI runs the
+backend checks on Python 3.12 and 3.13.
+
 Run from `backend/`:
 
 ```sh
-uv run --locked ruff check .
-uv run --locked ruff format --check .
-uv run --locked mypy src tests
+uv run --locked ruff check . ../infra/testing
+uv run --locked ruff format --check . ../infra/testing
+uv run --locked mypy src tests scripts ../infra/testing
 uv run --locked pytest
 ```
 
@@ -62,6 +66,10 @@ Run from `frontend/`:
 npm run lint
 npm run typecheck
 npm run build
+npm run test
+npm run test:browser:install
+npm run test:browser
+npm run test:integration
 ```
 
 Validate infrastructure changes with `docker compose config --quiet`. When a

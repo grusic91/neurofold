@@ -107,7 +107,8 @@ The process lazily creates the private directory on first biological operation.
 An existing root should be accessible only to the trusted operator. Symlink roots
 and parent traversal are rejected. Hard-link and fsync support are required.
 Never run cleanup/eviction tools over the archive. There is no retention UI,
-database, authentication, job system or distributed coordination.
+authentication or distributed coordination. NF-04 M2 uses local SQLite job
+metadata and a separately launched supervisor.
 
 From `frontend/`, run `npm ci` and `npm run dev`. Browser API requests default to
 `/api/health` and `/api/v1/...`; Vite strips `/api` and forwards to
@@ -273,7 +274,7 @@ remain separate gates; a sequence hypothesis is no disease-effect claim.
 See [executed M3 evidence](testing/nf03-m3-evidence.md).
 
 
-## NF-04 M1 contract boundary
+## Historical NF-04 M1 contract boundary
 
 [Prediction contracts](prediction-contracts.md) are pure core records and injected
 validators. The synchronous worker seam now accepts an authoritative resolved
@@ -289,9 +290,9 @@ open until the next execution-infrastructure checkpoint.
 ## NF-04 M2 prediction integration
 
 The [orchestration guide](prediction-orchestration.md) supersedes the historical
-M1-only boundary above. Seven prediction resource paths now expose static
+M1-only boundary above. Eight prediction resource paths now expose static
 capabilities, idempotent submit/get/cancel, result/manifest and graph-bound raw
-artifacts. Job HTTP bodies use the explicit versioned status envelope around the
+artifacts and a checksummed operational failure extension. Job HTTP bodies use the explicit versioned status envelope around the
 unchanged M1 job. Required nulls and Idempotency-Key, status/error precedence,
 Location/Retry-After and uncertain mutation outcomes are specified there.
 
@@ -311,3 +312,14 @@ silently creating new empty history. Retain DB/WAL, identity marker and archive
 together. A successful job verifies its complete retained graph on every read,
 including duplicate submissions. Missing/corrupt required dependencies are 500
 integrity failures. Recovery never overwrites retained data or reruns inference.
+
+See the [second-pass checkpoint](testing/nf04-m2-hardening-pass2-evidence.md) and
+[historical first pass](testing/nf04-m2-hardening-evidence.md) for the
+historical review disposition, failure extension compatibility, configuration/
+contention errors, variant container acceptance and remaining deployment gates.
+The broad first-pass configuration claim is limited: symlinked prediction
+sub-folders are not consistently translated to 503 CONFIGURATION_ERROR. This
+remains a tracked configuration/error-translation gap; no uniform response is
+promised for that topology. Current cleanup evidence is in the
+[focused cleanup closure](testing/nf04-m2-cleanup-closure-evidence.md).
+The historical NF-03/M1 stopped-daemon gap is tracked there, not silently waived.

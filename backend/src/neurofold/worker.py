@@ -40,6 +40,7 @@ def main() -> None:
         for value in (signal.SIGINT, signal.SIGTERM):
             signal.signal(value, lambda number, frame: worker.stop.set())
         worker.run()
+        raise SystemExit(worker.exit_code)
 
 
 if __name__ == "__main__":

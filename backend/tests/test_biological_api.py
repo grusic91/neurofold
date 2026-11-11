@@ -318,7 +318,7 @@ def test_openapi_contract_and_production_scope() -> None:
         # M4 intentionally replaces the historical health-only route assertion;
         # the fixed harness and frozen schema above remain compatibility evidence.
         assert "/health" in paths and "/v1/proteins" in paths
-        assert len(paths) == 20  # NF-04 M2 adds seven prediction resource paths
+        assert len(paths) == 21  # M2 includes the operational failure extension.
 
 
 def test_frozen_http_schema_matches_models_and_fixtures() -> None:

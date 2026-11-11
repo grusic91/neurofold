@@ -4,8 +4,12 @@ Status: NF-01, NF-08 M1 shared [provenance contracts](provenance-contracts.md),
 NF-09 M1 [test foundation](testing/README.md), and NF-02 M1–M4 biological data
 integration, [NF-03 M1–M3 substitutions, identity/storage and HTTP](variants.md),
 and [NF-04 M1 prediction contracts](prediction-contracts.md) plus
-[M2 durable orchestration](prediction-orchestration.md) are implemented and verified.
-[M2 evidence](testing/nf04-m2-evidence.md) records native and Linux acceptance.
+[M2 durable orchestration](prediction-orchestration.md) have implementing-agent
+acceptance evidence. M2 has conditional approval subject to the focused cleanup closure; an authorized
+first hosted CI checkpoint is still required before M3.
+[Historical M2 evidence](testing/nf04-m2-evidence.md) records the original runs;
+[focused closure evidence](testing/nf04-m2-cleanup-closure-evidence.md) records
+targeted verification and the remaining hosted CI/M3 gates.
 NF-03 M3 HTTP integration is implemented; variant interaction remains NF-07 work.
 [M2 lookup/pinning](uniprot-lookup.md) and
 [M3 structure imports/maps](structure-import.md) are composed into operational
@@ -35,8 +39,9 @@ diagnose disease, or establish causality from predicted structural differences.
 
 Read this plan with [AGENTS.md](../AGENTS.md), [README.md](../README.md),
 [architecture.md](architecture.md) and [integration.md](integration.md). These
-documents describe the implemented foundation and NF-02 M1–M4 behavior. Endpoint
-names and packages for later tasks below remain proposed future work.
+documents describe the implemented biological, variant and NF-04 M1/M2 foundation.
+NF-04 M2 exposes eight prediction resource paths, including the failure extension;
+M3–M5 and later unimplemented tasks remain proposed.
 
 - Backend: Python 3.12+, FastAPI application factory, the unchanged `GET /health`
   liveness contract, eight operational biological `/v1` routes and two retained
@@ -116,7 +121,7 @@ Record rejected inputs rather than silently approximating them.
 | --- | --- | --- |
 | [NF-02 Biological data](tasks/NF-02-biological-data.md) | UniProt/RCSB adapters, immutable reference snapshots and structure imports | NF-01; NF-08 M1 contracts |
 | [NF-03 Protein variants](tasks/NF-03-protein-variants.md) | M1 pure domain, M2 immutable identity/storage and M3 HTTP complete; interaction later | NF-02 snapshots; NF-08 M1 |
-| [NF-04 Prediction engine](tasks/NF-04-prediction-engine.md) | M1 contracts complete; M2 durable orchestration complete; M3 fake execution and M4/M5 real runtime open | NF-03; NF-08 M1 |
+| [NF-04 Prediction engine](tasks/NF-04-prediction-engine.md) | M1 contracts complete; M2 durable orchestration plus review hardening; M3 fake execution and M4/M5 real runtime open | NF-03; NF-08 M1 |
 | [NF-05 Molecular viewer](tasks/NF-05-molecular-viewer.md) | Mol* viewing, mapped selection and confidence display | NF-02 imports/mapping; NF-08 M1; NF-04 for predicted artifacts |
 | [NF-06 Structure comparison](tasks/NF-06-structure-comparison.md) | Explicit mapping, alignment and reproducible metrics | NF-03; NF-04; NF-08 M1; NF-05 for overlays |
 | [NF-07 Research workflow](tasks/NF-07-research-workflow.md) | Integrated UI with recoverable states and provenance | NF-02 through NF-06; NF-08 export |
@@ -217,7 +222,9 @@ design before exposure.
 ## Shared identifiers, schemas and HTTP conventions
 
 NF-02 biological `/v1` routes and their audit subresources are operational since
-M4; NF-03 M3 adds operational variant POST/GET. Other later routes remain proposed. Browsers use `/api/v1`
+M4; NF-03 M3 adds operational variant POST/GET. NF-04 M2 adds prediction
+capabilities, submit/get/cancel, result/manifest/artifact and failure reads.
+Other unimplemented task routes remain proposed. Browsers use `/api/v1`
 through existing development routing. `GET /health` retains its NF-01 liveness
 contract. Production must configure equivalent API routing before a deployed
 workflow is supported.

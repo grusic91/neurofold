@@ -7,6 +7,10 @@ class ArchiveIntegrityError(ValueError):
     """Known retained data is damaged or a required dependency is missing."""
 
 
+class InvalidChildOutput(ArchiveIntegrityError):
+    """An unregistered child proposal violates its output/ownership contract."""
+
+
 class ArchiveConflict(ValueError):
     """An immutable identifier is already bound to different bytes."""
 

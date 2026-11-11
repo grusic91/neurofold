@@ -24,6 +24,7 @@ from neurofold.application.structures import StructureService
 from neurofold.application.variants import VariantService
 from neurofold.core.biological import ExperimentalStructureCatalog, ProteinCatalog
 from neurofold.core.lookup import PinReceipt
+from neurofold.core.orchestration import OrchestrationError
 from neurofold.core.prediction_inputs import CodeIdentity, capabilities
 from neurofold.core.provenance import ArtifactStore
 
@@ -76,11 +77,27 @@ def compose(settings: Settings) -> Services:
 
 
 def compose_predictions(settings: Settings) -> PredictionService:
-    archive = FilesystemStore(settings.archive_root)
+    try:
+        return _compose_predictions(settings)
+    except OSError as exc:
+        # No submission/cancellation operation has started during composition.
+        raise OrchestrationError("PREDICTION_UNAVAILABLE") from exc
+
+
+def _compose_predictions(settings: Settings) -> PredictionService:
+    try:
+        archive = FilesystemStore(settings.archive_root)
+    except ValueError as exc:
+        raise ConfigurationError("Archive configuration is unsupported") from exc
     prediction_root = archive.root / "predictions"
     jobs = SQLiteJobs(prediction_root / "jobs.sqlite3")
     code_json = os.environ.get("NEUROFOLD_CODE_IDENTITY")
-    code = CodeIdentity.from_json(code_json.encode("utf-8")) if code_json else None
+    code = None
+    code_error = False
+    try:
+        code = CodeIdentity.from_json(code_json.encode("utf-8")) if code_json else None
+    except ValueError:
+        code_error = True
     return PredictionService(
         jobs,
         PredictionArchive(prediction_root / "registered", jobs, archive.artifact_store),
@@ -88,6 +105,7 @@ def compose_predictions(settings: Settings) -> PredictionService:
         FilesystemVariants(archive, archive),
         profiles=tuple(p for c in capabilities() for p in c.profiles),
         code=code,
+        code_invalid=code_error,
         clock=utc_now,
     )
 

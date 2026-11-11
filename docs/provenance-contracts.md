@@ -196,9 +196,9 @@ services or research data:
 
 ```sh
 uv sync --locked
-uv run --locked ruff check .
-uv run --locked ruff format --check .
-uv run --locked mypy src tests
+uv run --locked ruff check . ../infra/testing
+uv run --locked ruff format --check . ../infra/testing
+uv run --locked mypy src tests scripts ../infra/testing
 uv run --locked pytest
 ```
 

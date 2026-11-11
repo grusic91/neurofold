@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from threading import Event
@@ -14,14 +15,18 @@ from prediction_examples import ENDED
 
 from neurofold.adapters.prediction_process import ProcessChild, ProcessLauncher
 from neurofold.application.prediction_worker import PredictionWorker
+from neurofold.core.orchestration import LaunchCleanupError
 from neurofold.core.prediction_jobs import PredictionJob
 
 
 class ControlledLauncher(ProcessLauncher):
-    def __init__(self, mode: str = "copy") -> None:
+    def __init__(self, mode: str = "copy", *, ready_seconds: float = 30) -> None:
         super().__init__("orchestration_child", grace=0.1)
         self.mode = mode
         self.started = Event()
+        self.spawned = Event()
+        self.stop = Event()
+        self.ready_seconds = ready_seconds
         self.child: ProcessChild | None = None
         self.directory: Path | None = None
 
@@ -29,12 +34,43 @@ class ControlledLauncher(ProcessLauncher):
         (directory / "control.json").write_text(json.dumps({"mode": self.mode}))
         (directory / "proposal.json").write_bytes(bundle_for(job).to_json())
         os.mkfifo(directory / "ready.fifo")
-        child = super().launch(directory, job)
-        self.child, self.directory = child, directory
-        with (directory / "ready.fifo").open("rb", buffering=0) as ready:
-            assert ready.read(5) == b"ready"
-        self.started.set()
-        return child
+        reader = os.open(directory / "ready.fifo", os.O_RDONLY | os.O_NONBLOCK)
+        child = None
+        deadline = time.monotonic() + min(
+            self.ready_seconds, job.spec.profile.limits.max_seconds
+        )
+        try:
+            try:
+                child = super().launch(directory, job)
+                self.child, self.directory = child, directory
+                self.spawned.set()
+                token = b""
+                while True:
+                    if self.stop.is_set():
+                        raise RuntimeError("Controlled child startup interrupted")
+                    try:
+                        token += os.read(reader, 5 - len(token))
+                    except BlockingIOError:
+                        pass
+                    if token == b"ready":
+                        self.started.set()
+                        return child
+                    if not b"ready".startswith(token):
+                        raise RuntimeError("Invalid controlled child readiness signal")
+                    if child.poll() is not None:
+                        raise RuntimeError("Controlled child exited before readiness")
+                    if time.monotonic() >= deadline:
+                        raise TimeoutError("Controlled child readiness timed out")
+                    self.stop.wait(0.01)
+            finally:
+                os.close(reader)
+        except BaseException:
+            if child is not None:
+                try:
+                    child.terminate_and_reap()
+                except Exception as exc:
+                    raise LaunchCleanupError(child) from exc
+            raise
 
 
 @pytest.fixture(autouse=True)
@@ -211,3 +247,48 @@ def test_heartbeat_database_failure_stops_and_reaps_child(
     assert service.get(job.job_id).state == "failed"
     assert service.jobs.reason(job.job_id) == "SUPERVISION_FAILED"
     assert launcher.child is not None and launcher.child.process.returncode == -9
+
+
+@pytest.mark.parametrize(
+    "mode", ["exit_before_ready", "no_ready", "bad_ready", "startup_shutdown"]
+)
+def test_startup_wait_is_bounded_interruptible_and_reaps(
+    tmp_path: Path, mode: str
+) -> None:
+    service = service_for(tmp_path, ManualClock())
+    queued = submit(service)
+    launcher = ControlledLauncher(
+        "no_ready" if mode == "startup_shutdown" else mode,
+        ready_seconds=0.25 if mode == "no_ready" else 30,
+    )
+    worker = PredictionWorker(service, launcher, tmp_path / "staging")
+    launcher.stop = worker.stop
+    with ThreadPoolExecutor(1) as pool:
+        future = pool.submit(worker.once)
+        try:
+            assert launcher.spawned.wait(10)
+            if mode == "startup_shutdown":
+                worker.stop.set()
+            if mode == "exit_before_ready":
+                assert launcher.child is not None
+                assert launcher.child.process.wait(timeout=15) == 17
+                assert future.result(2)
+            else:
+                assert future.result(2 if mode == "startup_shutdown" else 15)
+            assert not launcher.started.is_set()
+            assert launcher.child is not None
+            assert launcher.child.poll() is not None
+            assert launcher.child.death_writer == -1
+            with pytest.raises(ProcessLookupError):
+                os.killpg(launcher.child.process.pid, 0)
+        finally:
+            # Cleanup after assertions cannot turn a launcher leak into a pass.
+            worker.stop.set()
+            if launcher.child is not None and launcher.child.poll() is None:
+                launcher.child.terminate_and_reap()
+    assert service.get(queued.job_id).state == "failed"
+    assert service.jobs.failure(queued.job_id).cause == (
+        "SHUTDOWN" if mode == "startup_shutdown" else "SUPERVISION_FAILED"
+    )
+    if mode == "exit_before_ready":
+        assert launcher.child.process.returncode == 17

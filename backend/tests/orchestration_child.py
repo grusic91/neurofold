@@ -32,8 +32,13 @@ def main(directory: Path) -> None:
     if liveness.exists():
         # Test observer receives EOF only when the orphan child actually exits.
         os.open(liveness, os.O_WRONLY)
+    if control["mode"] == "exit_before_ready":
+        raise SystemExit(17)
+    if control["mode"] == "no_ready":
+        while True:
+            signal.pause()
     with (directory / "ready.fifo").open("wb", buffering=0) as ready:
-        ready.write(b"ready")
+        ready.write(b"wrong" if control["mode"] == "bad_ready" else b"ready")
     if control["mode"] in ("wait", "ignore"):
         while True:
             signal.pause()

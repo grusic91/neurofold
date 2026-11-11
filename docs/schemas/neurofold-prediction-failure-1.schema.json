@@ -1,0 +1,101 @@
+{
+  "$comment": "Shape schema; strict codecs and semantic validation required.",
+  "$defs": {
+    "ContentHash": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "enum": [
+            "sha256"
+          ]
+        },
+        "encoding": {
+          "enum": [
+            "raw-bytes/1",
+            "sequence-ascii/1",
+            "neurofold-json/1"
+          ],
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sha256",
+        "encoding",
+        "algorithm"
+      ],
+      "type": "object"
+    },
+    "ContentReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "$ref": "#/$defs/ContentHash"
+        },
+        "record_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "content_hash"
+      ],
+      "type": "object"
+    },
+    "OperationalFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_id": {
+          "type": "string"
+        },
+        "cause": {
+          "enum": [
+            "WORKER_LOST",
+            "TIMEOUT",
+            "SHUTDOWN",
+            "CHILD_FAILED",
+            "INVALID_OUTPUT",
+            "PUBLICATION_FAILED",
+            "SUPERVISION_FAILED"
+          ]
+        },
+        "ended_at": {
+          "type": "string"
+        },
+        "job": {
+          "$ref": "#/$defs/ContentReference"
+        },
+        "retry_policy": {
+          "enum": [
+            "explicit-new-job-same-spec"
+          ]
+        },
+        "schema_version": {
+          "enum": [
+            "neurofold-prediction-failure/1"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "job",
+        "attempt_id",
+        "cause",
+        "ended_at",
+        "retry_policy"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:neurofold:prediction-failure:1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/OperationalFailure"
+    }
+  ],
+  "title": "NeuroFold prediction-failure v1 exchange shapes"
+}

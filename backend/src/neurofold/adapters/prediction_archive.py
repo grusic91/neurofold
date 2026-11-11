@@ -2,7 +2,7 @@
 
 import fcntl
 import io
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import replace
 from pathlib import Path
@@ -11,8 +11,8 @@ from neurofold.adapters.biological.storage import FilesystemStore
 from neurofold.adapters.prediction_sqlite import SQLiteJobs
 from neurofold.core.biological import ReferenceSnapshot
 from neurofold.core.canonical import sha256_bytes
-from neurofold.core.errors import ArchiveIntegrityError
-from neurofold.core.orchestration import Publication, Registration
+from neurofold.core.errors import ArchiveIntegrityError, InvalidChildOutput
+from neurofold.core.orchestration import OrchestrationError, Publication, Registration
 from neurofold.core.prediction_bundle import ChildBundle
 from neurofold.core.prediction_jobs import PredictionJob
 from neurofold.core.prediction_outputs import (
@@ -71,7 +71,10 @@ class PredictionArchive:
     @contextmanager
     def lock(self) -> Iterator[None]:
         with (self.store.root / "publication.lock").open("a+b") as stream:
-            fcntl.flock(stream, fcntl.LOCK_EX)
+            try:
+                fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError as exc:
+                raise OrchestrationError("PREDICTION_BUSY") from exc
             try:
                 yield
             finally:
@@ -100,7 +103,9 @@ class PredictionArchive:
         reference: ReferenceSnapshot,
         variant: VariantDefinition | None,
         now: str,
+        checkpoint: Callable[[], None] = lambda: None,
     ) -> Publication:
+        checkpoint()
         resolver = ProposalResolver(bundle, self.source)
         assert job.attempt is not None
         validate_publication(
@@ -118,9 +123,10 @@ class PredictionArchive:
         )
         ids = dependency_ids(bundle.manifest)
         if not set(resolver.staged) <= ids:
-            raise ArchiveIntegrityError("Uninventoried staged output")
+            raise InvalidChildOutput("Uninventoried staged output")
         graph: list[Registration] = []
         for identity in sorted(ids):
+            checkpoint()
             descriptor, data = resolver.describe(identity), resolver.read(identity)
             self.store.publish_artifact(io.BytesIO(data), descriptor=descriptor)
             if self.describe(identity) != descriptor or self.read(identity) != data:
@@ -141,10 +147,12 @@ class PredictionArchive:
             ("result", bundle.result.result_id, bundle.result.to_json()),
         ]
         for kind, identity, data in records:
+            checkpoint()
             self.store._publish(kind, identity, data)
             if self._read(kind, identity) != data:
                 raise ArchiveIntegrityError("Registered record changed")
             graph.append(Registration(kind, identity, sha256_bytes(data), len(data)))
+        checkpoint()
         return Publication(
             intent_id,
             job,
@@ -164,8 +172,7 @@ class PredictionArchive:
         self, job: PredictionJob
     ) -> tuple[PredictionResult, SuccessfulPredictionProvenance]:
         try:
-            with self.lock():
-                return self._verify(job)
+            return self._verify(job)
         except (KeyError, ValueError, OSError) as exc:
             raise ArchiveIntegrityError("Retained prediction graph damaged") from exc
 

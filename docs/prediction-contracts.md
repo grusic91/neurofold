@@ -245,3 +245,13 @@ unchanged M1 failure uses ILLEGAL_PREDICTION_TRANSITION/lifecycle. No existing
 prediction HTTP consumer existed. Frozen biological/variant routes are unchanged.
 See the orchestration guide for full schemas/statuses, sealing, resource bounds,
 strict final transactions, filesystem registration and crash/restart policies.
+
+The M2 independent-review hardening checkpoint adds the separately versioned,
+immutable checksummed `neurofold-prediction-failure/1` extension bound to the terminal
+job hash, attempt and time. New operational causes and explicit retry policy are
+authoritative there; the unchanged M1 nested failure is a compatibility placeholder.
+The status sidecar is verified against that extension. Historical failures are not
+rewritten. Future exports must include the extension or explicitly state legacy
+unavailability; the M1 placeholder alone is not a truthful operational cause. See
+[compatibility decisions](prediction-orchestration.md#truthful-retained-operational-failures)
+and [hardening evidence](testing/nf04-m2-hardening-evidence.md).

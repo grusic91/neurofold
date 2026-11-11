@@ -36,7 +36,8 @@ transactional fenced publication, verified retained reads and prediction HTTP
 routes. All shipped profiles remain contract-only/unavailable: no executable fake
 adapter, frontend polling or real runtime is installed. See
 [orchestration and recovery](docs/prediction-orchestration.md) and
-[M2 evidence](docs/testing/nf04-m2-evidence.md). M3 fake execution/frontend polling,
+[historical M2 evidence](docs/testing/nf04-m2-evidence.md) and the
+[focused cleanup closure](docs/testing/nf04-m2-cleanup-closure-evidence.md). M3 fake execution/frontend polling,
 M4/M5 reviewed Boltz-2, viewing, comparisons, exports and independent scientific
 acceptance remain open.
 
@@ -56,8 +57,9 @@ backend/
   src/neurofold/
     api/            FastAPI application, routes, and HTTP schemas
     core/           Standard-library-only contracts and pure substitution logic
-    adapters/       UniProt/RCSB, CIF/alignment and immutable storage adapters
+    adapters/       Biological, SQLite, process and immutable storage adapters
     application/    Reference, structure, variant and prediction orchestration
+    worker.py       Separate local prediction supervisor entry point
   tests/            Offline HTTP, core, fixture and architectural boundary tests
   pyproject.toml    Dependencies, lint, formatting, types, and test settings
   uv.lock           Locked Python dependencies
@@ -69,7 +71,7 @@ compose.yaml        Local development services
 ```
 
 Dependency direction is **API → core ← adapters**. Core does not import FastAPI
-or model libraries. Future orchestration will inject model adapters instead of
+or model libraries. Application orchestration injects storage and process adapters; future workers will select model adapters instead of
 putting inference inside HTTP handlers. See [architecture details](docs/architecture.md)
 and [contributor conventions](AGENTS.md).
 
@@ -158,13 +160,17 @@ serving and a separate CUDA inference image are deferred; see [infra notes](infr
 From `backend/`, run `uv run --locked python -m neurofold.worker` independently
 of Uvicorn, using the same `NEUROFOLD_ARCHIVE_ROOT`. In Compose use
 `docker compose --profile worker up --build --detach worker`.
-The worker polls durable jobs; M2 deliberately has no executable profile and
+The worker polls durable jobs, retries bounded SQLite contention and parks with an
+audited integrity error on corrupt queue rows until operator recovery/restart.
+M2 deliberately has no executable profile and
 production submission reports unavailable. Health/capabilities remain usable.
 See the orchestration guide for strict submission schemas, code-identity
 configuration, leases, cancellation, restart and integrity recovery. The explicit
 `compose.prediction-test.yaml` runs controlled authored-output children only.
 
 ## Checks
+
+[AGENTS.md required checks](AGENTS.md#required-checks) is the authoritative list.
 
 From `backend/`, after `uv sync --locked`:
 

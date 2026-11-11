@@ -120,3 +120,10 @@ and authored M1 bundles. Such children perform no prediction algorithm. Passing
 SQLite races, cancellation, crash recovery or Linux/container checks does not
 establish molecular validity, model accuracy, real-runtime provenance truth or
 independent scientific acceptance. M3–M5 and all required reviews above remain open.
+
+Independent-review finding H1 (tagged/truncated construct mapping) and reference-side
+ambiguity handling are unresolved biological-foundation corrections. They must be
+fixed and independently checked before scientific use of the mapping tables or
+NF-05/06 interpretation. NF-04 M2 hardening deliberately leaves alignment policy
+unchanged. Existing authored fixtures and the historical live pair do not waive
+this gate. See the [hardening disposition](nf04-m2-hardening-evidence.md).

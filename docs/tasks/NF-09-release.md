@@ -133,9 +133,9 @@ recorded as incomplete; no fabricated success or inference-accuracy claim.
 Retain the required commands, executed from `backend/` after `uv sync --locked`:
 
 ```sh
-uv run --locked ruff check .
-uv run --locked ruff format --check .
-uv run --locked mypy src tests
+uv run --locked ruff check . ../infra/testing
+uv run --locked ruff format --check . ../infra/testing
+uv run --locked mypy src tests scripts ../infra/testing
 uv run --locked pytest
 ```
 
@@ -148,6 +148,7 @@ npm run build
 npm run test
 npm run test:browser:install
 npm run test:browser
+npm run test:integration
 ```
 
 M1 adds component/browser scripts and CI steps alongside these checks. Browser

@@ -13,8 +13,10 @@ from neurofold.api.biological import ErrorResponse, OpaqueID, RequestDTO
 from neurofold.api.errors import translate
 from neurofold.api.execution import BlockingExecutor
 from neurofold.application.predictions import PredictionService
+from neurofold.core.canonical import sha256_bytes
 from neurofold.core.orchestration import FailureReason, OrchestrationError
 from neurofold.core.prediction_base import PredictionRecord
+from neurofold.core.prediction_failure import OperationalFailure
 from neurofold.core.prediction_inputs import AdapterCapability, capabilities
 from neurofold.core.prediction_jobs import TERMINAL, PredictionJob
 from neurofold.core.prediction_outputs import (
@@ -50,6 +52,10 @@ class ResultDTO(ScientificDTO):
 
 class ManifestDTO(ScientificDTO):
     contract = SuccessfulPredictionProvenance
+
+
+class FailureDTO(ScientificDTO):
+    contract = OperationalFailure
 
 
 class JobStatus(RequestDTO):
@@ -121,12 +127,13 @@ def prediction_router(
             )
 
     def status(
-        service: PredictionService, job: PredictionJob, *, code: int = 200
+        service: PredictionService, job: PredictionJob | str, *, code: int = 200
     ) -> Response:
+        job, reason = service.snapshot(job if isinstance(job, str) else job.job_id)
         value = JobStatus(
             schema_version="neurofold-prediction-status/1",
             job=JobDTO.model_validate(job.to_dict()),
-            operational_failure=service.jobs.reason(job.job_id),
+            operational_failure=reason,
         )
         return Response(
             value.model_dump_json(),
@@ -188,9 +195,7 @@ def prediction_router(
 
     @router.get("/prediction-jobs/{job_id}", response_model=JobStatus)
     async def get(request: Request, job_id: PredictionID) -> Response:
-        return await invoke(
-            request, lambda service: status(service, service.get(job_id))
-        )
+        return await invoke(request, lambda service: status(service, job_id))
 
     @router.post(
         "/prediction-jobs/{job_id}/cancel",
@@ -203,6 +208,15 @@ def prediction_router(
             return status(service, job, code=200 if job.state == "cancelled" else 202)
 
         return await invoke(request, execute)
+
+    @router.get("/prediction-jobs/{job_id}/failure", response_model=FailureDTO)
+    async def failure(request: Request, job_id: PredictionID) -> Response:
+        return await invoke(
+            request,
+            lambda service: Response(
+                service.jobs.failure(job_id).to_json(), media_type="application/json"
+            ),
+        )
 
     @router.get("/prediction-jobs/{job_id}/result", response_model=ResultDTO)
     async def result(request: Request, job_id: PredictionID) -> Response:
@@ -222,7 +236,19 @@ def prediction_router(
             ),
         )
 
-    @router.get("/prediction-jobs/{job_id}/artifacts/{artifact_id}")
+    @router.get(
+        "/prediction-jobs/{job_id}/artifacts/{artifact_id}",
+        response_class=Response,
+        responses={
+            200: {
+                "content": {
+                    "application/octet-stream": {
+                        "schema": {"type": "string", "format": "binary"}
+                    }
+                }
+            }
+        },
+    )
     async def artifact(
         request: Request, job_id: PredictionID, artifact_id: PredictionID
     ) -> Response:
@@ -232,7 +258,15 @@ def prediction_router(
                 raise OrchestrationError("JOB_CONFLICT")
             data, media = service.archive.artifact(job, artifact_id)
             return Response(
-                data, media_type=media, headers={"Content-Disposition": "attachment"}
+                data,
+                media_type=media,
+                headers={
+                    "Content-Disposition": "attachment",
+                    "X-Content-Type-Options": "nosniff",
+                    "ETag": '"' + sha256_bytes(data) + '"',
+                    "X-Checksum-SHA256": sha256_bytes(data),
+                    "Cache-Control": "private, no-store",
+                },
             )
 
         return await invoke(request, execute)

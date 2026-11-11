@@ -1,8 +1,6 @@
 """Frozen additive exchange shapes plus strict direct/codec validation."""
 
 import json
-import subprocess
-import sys
 from dataclasses import fields, is_dataclass, replace
 from pathlib import Path
 from typing import Any, get_type_hints
@@ -133,14 +131,13 @@ def test_schema_generator_is_reproducible_and_part_of_strict_checkpoint() -> Non
         )
     ]
     assert len(paths) == 4
-    before = {path: path.read_bytes() for path in paths}
-    result = subprocess.run(
-        [sys.executable, str(ROOT / "backend/scripts/prediction_schema.py")],
-        capture_output=True,
-        check=False,
-    )
-    assert result.returncode == 0, result.stderr
-    assert before == {path: path.read_bytes() for path in paths}
+    from scripts.prediction_schema import GROUPS, schema_for
+
+    for path, (family, roots) in zip(paths, GROUPS.items(), strict=True):
+        generated = (
+            json.dumps(schema_for(roots, family), sort_keys=True, indent=2) + "\n"
+        ).encode()
+        assert path.read_bytes() == generated
 
 
 def test_frozen_exchange_examples_match_authoritative_records() -> None:

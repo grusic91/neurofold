@@ -1,10 +1,12 @@
 """Durable local job metadata. No SQL or sqlite dependency escapes this adapter."""
 
+import fcntl
 import os
 import sqlite3
 import tempfile
+import time
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -20,6 +22,7 @@ from neurofold.core.orchestration import (
 )
 from neurofold.core.prediction_base import PredictionErrorCode as E
 from neurofold.core.prediction_base import ValidationStage as S
+from neurofold.core.prediction_failure import OperationalFailure
 from neurofold.core.prediction_inputs import PredictionSpec
 from neurofold.core.prediction_jobs import (
     TERMINAL,
@@ -32,6 +35,7 @@ from neurofold.core.prediction_jobs import (
     validate_success_eligibility,
     validate_transition,
 )
+from neurofold.core.provenance import ContentReference
 
 
 def utc_now() -> str:
@@ -67,55 +71,106 @@ SCHEMA = (
 )
 
 
+FAILURE_SCHEMA = (
+    "CREATE TABLE legacy_failures (job TEXT PRIMARY KEY REFERENCES jobs(id))",
+    "CREATE TABLE failures (job TEXT PRIMARY KEY REFERENCES jobs(id), "
+    "body BLOB NOT NULL, sha TEXT NOT NULL)",
+    "CREATE TRIGGER immutable_failure_update BEFORE UPDATE ON failures "
+    "BEGIN SELECT RAISE(ABORT, 'immutable failure'); END",
+    "CREATE TRIGGER immutable_failure_delete BEFORE DELETE ON failures "
+    "BEGIN SELECT RAISE(ABORT, 'retained failure'); END",
+)
+
+
 class SQLiteJobs:
     def __init__(
         self, path: Path, *, clock: Clock = utc_now, max_queued: int = 100
     ) -> None:
+        path = path.absolute()
         self.path, self.clock, self.max_queued = path, clock, max_queued
         self.initialized = False
-        marker = path.with_suffix(".identity")
-        if marker.exists() and not path.exists():
-            raise ArchiveIntegrityError("Retained prediction database missing")
         if any(p.is_symlink() for p in (path, *path.parents)):
             raise ArchiveIntegrityError("Symlink database path unsupported")
         path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-        if path.is_symlink():
-            raise ArchiveIntegrityError("Symlink database unsupported")
-        with self._connection() as connection:
-            connection.execute("PRAGMA journal_mode=WAL")
-            connection.execute("BEGIN IMMEDIATE")
-            version = connection.execute("PRAGMA user_version").fetchone()[0]
-            if version == 0:
-                for statement in SCHEMA:
-                    connection.execute(statement)
-                connection.execute("PRAGMA user_version=1")
-            elif version != 1:
-                raise ArchiveIntegrityError("Unsupported prediction database version")
-            connection.commit()
-        with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as stream:
-            temporary = Path(stream.name)
-            try:
-                stream.write(b"neurofold-prediction-sqlite/1")
-                stream.flush()
-                os.fsync(stream.fileno())
+        # Serialize first creation including WAL selection and marker publication.
+        with path.with_suffix(".init-lock").open("a+b") as lock:
+            deadline = time.monotonic() + 1
+            while True:
                 try:
-                    os.link(temporary, marker)
-                except FileExistsError:
-                    if (
-                        marker.is_symlink()
-                        or marker.read_bytes() != b"neurofold-prediction-sqlite/1"
-                    ):
-                        raise ArchiveIntegrityError(
-                            "Database identity marker corrupt"
-                        ) from None
-                directory = os.open(path.parent, os.O_RDONLY)
+                    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    break
+                except BlockingIOError:
+                    if time.monotonic() >= deadline:
+                        raise OrchestrationError("PREDICTION_BUSY") from None
+                    time.sleep(0.01)
+            marker = path.with_suffix(".identity")
+            retained = marker.exists() or marker.is_symlink()
+            if retained and (
+                marker.is_symlink()
+                or marker.read_bytes() != b"neurofold-prediction-sqlite/1"
+                or not path.is_file()
+            ):
+                raise ArchiveIntegrityError(
+                    "Retained prediction database missing/invalid"
+                )
+            fresh = not path.exists() and not retained
+            if not fresh:
+                self.initialized = True  # rw mode must never recreate retained history.
+            with self._connection() as connection:
+                if fresh:
+                    connection.execute("PRAGMA journal_mode=WAL")
+                    connection.execute("BEGIN IMMEDIATE")
+                    for statement in SCHEMA:
+                        connection.execute(statement)
+                    connection.execute("PRAGMA user_version=1")
+                    connection.commit()
+                self._validate_database(connection)
+                if connection.execute("PRAGMA user_version").fetchone() == (1,):
+                    connection.execute("BEGIN IMMEDIATE")
+                    for statement in FAILURE_SCHEMA:
+                        connection.execute(statement)
+                    connection.execute(
+                        "INSERT INTO legacy_failures SELECT id FROM jobs "
+                        "WHERE state='failed'"
+                    )
+                    connection.execute("PRAGMA user_version=2")
+                    connection.commit()
+            with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as stream:
+                temporary = Path(stream.name)
                 try:
-                    os.fsync(directory)
+                    stream.write(b"neurofold-prediction-sqlite/1")
+                    stream.flush()
+                    os.fsync(stream.fileno())
+                    try:
+                        os.link(temporary, marker)
+                    except FileExistsError:
+                        pass  # Already validated under the initialization lock.
+                    directory = os.open(path.parent, os.O_RDONLY)
+                    try:
+                        os.fsync(directory)
+                    finally:
+                        os.close(directory)
                 finally:
-                    os.close(directory)
-            finally:
-                temporary.unlink()
+                    temporary.unlink()
         self.initialized = True
+
+    @staticmethod
+    def _validate_database(connection: sqlite3.Connection) -> None:
+        with closing(sqlite3.connect(":memory:")) as expected:
+            version = connection.execute("PRAGMA user_version").fetchone()[0]
+            for statement in (*SCHEMA, *(FAILURE_SCHEMA if version == 2 else ())):
+                expected.execute(statement)
+            query = "SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY name"
+            if (
+                version not in (1, 2)
+                or connection.execute(query).fetchall()
+                != expected.execute(query).fetchall()
+                or connection.execute("PRAGMA quick_check").fetchall() != [("ok",)]
+                or connection.execute("PRAGMA foreign_key_check").fetchall()
+            ):
+                raise ArchiveIntegrityError(
+                    "Prediction database schema/integrity invalid"
+                )
 
     @contextmanager
     def _connection(self) -> Iterator[sqlite3.Connection]:
@@ -123,7 +178,12 @@ class SQLiteJobs:
         if self.initialized and not self.path.is_file():
             raise ArchiveIntegrityError("Retained prediction database missing")
         try:
-            connection = sqlite3.connect(self.path, timeout=1, isolation_level=None)
+            connection = sqlite3.connect(
+                self.path.as_uri() + "?mode=rw" if self.initialized else self.path,
+                uri=self.initialized,
+                timeout=1,
+                isolation_level=None,
+            )
             connection.execute("PRAGMA foreign_keys=ON")
             connection.execute("PRAGMA synchronous=FULL")
             yield connection
@@ -149,7 +209,15 @@ class SQLiteJobs:
         with self._connection() as connection:
             connection.execute("BEGIN IMMEDIATE")
             yield connection
-            connection.commit()
+            try:
+                connection.commit()
+            except sqlite3.DatabaseError as exc:
+                if getattr(exc, "sqlite_errorcode", None) in (
+                    sqlite3.SQLITE_BUSY,
+                    sqlite3.SQLITE_LOCKED,
+                ):
+                    raise OrchestrationError("PREDICTION_BUSY") from exc
+                raise OrchestrationError("PREDICTION_MUTATION_UNCERTAIN") from exc
 
     def _get(self, connection: sqlite3.Connection, job_id: str) -> PredictionJob:
         row = connection.execute(
@@ -183,9 +251,12 @@ class SQLiteJobs:
             return self._get(connection, job_id)
 
     def reason(self, job_id: str) -> FailureReason | None:
+        return self.snapshot(job_id)[1]
+
+    def snapshot(self, job_id: str) -> tuple[PredictionJob, FailureReason | None]:
         with self._connection() as connection:
             connection.execute("BEGIN")
-            self._get(connection, job_id)
+            job = self._get(connection, job_id)
             reason = connection.execute(
                 "SELECT reason FROM jobs WHERE id=?", (job_id,)
             ).fetchone()[0]
@@ -198,12 +269,64 @@ class SQLiteJobs:
                 "PUBLICATION_FAILED",
                 "SUPERVISION_FAILED",
             )
+            row = connection.execute(
+                "SELECT body,sha FROM failures WHERE job=?", (job_id,)
+            ).fetchone()
+            if row is not None:
+                failure = self._failure(job, row)
+                if failure.cause != reason:
+                    raise ArchiveIntegrityError("Operational failure mismatch")
+            elif (
+                job.state == "failed"
+                and not connection.execute(
+                    "SELECT 1 FROM legacy_failures WHERE job=?", (job_id,)
+                ).fetchone()
+            ):
+                raise ArchiveIntegrityError("Missing operational failure extension")
             if reason is None:
-                return None
+                return job, None
+            if job.state != "failed":
+                raise ArchiveIntegrityError("Failure on nonfailed job")
             for value in allowed:
                 if reason == value:
-                    return value
+                    return job, value
             raise ArchiveIntegrityError("Invalid operational failure")
+
+    @staticmethod
+    def _failure(job: PredictionJob, row: tuple[bytes, str]) -> OperationalFailure:
+        try:
+            value = OperationalFailure.from_json(row[0])
+            if (
+                sha256_bytes(row[0]) != row[1]
+                or value.job
+                != ContentReference(record_id=job.job_id, content_hash=job.content_hash)
+                or job.attempt is None
+                or value.attempt_id != job.attempt.attempt_id
+                or value.ended_at != job.ended_at
+                or job.state != "failed"
+            ):
+                raise ValueError("Failure linkage mismatch")
+            return value
+        except (ValueError, TypeError) as exc:
+            raise ArchiveIntegrityError("Retained operational failure invalid") from exc
+
+    def failure(self, job_id: str) -> OperationalFailure:
+        with self._connection() as connection:
+            connection.execute("BEGIN")
+            job = self._get(connection, job_id)
+            row = connection.execute(
+                "SELECT body,sha FROM failures WHERE job=?", (job_id,)
+            ).fetchone()
+            if row is None:
+                if (
+                    job.state == "failed"
+                    and not connection.execute(
+                        "SELECT 1 FROM legacy_failures WHERE job=?", (job_id,)
+                    ).fetchone()
+                ):
+                    raise ArchiveIntegrityError("Missing operational failure extension")
+                raise OrchestrationError("JOB_CONFLICT")
+            return self._failure(job, row)
 
     def _save(
         self,
@@ -212,6 +335,20 @@ class SQLiteJobs:
         reason: FailureReason | None = None,
     ) -> None:
         body = job.to_json()
+        if reason is not None:
+            assert job.attempt is not None and job.ended_at is not None
+            failure = OperationalFailure(
+                job=ContentReference(
+                    record_id=job.job_id, content_hash=job.content_hash
+                ),
+                attempt_id=job.attempt.attempt_id,
+                cause=reason,
+                ended_at=job.ended_at,
+            ).to_json()
+            connection.execute(
+                "INSERT INTO failures VALUES(?,?,?)",
+                (job.job_id, failure, sha256_bytes(failure)),
+            )
         connection.execute(
             "UPDATE jobs SET state=?,version=?,body=?,sha=?,reason=? WHERE id=?",
             (job.state, job.version, body, sha256_bytes(body), reason, job.job_id),
@@ -270,7 +407,7 @@ class SQLiteJobs:
                 "SELECT count(*) FROM jobs WHERE state='queued'"
             ).fetchone()[0]
             if count >= self.max_queued:
-                raise OrchestrationError("PREDICTION_BUSY")
+                raise OrchestrationError("PREDICTION_QUEUE_FULL")
             body = job.to_json()
             connection.execute(
                 "INSERT INTO jobs VALUES(?,?,?,?,?,NULL)",
@@ -417,6 +554,8 @@ class SQLiteJobs:
         with self._write() as connection:
             job, now = self._owner(connection, owner), self.clock()
             cancelled = job.state == "cancelling" and terminated
+            if not cancelled and reason is None:
+                reason = "SUPERVISION_FAILED"
             proposed = replace(
                 job,
                 version=job.version + 1,

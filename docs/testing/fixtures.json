@@ -303,11 +303,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 13283,
+      "byte_size": 13284,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "ac46e8e6c3a96a648e0ddbaa10b052bb4cdbc6c70802180cac233732ef34d2e5"
+        "sha256": "777eedb20ffe43e9b21111e7b686e904f68fccd6d031179aa179d9837562e0e0"
       },
       "units": {
         "state": "not_applicable",
@@ -423,7 +423,7 @@
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "aed006b0b63b652fa96f0ab29f9006975920e2ed426593fb56074538d86883e4"
+        "sha256": "9dbc2eb3873c224949f3b1a98723e59a1a1513fd6cf146b25799eb5e1c602524"
       },
       "units": {
         "state": "not_applicable",
@@ -448,11 +448,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 3580,
+      "byte_size": 3665,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "c3fa5f56fa72bc002b8fba79bf559971341db00efbcbb1da2100e7588ee526be"
+        "sha256": "93cd12b8cf661b967c23c4f7c9f713708552be3a1ba64bbf7a8672aa3d49598e"
       },
       "units": {
         "state": "not_applicable",
@@ -811,11 +811,11 @@
         "value": null,
         "reason": "No molecular coordinates are present."
       },
-      "byte_size": 28752,
+      "byte_size": 29593,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "4bda50ec371a9157f8dcb4eea5b32f5dfeccf7b0326ccf39c337610411e298d2"
+        "sha256": "05b0350bf17ceb0c7319cec257e6eadf88d7ddb788a65d39bd9fcadb265e16ad"
       }
     },
     {
@@ -1005,11 +1005,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 5321,
+      "byte_size": 5264,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "75bf714abf5de0f8d99fbd836c72ca3f668afc0527090813a7a5b03efc207cb4"
+        "sha256": "afb73b99156f63bae36f0e9308cff7cf5ae46d9d7d34235e25988c01199b1e94"
       },
       "units": {
         "state": "not_applicable",
@@ -1092,11 +1092,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 1674,
+      "byte_size": 1883,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "f7f0f74a83219db1acac1957ee802699ea98f27ece389c3f320a556ec9ea928c"
+        "sha256": "6b2721a009d63e9ac9473c0f78e87d0e8a36426f3864c78e9eb6606c5b42a1df"
       },
       "units": {
         "state": "not_applicable",
@@ -1150,11 +1150,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 7638,
+      "byte_size": 11125,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "e341e84e557042a3f59bc207d80bb7df362e4e6a87b490964b50d11cb49cf1e2"
+        "sha256": "909d6549bf7021fe75b956c0486e99aaa1600099b856920ba1bf7bab84a5338f"
       },
       "units": {
         "state": "not_applicable",
@@ -1179,11 +1179,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 11882,
+      "byte_size": 12683,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "f794489be9afeae931cc0af7bc613bf4d08911f4c7f287173744b4caec22769b"
+        "sha256": "589e0a74a74514c87b311971f83399980f12b99ff507c8611a3b70390433fd00"
       },
       "units": {
         "state": "not_applicable",
@@ -1208,11 +1208,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 656,
+      "byte_size": 991,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "87b9e207fb8090c2e1f5854511be3bc992db64f83acb97e4569eaa7cd93b3693"
+        "sha256": "18f2e68b027325ef0d2f58f2dede0f3546bca1f3add5a7225976012426fcaff0"
       },
       "units": {
         "state": "not_applicable",
@@ -1237,11 +1237,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 951,
+      "byte_size": 1058,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "01b2ae6c3e1eb569fcc2cf312f21ed16e8070e0cd8c068b86f883c91ecece0c3"
+        "sha256": "7b26ac9dce42c9d878c73eb6b24e61610aceb745bacdaf9cfa7a31b2f76ba713"
       },
       "units": {
         "state": "not_applicable",
@@ -1266,11 +1266,156 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 4925,
+      "byte_size": 6446,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "96f358715df9e7668e08a95b5e7c2b189ce23ee795a661a61218f7fc79f9d132"
+        "sha256": "cbe07d0b983f7c984bcf2e7de123a179b97a17a5b8215345466ed7ecee1169ad"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-hardening-inline",
+      "path": "backend/tests/test_prediction_hardening.py",
+      "generation_method": "Independent-review storage, process, publication and HTTP failure regressions with authored synthetic proposals.",
+      "expected_invariants": [
+        "Only authored synthetic bytes; no inference, provider access or scientific claims",
+        "Externally observable behavior detects removal of the corresponding guards"
+      ],
+      "purpose": "Independent-review storage, process, publication and HTTP failure regressions with authored synthetic proposals.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 37230,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "362543769f09d8c95b85001bd7e778a3a63b329d38b9806a69db26f3397d4c18"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-rereview-inline",
+      "path": "backend/tests/test_prediction_rereview.py",
+      "generation_method": "Second-review mapping lineage, failure integrity/binding/immutability, active SQLite contention and cancellation regressions.",
+      "expected_invariants": [
+        "Only authored synthetic bytes; no inference, provider access or scientific claims",
+        "Externally observable behavior detects removal of the corresponding guards"
+      ],
+      "purpose": "Second-review mapping lineage, failure integrity/binding/immutability, active SQLite contention and cancellation regressions.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 13008,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "a1152ee940949317beb889b65710e3615492dff0cff8b97aa7a1e8d98b00c5d4"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-process-inline",
+      "path": "backend/tests/test_prediction_process.py",
+      "generation_method": "Authored harmless immediate-exit processes, kernel exit observers that do not reap, and injected signal failures; no inference or networks.",
+      "expected_invariants": [
+        "Exited macOS process groups tolerate EPERM only after poll confirms exit",
+        "Cancel/shutdown/timeout retain terminal state; process reaping and death-pipe closure survive signal errors"
+      ],
+      "purpose": "POSIX cleanup regression including macOS zombie-only process groups.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 12661,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "acbe7127c547ec92e2624c3a0ba771e69591d89656f48d292f2f527055d4ca5d"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "orchestration-helper-child",
+      "path": "backend/tests/orchestration_helper_child.py",
+      "generation_method": "Authored synthetic proposal copier with a same-group EOF helper; no inference or network.",
+      "expected_invariants": [
+        "Only tiny synthetic proposals and harmless local processes",
+        "Unconfirmed cleanup preserves truthful outcomes and prevents automatic resumption"
+      ],
+      "purpose": "Focused NF-04 M2 cleanup closure, not scientific validation.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 660,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "2aa566ba03fa212c82d14630d9a2df151d72bfc9ee145cccab50e30524842d71"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-cleanup-closure",
+      "path": "backend/tests/test_prediction_cleanup_closure.py",
+      "generation_method": "Authored real helper exits, SQLite contention barriers, launcher ownership faults and blocked-worker subprocess diagnostics.",
+      "expected_invariants": [
+        "Only tiny synthetic proposals and harmless local processes",
+        "Unconfirmed cleanup preserves truthful outcomes and prevents automatic resumption"
+      ],
+      "purpose": "Focused NF-04 M2 cleanup closure, not scientific validation.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 13112,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "7441a9f98a1e9cd5ea7d5440a233c02073b1501e4960531a9568873222d6f5c7"
       },
       "units": {
         "state": "not_applicable",

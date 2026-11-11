@@ -24,6 +24,7 @@ from neurofold.api.health import router as health_router
 from neurofold.api.prediction_schema import scientific_schema
 from neurofold.api.predictions import (
     CapabilityDTO,
+    FailureDTO,
     JobDTO,
     ManifestDTO,
     ResultDTO,
@@ -152,7 +153,7 @@ def create_app(
     def openapi() -> dict[str, Any]:
         schema = original_openapi()
         definitions = schema["components"]["schemas"]
-        for projection in (JobDTO, CapabilityDTO, ResultDTO, ManifestDTO):
+        for projection in (JobDTO, CapabilityDTO, ResultDTO, ManifestDTO, FailureDTO):
             definitions[projection.__name__] = scientific_schema(
                 projection.contract, definitions
             )

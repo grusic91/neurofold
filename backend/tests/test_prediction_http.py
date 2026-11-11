@@ -167,14 +167,36 @@ def test_success_reads_exact_records_artifacts_and_known_corruption(
         ManifestDTO.model_validate(manifest.json())
         assert client.post(path + "/cancel", json={}).status_code == 409
         assert (
-            client.get(path + "/artifacts/structure-1").content
+            client.get(
+                path
+                + "/artifacts/"
+                + result.json()["samples"][0]["structure"]["record_id"]
+            ).content
             == b"authored synthetic structure placeholder\n"
+        )
+        artifact = client.get(
+            path + "/artifacts/" + result.json()["samples"][0]["structure"]["record_id"]
+        )
+        from neurofold.core.canonical import sha256_bytes
+
+        assert artifact.headers["Content-Disposition"] == "attachment"
+        assert artifact.headers["Cache-Control"] == "private, no-store"
+        assert artifact.headers["X-Content-Type-Options"] == "nosniff"
+        assert artifact.headers["X-Checksum-SHA256"] == sha256_bytes(artifact.content)
+        assert artifact.headers["ETag"] == '"' + sha256_bytes(artifact.content) + '"'
+        assert (
+            "application/octet-stream"
+            in client.get("/openapi.json").json()["paths"][
+                "/v1/prediction-jobs/{job_id}/artifacts/{artifact_id}"
+            ]["get"]["responses"]["200"]["content"]
         )
         assert client.get(path + "/artifacts/absent").status_code == 404
         from neurofold.adapters.prediction_archive import PredictionArchive
 
         assert isinstance(service.archive, PredictionArchive)
-        service.archive.store._path("artifact", "structure-1").unlink()
+        service.archive.store._path(
+            "artifact", result.json()["samples"][0]["structure"]["record_id"]
+        ).unlink()
         damaged = client.get(path)
         assert damaged.status_code == 500
         assert damaged.json()["error"]["code"] == "ARCHIVE_INTEGRITY"
@@ -281,16 +303,9 @@ def test_m2_additive_schemas_reproducible_and_openapi_matches_records() -> None:
     from prediction_examples import queued
 
     root = Path(__file__).resolve().parents[2]
-    # The generator imports its sibling using the normal script search path.
-    import sys
+    from scripts.prediction_m2_schema import schemas
 
-    sys.path.insert(0, str(root / "backend/scripts"))
-    try:
-        from prediction_m2_schema import schemas
-
-        documents = schemas()
-    finally:
-        sys.path.pop(0)
+    documents = schemas()
     for family, schema in documents.items():
         retained = json.loads(
             (root / f"docs/schemas/neurofold-{family}-1.schema.json").read_bytes()
