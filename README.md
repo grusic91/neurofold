@@ -237,3 +237,12 @@ in [AGENTS.md](AGENTS.md#scientific-reproducibility).
 
 The original [Apache 2.0 license](LICENSE) is preserved. Future model weights,
 datasets, and third-party components require separate license review.
+
+
+Dated state note (2026-11-12): local main and origin/main are fd2c8d5, and the
+origin reflog records the 07:40:56 +0100 push. Earlier no-push statements are
+historical. The **first recorded hosted CI checkpoint** is
+[CI 43169838959](https://github.com/grusic91/neurofold/actions/runs/43169838959),
+**success** for fd2c8d5 (2026-11-12). The user attributes the push to “Me”.
+This uncommitted follow-up is not covered by that hosted result.
+Current follow-up: [post-closure evidence](docs/testing/nf04-m2-post-closure-evidence.md). H1 is unresolved; M3 has not started.

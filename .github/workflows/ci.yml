@@ -34,6 +34,8 @@ jobs:
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
       - run: uv sync --locked
+      - run: uv run --locked python -VV
+      - run: uv run --locked python -c "import sqlite3; print('SQLite', sqlite3.sqlite_version)"
       - run: uv run --locked ruff check . ../infra/testing
       - run: uv run --locked ruff format --check . ../infra/testing
       - run: uv run --locked mypy src tests scripts ../infra/testing

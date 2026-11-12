@@ -5,11 +5,12 @@ NF-09 M1 [test foundation](testing/README.md), and NF-02 M1–M4 biological data
 integration, [NF-03 M1–M3 substitutions, identity/storage and HTTP](variants.md),
 and [NF-04 M1 prediction contracts](prediction-contracts.md) plus
 [M2 durable orchestration](prediction-orchestration.md) have implementing-agent
-acceptance evidence. M2 has conditional approval subject to the focused cleanup closure; an authorized
-first hosted CI checkpoint is still required before M3.
+acceptance evidence. M2 has conditional approval subject to the focused cleanup
+closure. The recorded green hosted CI checkpoint for fd2c8d5 is linked in the
+dated note below; it does not cover this uncommitted follow-up. M3 has not started.
 [Historical M2 evidence](testing/nf04-m2-evidence.md) records the original runs;
 [focused closure evidence](testing/nf04-m2-cleanup-closure-evidence.md) records
-targeted verification and the remaining hosted CI/M3 gates.
+targeted verification and the remaining M3 conditions.
 NF-03 M3 HTTP integration is implemented; variant interaction remains NF-07 work.
 [M2 lookup/pinning](uniprot-lookup.md) and
 [M3 structure imports/maps](structure-import.md) are composed into operational
@@ -328,3 +329,12 @@ this roadmap as an upstream compatibility guarantee.
 - Rigid fitting follows the method described by
   [Kabsch (1976)](https://doi.org/10.1107/S0567739476001873), with the specific
   fit/evaluation policies defined in NF-06.
+
+
+Dated state note (2026-11-12): local main and origin/main are fd2c8d5, and the
+origin reflog records the 07:40:56 +0100 push. Earlier no-push statements are
+historical. The **first recorded hosted CI checkpoint** is
+[CI 43169838959](https://github.com/grusic91/neurofold/actions/runs/43169838959),
+**success** for fd2c8d5 (2026-11-12). The user attributes the push to “Me”.
+This uncommitted follow-up is not covered by that hosted result.
+Current follow-up: [post-closure evidence](testing/nf04-m2-post-closure-evidence.md). H1 is unresolved; M3 has not started.

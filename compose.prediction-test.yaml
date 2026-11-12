@@ -29,4 +29,4 @@ services:
       - ./infra/testing:/app/smoke:ro
       - ./backend/scripts:/app/backend/scripts:ro
       - ./docs:/app/docs:ro
-    stop_grace_period: 10s
+    stop_grace_period: 20s

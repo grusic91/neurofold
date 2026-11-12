@@ -670,8 +670,6 @@ def test_uncertain_commit_reports_recovery_and_preserves_idempotency(
 def test_publication_reserves_live_ownership_across_slow_registration(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from test_prediction_worker import ControlledLauncher
-
     from neurofold.adapters.prediction_sqlite import after
     from neurofold.core.orchestration import Publication
 
@@ -689,10 +687,16 @@ def test_publication_reserves_live_ownership_across_slow_registration(
         return register(*args, **kwargs)  # type: ignore[arg-type]
 
     monkeypatch.setattr(service.archive, "register", slow_register)
-    monkeypatch.setenv("PYTHONPATH", str(Path(__file__).parent.resolve()))
+
+    class Launcher:
+        def launch(self, directory: Path, job: PredictionJob) -> FinishedChild:
+            # Test publication/lease ownership independently of real child startup.
+            (directory / "bundle.json").write_bytes(bundle_for(job).to_json())
+            return FinishedChild()
+
     worker = PredictionWorker(
         service,
-        ControlledLauncher(),
+        Launcher(),
         tmp_path / "staging",
         lease_seconds=2,
         heartbeat_seconds=0.2,

@@ -83,3 +83,23 @@ checksum/binding/missing/immutability guards, all linkage prechecks, observable
 prelaunch cancellation, operation retry recovery, attachment/no-store and running
 cancel 202 assertions, and bounded interruptible controlled-child startup. Current
 platform results are distinct from the historical first pass and pending remote CI.
+
+
+### Post-closure timing sensitivity (2026-11-12)
+
+| Test | Current treatment | Trigger |
+| --- | --- | --- |
+| cleanup outcome SQLite contention | Stop assertion and writer release occur inside the first-BUSY hook, before retry resumes; observer timing does not control outcome. | Retain deterministic sequencing when changing retry code. |
+| publication reservation early release | Writer release occurs in the renewal/stage BUSY hook, before retry resumes. | Retain sequencing when changing publication ownership. |
+| real child copy/succeeded | Retains real profile/handshake wall-clock budgets; does not test a timeout and can still be timing-sensitive on an overloaded host. No timeout was widened to hide it. | Hosted CI flake; revisit supervision-clock injection rather than extending a functional limit. |
+| controlled entrypoint startup and recording exhaustion | Only outer hang guards were enlarged, with inline justification; production retry/execution bounds are unchanged. | Re-measure on a new emulator/runtime, independently of behavior budgets. |
+| concurrent HTTP submissions | Fixed in round 7: bounded retries only for 503/PREDICTION_BUSY, respecting Retry-After and reusing the identical key/body. Only the initial four calls enter the barrier. Final 202 responses, one job ID and durable reopening remain asserted. | No deferral; retain retry limits and the final uniqueness assertions. |
+| concurrent durable submissions | Fixed in round 7: bounded retries cover initialization/submission on PREDICTION_BUSY or raw SQLite busy/locked errors. All eight callers retain identical keys/specs; reopening, conflicts and exact specs remain asserted. | No deferral; non-busy failures and exhausted retries must surface. |
+| slow-publication lease reservation | Fixed in round 7: an already-finished child isolates the publication/lease invariant from subprocess startup. Clock advancement, recovery rejection and successful publication remain asserted; removing lease reservation still fails the test. | No deferral; real child lifecycle/timeout coverage remains in process/worker tests. |
+
+Only the named test families run during their respective CPU-saturation batches:
+five L4 families in round 6, then the three repaired cases in round 7. Full
+suites run separately while the host is otherwise idle. Round 7 runs no full
+emulated Linux suite; its hosted Linux/container checkpoint waits for explicit
+commit and feature-branch push authorization.
+The [new checkpoint](nf04-m2-post-closure-evidence.md) records repetition counts.

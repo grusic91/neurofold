@@ -278,5 +278,15 @@ remain separate gates.
 
 The current NF-04 M2 [focused cleanup closure](nf04-m2-cleanup-closure-evidence.md)
 implements the five conditions for the authorized hardening commit. Verification
-is targeted by user instruction; the first hosted CI gate still requires push
-authorization before M3. H1 and scientific acceptance remain separate.
+is targeted by user instruction. The first recorded hosted CI checkpoint for
+fd2c8d5 is green (below); it does not cover this uncommitted follow-up. H1 and
+scientific acceptance remain separate.
+
+
+Dated state note (2026-11-12): local main and origin/main are fd2c8d5, and the
+origin reflog records the 07:40:56 +0100 push. Earlier no-push statements are
+historical. The **first recorded hosted CI checkpoint** is
+[CI 43169838959](https://github.com/grusic91/neurofold/actions/runs/43169838959),
+**success** for fd2c8d5 (2026-11-12). The user attributes the push to “Me”.
+This uncommitted follow-up is not covered by that hosted result.
+Current follow-up: [post-closure evidence](nf04-m2-post-closure-evidence.md). H1 is unresolved; M3 has not started.

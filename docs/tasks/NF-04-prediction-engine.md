@@ -1,6 +1,6 @@
 # NF-04 — Molecular Prediction Engine
 
-Status: **M1/M2 implemented; focused cleanup closure under conditional approval; first hosted CI gate pending; M3–M5 open.**
+Status: **M1/M2 implemented; focused cleanup closure under conditional approval; fd2c8d5 hosted CI green; post-closure follow-up uncommitted; M3–M5 open.**
 [First-pass evidence](../testing/nf04-m2-hardening-evidence.md);
 [second-review hardening checkpoint](../testing/nf04-m2-hardening-pass2-evidence.md);
 [round-3 macOS cleanup correction](../testing/nf04-m2-macos-cleanup-evidence.md);
@@ -309,9 +309,11 @@ The second pass addresses O1 mapping lineage, W1 failure classification, missing
 failure-extension routing, sensitive regressions and W2 bounded controlled-child
 startup. Subsequent review conditionally approves moving forward after the five
 focused cleanup closure items; the closure checkpoint records their targeted
-verification. An authorized first hosted CI run remains required. M3 must
+verification. Hosted CI for fd2c8d5 is recorded green below; this follow-up
+remains uncommitted and untested on hosted CI. M3 must
 include the [explicit entry conditions](../prediction-orchestration.md#second-review-hardening-and-m3-entry-conditions):
-worker readiness/restart policy, upgrade order and schema-version guard, terminal
+worker readiness/restart policy (manual recovery for integrity exit 65 and cleanup
+uncertainty exit 78), upgrade order and schema-version guard, terminal
 write retries, M6 mutation recovery UX and child-staged dependency naming. These
 are tracked requirements, not completed features.
 
@@ -324,3 +326,12 @@ schema compatibility, remaining terminal/publication retries, mutation recovery,
 dependency naming and W6/H-01 harness conditions are still explicit M3 scope.
 H1 mapping correction and biological-foundation review remain separate required
 work before scientific interpretation or NF-05/NF-06 acceptance.
+
+
+Dated state note (2026-11-12): local main and origin/main are fd2c8d5, and the
+origin reflog records the 07:40:56 +0100 push. Earlier no-push statements are
+historical. The **first recorded hosted CI checkpoint** is
+[CI 43169838959](https://github.com/grusic91/neurofold/actions/runs/43169838959),
+**success** for fd2c8d5 (2026-11-12). The user attributes the push to “Me”.
+This uncommitted follow-up is not covered by that hosted result.
+Current follow-up: [post-closure evidence](../testing/nf04-m2-post-closure-evidence.md). H1 is unresolved; M3 has not started.

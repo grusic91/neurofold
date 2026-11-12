@@ -74,15 +74,31 @@ leader's exit alone cannot excuse an unsignalable group member.
 
 Unconfirmed cleanup retains staging/worker-block.json before bounded outcome
 recording. Job/attempt ownership checks remain mandatory; get/finish retry SQLite
-contention for min(2 seconds, lease/4), even if shutdown has already been requested.
+contention, and same-attempt JOB_CONFLICT from a concurrent cancellation, using
+min(2 seconds, lease/4) as a retry-scheduling budget even after shutdown is requested.
+This is not a hard wall-clock deadline: backoff and the final attempt can extend
+it, including a final SQLite busy timeout of up to one second (2.17 seconds was
+measured in review for a nominal two-second phase).
 Then the worker blocks with UNCONFIRMED_CLEANUP and exits 78. Its safe diagnostics
 contain job/attempt/worker IDs, PID/PGID when available, error class, whether the
 block was retained and whether the outcome was recorded. They exclude exception
 messages, sequences, request bodies and child output. Successful cleanup and
-normal requested shutdown retain exit 0.
+normal requested shutdown retain exit 0 only when the worker is not integrity-
+blocked. The common entrypoint contract is 0 for a normal requested shutdown,
+78 only for UNCONFIRMED_CLEANUP, and 65 (data error) for ARCHIVE_INTEGRITY detected
+either during startup or in the running queue. Integrity parks until requested
+stop, logs a safe critical reason/code, error_type and fixed authored validation
+message without traceback or chained exception details, and creates no cleanup
+marker by itself. Uncaught errors keep Python's ordinary nonzero crash behavior.
+This distinguishes storage restoration from uncertain-process recovery.
+Only recognized fixed authored integrity messages are emitted; wrapped or
+unrecognized detail uses a generic validation message so retained input cannot
+enter the log.
 
 The block is checked before recovery or claim on every new worker, including when
-its contents are partial or invalid. Clearing an in-memory stop Event cannot
+its contents are partial or invalid. The presence check uses lstat: only
+FileNotFoundError means no marker. EACCES, ENOTDIR and other stat errors block
+before recovery/claim with exit 78 and an errno name, without exception text. Clearing an in-memory stop Event cannot
 resume a blocked worker. Unconfirmed termination is never cancelled: while storage
 and ownership permit, it records failed/SUPERVISION_FAILED with termination false.
 If the bounded recording attempt fails, the retained block still prevents new
@@ -224,7 +240,9 @@ WAL, identity marker and registered archive together; never erase the marker to
 ### Supervision, liveness and bounded output
 
 Worker polling retries SQLite contention with exponential backoff capped at one
-second; operation-level retries are bounded by min(2 seconds, lease/4). Event waits
+second; operation-level retries use a min(2 seconds, lease/4) scheduling budget,
+not a hard elapsed-time cap. A final attempt can add SQLite's one-second busy
+wait, and backoff/scheduling can extend elapsed time. Event waits
 allow prompt SIGINT/SIGTERM shutdown. Active contention never assumes ownership:
 if its retry budget is exhausted, the child is reaped and the attempt fails or
 is left for lease-expiry recovery when storage cannot record the failure.
@@ -360,11 +378,14 @@ budgets, observes child exit/shutdown, and reaps on startup failure. This is a t
 harness correction, not a production readiness mechanism or an M4/M5 resource-limit
 claim.
 
-M3 remains gated on independent acceptance of M2 and the first authorized GitHub
-CI run. Before expanding fake execution or its frontend workflow, M3 must include:
+M3 remains gated on independent acceptance of M2 and a recorded green hosted CI
+checkpoint. Before expanding fake execution or its frontend workflow, M3 must include:
 
 - Explicit worker readiness and a restart policy, including parked/corrupt storage
-  and unavailable storage behavior; API health remains independent of model IO.
+  and unavailable storage behavior. Preserve exit 65 for startup/runtime integrity
+  damage and exit 78 for uncertain cleanup/inaccessible marker checks; both require
+  operator recovery before restart. Normal requested shutdown exits 0. API health
+  remains independent of model IO.
 - A documented upgrade order and an operation-time schema-version guard. Stop all
   schema-1 workers before upgrading storage, migrate with schema-2 code, then
   restart only compatible API/workers. An already running old worker can otherwise
@@ -390,8 +411,36 @@ The [closure checkpoint](testing/nf04-m2-cleanup-closure-evidence.md) records th
 five conditions of the user's conditional approval. The bounded unconfirmed-
 cleanup outcome retry is implemented here; general terminal/publication write
 retries remain M3 work. M3 must preserve the durable manual block, safe launch
-ownership transfer and exit-78 handling while adding its readiness/restart,
-schema compatibility, M6 mutation recovery, dependency naming and harness
-conditions (including W6 and H-01). First hosted CI requires a separately
-authorized push. H1 mapping correction and biological-foundation review are
+ownership transfer and distinct exit-65/exit-78 recovery handling while adding its
+readiness/restart, schema compatibility, M6 mutation recovery, dependency naming and harness
+conditions (including W6 and H-01). The local origin ref now records the push of
+fd2c8d5; its first recorded hosted checkpoint is
+[CI 43169838959](https://github.com/grusic91/neurofold/actions/runs/43169838959),
+with a green conclusion. This uncommitted follow-up is not covered by that run.
+Changes to CI in this post-closure follow-up take effect only after a
+separately authorized new push; none is performed here. H1 mapping correction and biological-foundation review are
 required before scientific interpretation and NF-05/NF-06 acceptance.
+
+
+### Shutdown budget and recovery reference data (2026-11-12)
+
+Let G be child termination grace and R=max(0.5 s,G). A conservative scheduled-call
+cleanup allowance is G+R+3*(0.5 s+0.1 s), or 5.8 s for G=2 s. A post-spawn launch
+failure can require both launcher cleanup and supervisor cleanup: reserve twice
+that allowance (11.6 s). Then reserve the retry-scheduling budget min(2 s,lease/4),
+up to 0.2 s backoff and a conservative 2 s for the final SQLite read/write pair:
+about **15.8 s** before filesystem/OS scheduling margin at defaults. Review measured
+6.7 s on one cleanup-failure path; that measurement is not the maximum contract.
+Both worker compositions now allow **20 s** before Docker force-kill. At M4, and
+whenever grace/lease/storage configuration changes, recompute this envelope,
+measure teardown under the intended memory/IO workload, and set stop_grace_period
+at least to the resulting allowance plus margin. Kernel IO and descheduling are
+not hard real-time bounded by Python; increase margin where measurements require.
+
+New block records add UTC created_at, host_id (the owning host/container hostname;
+null if lookup fails without interrupting the marker/outcome record),
+and child_launched_at, the worker's timestamp immediately before the launch call,
+not an asserted kernel process birth time. Null launch time means no launch-call
+reference was available. worker_id is also in the critical log. These private
+reference fields support investigation, not automatic PID signalling; presence
+still blocks regardless of record contents or parseability.

@@ -1,6 +1,7 @@
 """Separately launched acceptance worker; not production adapter registration."""
 
 import fcntl
+import logging
 import os
 import signal
 from pathlib import Path
@@ -8,10 +9,11 @@ from pathlib import Path
 from prediction_app import services
 from test_prediction_worker import ControlledLauncher
 
-from neurofold.application.prediction_worker import PredictionWorker
+from neurofold.application.prediction_worker import PredictionWorker, integrity_message
+from neurofold.core.errors import ArchiveIntegrityError
 
 
-def main() -> None:
+def _run() -> None:
     service = services()
     root = Path(os.environ["NEUROFOLD_ARCHIVE_ROOT"])
     with (root / "controlled-worker.lock").open("a+b") as lock:
@@ -29,6 +31,19 @@ def main() -> None:
             signal.signal(value, lambda number, frame: worker.stop.set())
         worker.run()
         raise SystemExit(worker.exit_code)
+
+
+def main() -> None:
+    try:
+        _run()
+    except ArchiveIntegrityError as exc:
+        logging.getLogger(__name__).critical(
+            "worker blocked reason=ARCHIVE_INTEGRITY exit_code=65 "
+            "error_type=%s message=%s; operator recovery and restart required",
+            type(exc).__name__,
+            integrity_message(exc),
+        )
+        raise SystemExit(65) from None
 
 
 if __name__ == "__main__":

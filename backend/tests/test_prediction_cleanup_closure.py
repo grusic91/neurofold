@@ -118,6 +118,13 @@ def test_cleanup_outcome_retries_real_sqlite_contention_before_stop(
                 clock.now = "2026-11-10T10:00:11Z"
             return GatedRefusal()
 
+    def release_after_busy() -> None:
+        # Assert and release on the worker thread before retry can finish.
+        if action != "shutdown":
+            assert not worker.stop.is_set()
+        lock.rollback()
+        busy.set()
+
     def contended_finish(
         job: PredictionJob, reason: FailureReason | None, *, terminated: bool
     ) -> PredictionJob:
@@ -125,12 +132,12 @@ def test_cleanup_outcome_retries_real_sqlite_contention_before_stop(
             return finish(job, reason, terminated=terminated)
         except OrchestrationError as exc:
             if exc.code == "PREDICTION_BUSY":
-                busy.set()
+                release_after_busy()
             raise
 
     def contended_get(job_id: str) -> PredictionJob:
         if phase == "read" and worker.blocked_reason is not None and not busy.is_set():
-            busy.set()
+            release_after_busy()
             raise OrchestrationError("PREDICTION_BUSY")
         return get(job_id)
 
@@ -139,7 +146,7 @@ def test_cleanup_outcome_retries_real_sqlite_contention_before_stop(
     worker = PredictionWorker(service, Launcher(), tmp_path / "staging")
     with (
         ThreadPoolExecutor(1) as pool,
-        closing(sqlite3.connect(service.jobs.path)) as lock,
+        closing(sqlite3.connect(service.jobs.path, check_same_thread=False)) as lock,
     ):
         future = pool.submit(worker.once)
         try:
@@ -147,8 +154,6 @@ def test_cleanup_outcome_retries_real_sqlite_contention_before_stop(
             lock.execute("BEGIN IMMEDIATE")
             proceed.set()
             assert busy.wait(10)
-            if action != "shutdown":
-                assert not worker.stop.is_set()
         finally:
             lock.rollback()
             proceed.set()
@@ -309,7 +314,7 @@ def test_blocked_production_entrypoint_exits_unsuccessfully(
         },
         capture_output=True,
         text=True,
-        timeout=20,
+        timeout=60,  # Hang guard for interpreter/fixture startup under emulation.
     )
     assert result.returncode == 78
     assert "UNCONFIRMED_CLEANUP" in result.stderr
@@ -334,7 +339,8 @@ def test_unrecorded_cleanup_remains_blocked_after_retry_budget(
     monkeypatch.setattr(service.jobs, "finish", busy)
     worker = PredictionWorker(service, Launcher(), tmp_path / "staging")
     with ThreadPoolExecutor(1) as pool:
-        assert pool.submit(worker.once).result(5)
+        # Hang guard includes loaded scheduling; the recording budget remains 2 s.
+        assert pool.submit(worker.once).result(30)
     assert service.get(queued.job_id).state == "cancelling"
     assert worker.block_path.exists() and worker.exit_code == 78
     assert "outcome_recorded=False" in caplog.text

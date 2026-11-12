@@ -1121,11 +1121,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 20047,
+      "byte_size": 20212,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "223a17be4732002d577f482a6ae5034716d1d947a750e7a63b11ba09ddc1bd7c"
+        "sha256": "40fabaffefce2a35d93e71177ae0a6d5158fff5eef01203ce01c4043c0832638"
       },
       "units": {
         "state": "not_applicable",
@@ -1179,11 +1179,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 12683,
+      "byte_size": 13285,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "589e0a74a74514c87b311971f83399980f12b99ff507c8611a3b70390433fd00"
+        "sha256": "06376c516746e958ec105f368e149cb90627dbc1de7858eb7e8a6c1acb58b563"
       },
       "units": {
         "state": "not_applicable",
@@ -1237,11 +1237,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 1058,
+      "byte_size": 1546,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "7b26ac9dce42c9d878c73eb6b24e61610aceb745bacdaf9cfa7a31b2f76ba713"
+        "sha256": "084a0c133ba7d1c03952a8600a3ab7a587edcf34be36bc7ecabd0f7db17a82e7"
       },
       "units": {
         "state": "not_applicable",
@@ -1295,11 +1295,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 37230,
+      "byte_size": 37386,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "362543769f09d8c95b85001bd7e778a3a63b329d38b9806a69db26f3397d4c18"
+        "sha256": "4fdd102ff69a313c1c42ad8153244e6dda8c96ea639cdc1aa9a891dd923ecae3"
       },
       "units": {
         "state": "not_applicable",
@@ -1324,11 +1324,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 13008,
+      "byte_size": 13335,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "a1152ee940949317beb889b65710e3615492dff0cff8b97aa7a1e8d98b00c5d4"
+        "sha256": "dabcc626256d364cb10df4b0dbe4f86314f63b726555b410caf6e327d3a7b1fb"
       },
       "units": {
         "state": "not_applicable",
@@ -1411,11 +1411,98 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 13112,
+      "byte_size": 13453,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "7441a9f98a1e9cd5ea7d5440a233c02073b1501e4960531a9568873222d6f5c7"
+        "sha256": "9f74ad82124c3dfee68bdbb05605f1348317fe4e08339831e5ca0891aaf491b6"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-post-closure",
+      "path": "backend/tests/test_prediction_post_closure.py",
+      "generation_method": "Authored injected startup/runtime integrity faults, lstat errors, fake monotonic signal retries, ownership/cancellation races and recovery metadata; no research inputs.",
+      "expected_invariants": [
+        "Exit codes and markers fail closed before recovery",
+        "No real sleeps in signal-bound tests; identifiers/reference data contain no sequence or exception text"
+      ],
+      "purpose": "Round-6 post-closure failure and test-sensitivity regressions.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 11965,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "f93020c754f8eee654618ecc0ee95c29f7d04d9ac150dea5cbe4f4985dd1588e"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-round7",
+      "path": "backend/tests/test_prediction_round7.py",
+      "generation_method": "Authored hostname lookup failures and bounded busy retry contract checks.",
+      "expected_invariants": [
+        "Only documented busy outcomes are retried; other failures remain visible",
+        "No sequences or traceback causes enter integrity diagnostics"
+      ],
+      "purpose": "Authored hostname lookup failures and bounded busy retry contract checks.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 4488,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "dea1d6e83dad4225ab2c7c6b0f89b537980c5f5d58feb39aaeb214136e67a84c"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-test-retries",
+      "path": "backend/tests/prediction_test_retries.py",
+      "generation_method": "Test-only bounded busy recovery; no production timeout changes.",
+      "expected_invariants": [
+        "Only documented busy outcomes are retried; other failures remain visible",
+        "No sequences or traceback causes enter integrity diagnostics"
+      ],
+      "purpose": "Test-only bounded busy recovery; no production timeout changes.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 1946,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "d4cabcff4ba2ad0f39250e93ab0c6f82bb0fc52a19ffe0eb6b9883f68b97cec7"
       },
       "units": {
         "state": "not_applicable",

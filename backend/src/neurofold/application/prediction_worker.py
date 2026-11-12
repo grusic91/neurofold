@@ -1,11 +1,14 @@
 """Single-capacity supervisor. Child lifetime is independent of HTTP awaiters."""
 
+import errno
 import json
 import logging
 import os
+import socket
 import stat
 import time
 from collections.abc import Callable
+from datetime import UTC, datetime
 from functools import partial
 from pathlib import Path
 from threading import Event
@@ -24,6 +27,59 @@ from neurofold.core.orchestration import (
 from neurofold.core.prediction_base import PredictionError
 from neurofold.core.prediction_bundle import MAX_BUNDLE_BYTES, ChildBundle
 from neurofold.core.prediction_jobs import TERMINAL, PredictionJob, instant
+
+# Only fixed authored validation messages may enter operator logs.
+# Wrapped parser/data errors fall back rather than echoing retained input.
+_AUTHORED_INTEGRITY_MESSAGES = frozenset(
+    {
+        "Artifact size/checksum mismatch",
+        "Cannot read pinned reference dependency",
+        "Cannot read retained variant",
+        "Cannot read variant reference dependency",
+        "Failure on nonfailed job",
+        "Incomplete retained registration graph",
+        "Invalid operational failure",
+        "Invalid publication graph",
+        "Mapping registration mismatch",
+        "Missing committed publication",
+        "Missing operational failure extension",
+        "Not a retained success",
+        "Operational failure mismatch",
+        "Prediction database integrity failure",
+        "Prediction database schema/integrity invalid",
+        "Publication dependency no longer eligible",
+        "Reference repository identity mismatch",
+        "Reference repository returned a different ID",
+        "Registered artifact changed",
+        "Registered record changed",
+        "Registration conflict",
+        "Retained graph mismatch",
+        "Retained operational failure invalid",
+        "Retained prediction database missing",
+        "Retained prediction database missing/invalid",
+        "Retained prediction graph damaged",
+        "Retained prediction job invalid",
+        "Retained roots mismatch",
+        "Symlink database path unsupported",
+        "Symlink prediction record",
+        "Symlink variant records are unsupported",
+        "Variant reference dependency missing",
+        "Variant repository identity mismatch",
+    }
+)
+
+
+def integrity_message(error: ArchiveIntegrityError) -> str:
+    message = str(error)
+    return (
+        message
+        if message in _AUTHORED_INTEGRITY_MESSAGES
+        else "Retained archive validation failed"
+    )
+
+
+def _utc_now() -> str:
+    return datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
 
 class SupervisionInterrupted(RuntimeError):
@@ -57,10 +113,16 @@ class PredictionWorker:
 
     @property
     def exit_code(self) -> int:
-        return 78 if self.blocked_reason is not None else 0
+        return {None: 0, "UNCONFIRMED_CLEANUP": 78, "ARCHIVE_INTEGRITY": 65}[
+            self.blocked_reason
+        ]
 
     def _retry[T](
-        self, operation: Callable[[], T], *, allow_stopping: bool = False
+        self,
+        operation: Callable[[], T],
+        *,
+        allow_stopping: bool = False,
+        retry_conflicts: bool = False,
     ) -> T:
         until, delay = time.monotonic() + min(2, self.lease_seconds / 4), 0.01
         waiter = Event() if allow_stopping else self.stop
@@ -68,7 +130,10 @@ class PredictionWorker:
             try:
                 return operation()
             except OrchestrationError as exc:
-                if exc.code != "PREDICTION_BUSY" or time.monotonic() >= until:
+                retryable = exc.code == "PREDICTION_BUSY" or (
+                    retry_conflicts and exc.code == "JOB_CONFLICT"
+                )
+                if not retryable or time.monotonic() >= until:
                     raise
                 if waiter.wait(delay):
                     raise SupervisionInterrupted("SHUTDOWN") from exc
@@ -88,7 +153,12 @@ class PredictionWorker:
         return True
 
     def _block_cleanup(
-        self, owner: PredictionJob, child: Child, error: Exception
+        self,
+        owner: PredictionJob,
+        child: Child,
+        error: Exception,
+        *,
+        child_launched_at: str | None = None,
     ) -> None:
         self.blocked_reason = "UNCONFIRMED_CLEANUP"
         assert owner.attempt is not None
@@ -101,6 +171,10 @@ class PredictionWorker:
             pgid = value if type(value) is int and value > 0 else None
         except Exception:
             pid = pgid = None  # Diagnostics must not prevent outcome recording.
+        try:
+            host_id: str | None = socket.gethostname()
+        except Exception:
+            host_id = None  # A diagnostic lookup must not interrupt quarantine.
         record = {
             "schema_version": "neurofold-worker-block/1",
             "reason": self.blocked_reason,
@@ -110,6 +184,9 @@ class PredictionWorker:
             "process_id": pid,
             "process_group_id": pgid,
             "error_type": type(error).__name__,
+            "created_at": _utc_now(),
+            "host_id": host_id,
+            "child_launched_at": child_launched_at,
         }
         retained = False
         try:
@@ -135,16 +212,20 @@ class PredictionWorker:
         recorded = False
         try:
             recorded = self._retry(
-                partial(self._record_cleanup_outcome, owner), allow_stopping=True
+                partial(self._record_cleanup_outcome, owner),
+                allow_stopping=True,
+                retry_conflicts=True,
             )
         except Exception:
             pass  # Retained block and nonzero exit require manual reconciliation.
         finally:
             self.stop.set()
             logging.getLogger(__name__).critical(
-                "worker blocked reason=%s job=%s attempt=%s pid=%s pgid=%s "
+                "worker blocked reason=%s worker_id=%s job=%s attempt=%s "
+                "pid=%s pgid=%s "
                 "error_type=%s block_retained=%s outcome_recorded=%s exit_code=78",
                 self.blocked_reason,
+                self.worker_id,
                 owner.job_id,
                 owner.attempt.attempt_id,
                 pid,
@@ -190,13 +271,21 @@ class PredictionWorker:
             return False
         if self.stop.is_set():
             return False
-        if os.path.lexists(self.block_path):
+        marker_present, check_errno = True, "NONE"
+        try:
+            os.lstat(self.block_path)
+        except FileNotFoundError:
+            marker_present = False
+        except OSError as exc:
+            check_errno = errno.errorcode.get(exc.errno or 0, "UNKNOWN")
+        if marker_present:
             self.blocked_reason = "UNCONFIRMED_CLEANUP"
             self.stop.set()
             logging.getLogger(__name__).critical(
                 "worker blocked reason=UNCONFIRMED_CLEANUP "
                 "retained_record=worker-block.json manual_recovery_required=true "
-                "exit_code=78"
+                "check_errno=%s exit_code=78",
+                check_errno,
             )
             return False
         jobs = self.service.jobs
@@ -208,6 +297,7 @@ class PredictionWorker:
         reason: FailureReason = "SUPERVISION_FAILED"
         confirmed = True  # No process exists until launch succeeds.
         cleanup_uncertain = False
+        child_launched_at = None
         deadline = time.monotonic() + job.spec.profile.limits.max_seconds
 
         def checkpoint() -> None:
@@ -233,6 +323,7 @@ class PredictionWorker:
                 raise SupervisionInterrupted("SUPERVISION_FAILED")
             checkpoint()
             launch = job
+            child_launched_at = _utc_now()
             child = self.launcher.launch(directory, job)
             confirmed = False
             heartbeat = time.monotonic() + self.heartbeat_seconds
@@ -297,7 +388,9 @@ class PredictionWorker:
                 except Exception as exc:
                     reason = "SUPERVISION_FAILED"
                     cleanup_uncertain = True
-                    self._block_cleanup(job, child, exc)
+                    self._block_cleanup(
+                        job, child, exc, child_launched_at=child_launched_at
+                    )
         if cleanup_uncertain:
             return True
         # Re-read only to observe cancellation; never adopt another lease/attempt.
@@ -326,14 +419,15 @@ class PredictionWorker:
                 logging.getLogger(__name__).warning("worker contention; retrying")
                 self.stop.wait(delay)
                 delay = min(delay * 2, 1)
-            except ArchiveIntegrityError:
+            except ArchiveIntegrityError as exc:
                 # Fail closed for the whole queue. Preserve every corrupt byte;
                 # an operator must inspect/restore storage and restart explicitly.
                 self.blocked_reason = "ARCHIVE_INTEGRITY"
                 logging.getLogger(__name__).critical(
-                    "worker blocked by retained integrity failure; "
-                    "operator recovery and restart required",
-                    exc_info=True,
+                    "worker blocked reason=ARCHIVE_INTEGRITY exit_code=65 "
+                    "error_type=%s message=%s; operator recovery and restart required",
+                    type(exc).__name__,
+                    integrity_message(exc),
                 )
                 while not self.stop.wait(1):
                     pass

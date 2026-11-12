@@ -93,25 +93,48 @@ volume unless `--volumes` is deliberately supplied for that disposable project.
 
 ### Unconfirmed cleanup and manual recovery
 
-`UNCONFIRMED_CLEANUP` and exit **78** require operator action, not an automatic
-restart. Both production and controlled workers honor this status. Normal
-requested shutdown exits 0. Keep restart disabled for this condition; M3's future
+Both production and controlled workers use one exit-code contract:
+
+- **0:** normal requested shutdown with no retained integrity block.
+- **78 / UNCONFIRMED_CLEANUP:** uncertain process cleanup or an inaccessible marker
+  check; follow the process-recovery procedure below. Do not resume automatically.
+- **65 / ARCHIVE_INTEGRITY:** startup or running-queue integrity damage. Stop
+  admission, preserve DB/WAL/identity/staging/registered data, inspect and restore a
+  consistent backup deliberately before restart. This path creates no cleanup
+  marker by itself; if one is present, also complete the exit-78 procedure.
+- Other uncaught failures retain Python's usual unsuccessful crash behavior.
+
+Integrity diagnostics contain the reason/code, error_type and fixed authored
+validation message, without a traceback or chained exception details.
+Only recognized authored messages are emitted; wrapped/unrecognized detail falls
+back to "Retained archive validation failed" rather than echoing retained input.
+A normal SIGTERM after an integrity park still exits 65, not 0 or 78. Keep restart
+disabled for this condition; M3's future
 restart/readiness policy must preserve the manual gate.
 
 A private `staging/worker-block.json` under the prediction worker root records
-worker/job/attempt IDs, PID/PGID when available, error class and blocked reason.
+worker/job/attempt IDs, PID/PGID when available, error class, blocked reason,
+UTC created_at, owning host/container host_id, and child_launched_at (launch-call
+start time, which is not claimed to equal kernel process birth time).
+Hostname lookup failure records host_id=null and never prevents the blocking
+marker or the specific outcome record. Treat a missing host reference as requiring
+additional investigation before restart.
 It contains no sequences, proposal bytes or raw exception messages. The production
 path is `$NEUROFOLD_ARCHIVE_ROOT/predictions/staging/worker-block.json`; the explicit
 controlled-test composition uses `$NEUROFOLD_ARCHIVE_ROOT/staging/worker-block.json`.
 The final log also reports `outcome_recorded` and `block_retained`. A partial,
 corrupt, symlinked or otherwise present marker blocks startup before recovery or
-claim; deleting it is not routine retry handling. Include it with archive backups.
+claim; lstat errors other than missing-file also block, with the errno name
+logged. Deleting it is not routine retry handling. Include it with archive backups.
 
 1. Stop admission and the worker; disable any external automatic restart for exit
    78. Preserve logs, the marker, staging, DB/WAL/identity and registered artifacts.
 2. Inspect the recorded job and attempt and the owning host/container process
-   namespace. Verify process identity and start time before acting on PID/PGID;
-   numbers can be reused. Establish that the owned group and helpers have exited,
+   namespace. Compare host_id with the hostname inside that host/container, and
+   worker_id with the critical log. Compare the OS process start time with the
+   interval from child_launched_at to created_at, accounting for clock accuracy;
+   also verify the command/staging ownership before acting. Missing/partial fields
+   require more investigation, never bypass. PID/PGID numbers can be reused. Establish that the owned group and helpers have exited,
    or deliberately stop the owning container/processes. API health is not proof of
    termination. Do not kill an unrelated process based only on a stale number.
 3. Check whether the specific SUPERVISION_FAILED outcome was retained. When it was
@@ -133,3 +156,12 @@ rolling schema compatibility, terminal-write retries outside this cleanup path,
 mutation recovery, dependency naming and harness conditions remain M3 work. H1
 mapping correction and biological-foundation review remain separate prerequisites
 before scientific interpretation or NF-05/NF-06 acceptance.
+
+
+The default and controlled worker stop_grace_period is 20 seconds. The design's
+conservative default double-cleanup/recording allowance is about 15.8 seconds plus
+filesystem and scheduler margin; the review's measured 6.7 seconds is not a hard
+maximum. Recompute and re-measure before changing child grace, lease or storage
+behavior, and at M4 before enabling real runtime helpers. Keep the stop grace
+above the computed/measured total plus margin; never use force-kill timing as
+proof of confirmed scientific execution cleanup.

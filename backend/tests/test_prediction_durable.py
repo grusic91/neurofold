@@ -12,6 +12,7 @@ from typing import Any
 import pytest
 from orchestration_examples import ManualClock, bundle_for, service_for, submit
 from prediction_examples import ENDED, EXPIRES, STARTED
+from prediction_test_retries import retry_busy
 from test_variant_storage import create
 
 from neurofold.adapters.prediction_archive import PredictionArchive
@@ -60,9 +61,9 @@ def test_concurrent_idempotency_reopen_conflict_and_exact_specs(tmp_path: Path) 
     barrier = Barrier(8)
 
     def concurrent(index: int) -> PredictionJob:
-        independent = service_for(tmp_path, clock)
-        barrier.wait(timeout=10)
-        return submit(independent)
+        barrier.wait(timeout=60)  # Thread-startup hang guard under CPU saturation.
+        # Initialization can also be busy; repeat the same key/spec on recovery.
+        return retry_busy(lambda: submit(service_for(tmp_path, clock)))
 
     with ThreadPoolExecutor(8) as pool:
         jobs = list(pool.map(concurrent, range(8)))

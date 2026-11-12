@@ -108,3 +108,25 @@ framework-independent launcher/diagnostic protocol; no scientific wire format
 changes. All index blobs are compared to the tested source map before committing.
 The resulting commit is reported separately, avoiding a self-referential commit
 hash in this file. Hosted CI remains unexecuted until push authorization.
+
+
+## Dated post-closure correction — 2026-11-12
+
+This historical checkpoint is preserved as written. Local refs now show main and
+origin/main at fd2c8d51b7911265f31a77440f6a1ed7f5f94fb5; origin/main's reflog records
+an update by push at 2026-11-12 07:40:56 +0100. The retained
+committed-checkpoint.json push_performed=false predates that event. Asked who
+performed or authorized that push, the user answered verbatim **“Me”**. A later
+authorized read-only lookup records [CI 43169838959](https://github.com/grusic91/neurofold/actions/runs/43169838959)
+as successful for fd2c8d5. This does not cover the uncommitted follow-up; no push
+is performed in this task.
+
+The narrative omitted two retained early strict-mypy failures: mypy-first.log and
+mypy.log each reported an invalid original_child base-class alias (two errors).
+They were corrected before the final passing type checks; the failures remain
+retained and hashed, not passing evidence. The nominal min(2 s,lease/4) recording
+window is a retry-scheduling budget, not a hard elapsed-time maximum: backoff and
+a final SQLite busy wait can extend it (review measured 2.17 s). Current design
+also distinguishes integrity exit 65 from cleanup-uncertainty exit 78. See the
+[post-closure checkpoint](nf04-m2-post-closure-evidence.md) for current results,
+exit contracts and the first recorded hosted-CI checkpoint status. H1 remains open.

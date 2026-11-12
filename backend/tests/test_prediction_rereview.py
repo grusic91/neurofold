@@ -250,6 +250,9 @@ def test_active_publication_contention_is_retried_and_truthfully_classified(
             return renew(job, seconds)
         except OrchestrationError as exc:
             if exc.code == "PREDICTION_BUSY":
+                if release_early:
+                    # Release before retry, without an observer scheduling race.
+                    lock.rollback()
                 busy.set()
             raise
 
@@ -262,6 +265,9 @@ def test_active_publication_contention_is_retried_and_truthfully_classified(
             return stage(job, value)
         except OrchestrationError as exc:
             if exc.code == "PREDICTION_BUSY":
+                if release_early:
+                    # Release before retry, without an observer scheduling race.
+                    lock.rollback()
                 busy.set()
             raise
 
@@ -287,7 +293,7 @@ def test_active_publication_contention_is_retried_and_truthfully_classified(
     worker = PredictionWorker(service, Launcher(), tmp_path / "staging")
     with (
         ThreadPoolExecutor(1) as pool,
-        closing(sqlite3.connect(service.jobs.path)) as lock,
+        closing(sqlite3.connect(service.jobs.path, check_same_thread=False)) as lock,
     ):
         future = pool.submit(worker.once)
         try:

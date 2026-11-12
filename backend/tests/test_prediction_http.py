@@ -9,6 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 from orchestration_examples import ManualClock, bundle_for, service_for, submit
 from prediction_examples import ENDED
+from prediction_test_retries import retry_busy_response
 
 from neurofold.api.configuration import Settings
 from neurofold.api.main import create_app
@@ -269,14 +270,20 @@ def test_outgoing_records_cannot_hide_unknown_fields_or_bad_types() -> None:
 
 
 def test_concurrent_http_submissions_share_one_durable_job(tmp_path: Path) -> None:
-    from threading import Barrier
+    from threading import Barrier, Lock
 
     service = service_for(tmp_path, ManualClock())
     barrier = Barrier(4)
     original = service.submit
+    gate, remaining = Lock(), 4
 
     def synchronized(**kwargs: Any) -> Any:
-        barrier.wait(timeout=5)
+        nonlocal remaining
+        with gate:
+            first_wave = remaining > 0
+            remaining -= int(first_wave)
+        if first_wave:
+            barrier.wait(timeout=60)  # Thread-startup hang guard under CPU saturation.
         return original(**kwargs)
 
     service.submit = synchronized  # type: ignore[method-assign]
@@ -284,16 +291,21 @@ def test_concurrent_http_submissions_share_one_durable_job(tmp_path: Path) -> No
         with ThreadPoolExecutor(4) as pool:
             futures = [
                 pool.submit(
-                    client.post,
-                    "/v1/prediction-jobs",
-                    json=BODY,
-                    headers={"Idempotency-Key": "concurrent"},
+                    retry_busy_response,
+                    lambda: client.post(
+                        "/v1/prediction-jobs",
+                        json=BODY,
+                        headers={"Idempotency-Key": "concurrent"},
+                    ),
                 )
                 for _ in range(4)
             ]
-            replies = [future.result(timeout=10) for future in futures]
+            # Outer hang guard includes bounded request/retry waits under load.
+            replies = [future.result(timeout=90) for future in futures]
     assert all(reply.status_code == 202 for reply in replies)
     assert len({reply.json()["job"]["job_id"] for reply in replies}) == 1
+    reopened = service_for(tmp_path, ManualClock())
+    assert submit(reopened, "concurrent").job_id == replies[0].json()["job"]["job_id"]
 
 
 def test_m2_additive_schemas_reproducible_and_openapi_matches_records() -> None:
