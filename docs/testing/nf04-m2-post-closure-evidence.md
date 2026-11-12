@@ -418,7 +418,7 @@ changes are included. H1 remains unresolved and M3 has not started.
 | --- | --- |
 | T1 | Each worker constructs its independent repository with bounded retry **before** the eight-party barrier, then submits with a separate bounded retry on that same repository. This removes the initialization flock from the racing submit path. All eight results, single ID, reopening, conflicts, availability ordering and exact specs remain asserted. A submit-only deferred-BEGIN mutant, with initialization and other writes unchanged, passes the round-7 test 3/3 and fails the repaired test 3/3. No forced sleep or additional rendezvous is used to obtain those mutant failures. |
 | T2 | Both entrypoints get an additional startup-private case: startup raises ArchiveIntegrityError('PRIVATE_DETAIL_DO_NOT_LOG'); exit 65, generic authored message, absence of PRIVATE/Traceback are required. Replacing only either main's message renderer with str(exc) fails its dedicated case. |
-| R8-REL-1 | The actual 43257968940 round-7 result is recorded above, replacing the pending status. The new follow-up run will be recorded after separately approved commit and branch push; no new run is claimed yet. |
+| R8-REL-1 | The actual 43257968940 round-7 result is recorded above, replacing the pending status. Follow-up run 43280081847 is recorded below after the separately approved commit and feature-branch push. |
 | R8-REL-2 | Design and test-matrix now explicitly require M4 remeasurement of the 100 ms Darwin EPERM bound before enabling the first macOS runtime child that spawns helpers, under representative CPU/IO load, with boundary-test and shutdown-margin updates if changed. |
 | Optional drift check | A static AST check discovers ArchiveIntegrityError subclasses and literal constructor messages, requiring allowlist membership or a reasoned explicit exclusion. The three InvalidChildOutput literals are explicitly excluded as proposal rejection messages. Removing an existing allowlist entry fails this drift test. |
 | Optional retry cleanup | The raw sqlite3 retry branch is removed. A raw database-locked OperationalError now belongs to the non-retry tests and must propagate immediately; only the repository's documented typed PREDICTION_BUSY is retried. |
@@ -448,8 +448,8 @@ Frontend checks run after both full native suites, without overlapping heavy
 work. Both the base Compose configuration and its controlled-prediction overlay
 validate. An initial attempt to validate the overlay without its required base
 file is retained as a setup error, not a product failure or a passing check.
-No full emulated Linux suite is run. New Linux/container smoke results wait for
-the hosted checkpoint; the earlier hosted result above belongs to 8b7acc0.
+No full emulated Linux suite is run. The follow-up Linux/container smoke results
+are recorded below; the earlier hosted result above belongs to 8b7acc0.
 
 The final **169-file runtime/configuration payload** hashes to
 `0961c3b36f1566678b8432a5804478cef59b3e8bf802347f6f6dd124ffc12265`.
@@ -462,14 +462,34 @@ production/backend-script/infra/frontend/schema/license/configuration/lock files
 equal the starting tree. The raw artifact manifest is separate from source
 identity.
 
-### Round-8 hosted checkpoint — awaiting authorization
+### Round-8 hosted checkpoint — recorded after authorized push
 
-The follow-up remains uncommitted on **fix/nf04-m2-round7-hardening** at 8b7acc0.
-The user requires separate approval before committing and before pushing this
-branch. No round-8 hosted run exists yet. After those approvals, record its URL,
-ID, push revision, runner/image, Python/SQLite versions, test/coverage counts,
-frontend and both smoke results, and conclusion. Main is not a commit, push or
-merge target; any change to main requires separate authorization.
+The user separately authorized the commit (**yes commit**) and branch push
+(**push**). [CI **43280081847**](https://github.com/grusic91/neurofold/actions/runs/43280081847)
+concluded **success**, event **push** on **fix/nf04-m2-round7-hardening** at
+**d7bd884029df6b026f1b0b34714fdd6fa2804129**. It started
+2026-11-12T18:27:50Z and completed by 18:31:05Z. All four jobs passed.
+Runner: **ubuntu-26.04**, image **20261101.186.1**.
+
+| Backend Python | SQLite | Full result | Coverage |
+| --- | --- | --- | --- |
+| 3.12.16 | 3.53.1 | 2,089 passed / 20 Darwin-only skips | 95.33% |
+| 3.13.18 | 3.53.1 | 2,089 passed / 20 Darwin-only skips | 95.36% |
+
+Frontend: **36 unit / 12 browser / 1 integration** passes. Compose smoke and
+controlled prediction smoke pass, including **158 in-container tests** (one
+non-fatal PytestCacheWarning for an unwritable pytest cache). Exact metadata,
+logs and the parsed record are retained in
+`backend/outputs/nf04-m2-round8/hosted-run-43280081847.json`,
+`hosted-run-43280081847.log` and `hosted-checkpoint.{json,md}`.
+
+This post-push evidence update records d7bd884 without changing its tested
+runtime/configuration payload. The reviewable-tree identity above describes
+d7bd884 before this documentation update; it excludes the checkpoint itself.
+The post-push evidence and test-matrix edits are recorded separately in
+`backend/outputs/nf04-m2-round8/post-hosted-documentation.json`. Main was not
+pushed or merged; any change to main requires separate authorization. M3 has
+not started and H1 remains unresolved.
 
 ## Remaining gates
 

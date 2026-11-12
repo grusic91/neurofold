@@ -103,6 +103,7 @@ five L4 families in round 6, the three repaired cases in round 7, and the restor
 durable submit race in round 8. Full suites run separately while the host is
 otherwise idle. Round-7 hosted CI
 43257968940 passed and is recorded in the checkpoint. Round 8 runs no full
-emulated Linux suite; its follow-up hosted checkpoint waits for explicit commit
-and feature-branch push authorization. Main is not a target.
+emulated Linux suite; its separately authorized feature-branch push at d7bd884
+passed hosted CI 43280081847, including Linux 3.12/3.13 and both container smokes.
+Main is not a target.
 The [new checkpoint](nf04-m2-post-closure-evidence.md) records repetition counts.
