@@ -64,10 +64,7 @@ def test_hostname_failure_cannot_prevent_marker_or_outcome(
 
 @pytest.mark.parametrize(
     "error",
-    [
-        OrchestrationError("PREDICTION_BUSY"),
-        sqlite3.OperationalError("database is locked"),
-    ],
+    [OrchestrationError("PREDICTION_BUSY")],
 )
 def test_busy_retry_is_bounded_and_preserves_original_error(error: Exception) -> None:
     calls = 0
@@ -85,7 +82,11 @@ def test_busy_retry_is_bounded_and_preserves_original_error(error: Exception) ->
 
 @pytest.mark.parametrize(
     "error",
-    [OrchestrationError("JOB_CONFLICT"), sqlite3.OperationalError("syntax error")],
+    [
+        OrchestrationError("JOB_CONFLICT"),
+        sqlite3.OperationalError("syntax error"),
+        sqlite3.OperationalError("database is locked"),
+    ],
 )
 def test_busy_retry_never_retries_other_errors(error: Exception) -> None:
     waits: list[float] = []

@@ -1121,11 +1121,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 20212,
+      "byte_size": 20266,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "40fabaffefce2a35d93e71177ae0a6d5158fff5eef01203ce01c4043c0832638"
+        "sha256": "6b0c7f64d12cae2085e990ce59d5a378c07de19bdba015cb6c2835537eccc3a0"
       },
       "units": {
         "state": "not_applicable",
@@ -1440,11 +1440,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 11965,
+      "byte_size": 12251,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "f93020c754f8eee654618ecc0ee95c29f7d04d9ac150dea5cbe4f4985dd1588e"
+        "sha256": "1dede7c917242be804324af195eef69639ade6291c5a222c786281236325fa1f"
       },
       "units": {
         "state": "not_applicable",
@@ -1469,11 +1469,11 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 4488,
+      "byte_size": 4496,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "dea1d6e83dad4225ab2c7c6b0f89b537980c5f5d58feb39aaeb214136e67a84c"
+        "sha256": "3ac399290068e85fe222fbe513a7a746151943b3b31a3ace3a0975470f924ac1"
       },
       "units": {
         "state": "not_applicable",
@@ -1498,11 +1498,40 @@
       "author": "NeuroFold contributors",
       "license": "Apache-2.0",
       "evidence": "synthetic",
-      "byte_size": 1946,
+      "byte_size": 1535,
       "content_hash": {
         "algorithm": "sha256",
         "encoding": "raw-bytes/1",
-        "sha256": "d4cabcff4ba2ad0f39250e93ab0c6f82bb0fc52a19ffe0eb6b9883f68b97cec7"
+        "sha256": "d357e6dc6f69c18d0d08be245d4eb5dbf1fad8b9472ee85cac23b972b2ff9d6e"
+      },
+      "units": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      },
+      "coordinate_convention": {
+        "state": "not_applicable",
+        "value": null,
+        "reason": "Authored metadata/byte placeholders; no molecular coordinates or physical measurement."
+      }
+    },
+    {
+      "fixture_id": "prediction-round8",
+      "path": "backend/tests/test_prediction_round8.py",
+      "generation_method": "AST inspection of authored integrity exception literals and subclasses; no imported model packages or research inputs.",
+      "expected_invariants": [
+        "Every literal integrity message has an explicit disposition",
+        "Child-output exclusions have a reason and remain present in source"
+      ],
+      "purpose": "Detect authored-message allowlist/exclusion drift.",
+      "author": "NeuroFold contributors",
+      "license": "Apache-2.0",
+      "evidence": "synthetic",
+      "byte_size": 2283,
+      "content_hash": {
+        "algorithm": "sha256",
+        "encoding": "raw-bytes/1",
+        "sha256": "0ff7ad292b12694555c30e28f9da1daa5d408007005bf3b589a535c9c56100ce"
       },
       "units": {
         "state": "not_applicable",

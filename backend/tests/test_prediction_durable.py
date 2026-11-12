@@ -61,9 +61,10 @@ def test_concurrent_idempotency_reopen_conflict_and_exact_specs(tmp_path: Path) 
     barrier = Barrier(8)
 
     def concurrent(index: int) -> PredictionJob:
+        independent = retry_busy(lambda: service_for(tmp_path, clock))
         barrier.wait(timeout=60)  # Thread-startup hang guard under CPU saturation.
-        # Initialization can also be busy; repeat the same key/spec on recovery.
-        return retry_busy(lambda: submit(service_for(tmp_path, clock)))
+        # Rendezvous after initialization: its flock must not serialize submits.
+        return retry_busy(lambda: submit(independent))
 
     with ThreadPoolExecutor(8) as pool:
         jobs = list(pool.map(concurrent, range(8)))

@@ -30,6 +30,10 @@ from pathlib import Path
 from neurofold.adapters.prediction_sqlite import SQLiteJobs
 from neurofold.core.errors import ArchiveIntegrityError
 root,mode,entry=Path(sys.argv[1]),sys.argv[2],sys.argv[3]
+if mode=='startup-private':
+    def damaged_startup(self,*args,**kwargs):
+        raise ArchiveIntegrityError('PRIVATE_DETAIL_DO_NOT_LOG')
+    SQLiteJobs.__init__=damaged_startup
 if mode=='startup':
     relative='predictions/jobs.sqlite3' if entry=='production' else 'data/jobs.sqlite3'
     path=root/relative
@@ -57,7 +61,14 @@ else:
 
 @pytest.mark.parametrize("entrypoint", ["production", "controlled"])
 @pytest.mark.parametrize(
-    "mode,code", [("normal", 0), ("runtime", 65), ("startup", 65), ("marker", 78)]
+    "mode,code",
+    [
+        ("normal", 0),
+        ("runtime", 65),
+        ("startup", 65),
+        ("startup-private", 65),
+        ("marker", 78),
+    ],
 )
 def test_entrypoint_exit_contract(
     tmp_path: Path, entrypoint: str, mode: str, code: int
@@ -98,18 +109,16 @@ def test_entrypoint_exit_contract(
             process.send_signal(signal.SIGTERM)
         stdout, stderr = process.communicate(timeout=60)
         assert process.returncode == code, (stdout, stderr)
-        if mode in ("runtime", "startup"):
+        if mode in ("runtime", "startup", "startup-private"):
             assert "ARCHIVE_INTEGRITY" in stderr
             assert "error_type=ArchiveIntegrityError" in stderr
-            message = (
-                "Retained prediction job invalid"
-                if mode == "runtime"
-                else "Retained prediction database missing/invalid"
-            )
+            message = {
+                "runtime": "Retained prediction job invalid",
+                "startup": "Retained prediction database missing/invalid",
+                "startup-private": "Retained archive validation failed",
+            }[mode]
             assert "message=" + message in stderr
-            assert (
-                "Traceback" not in stderr and "PRIVATE_DETAIL_DO_NOT_LOG" not in stderr
-            )
+            assert "Traceback" not in stderr and "PRIVATE" not in stderr
         if mode == "marker":
             assert "UNCONFIRMED_CLEANUP" in stderr
     finally:

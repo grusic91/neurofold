@@ -71,6 +71,11 @@ closure attempted in a finally block. Darwin EPERM first permits a 0.5-second
 leader-exit wait, then signal retries every 1 ms for at most 100 ms while exiting
 same-group helpers disappear. Persistent refusal remains a cleanup failure; a
 leader's exit alone cannot excuse an unsignalable group member.
+At M4, before enabling the first macOS child runtime that spawns helpers,
+re-measure the 100 ms EPERM bound under representative CPU/IO load. If the bound
+changes, update the portable boundary regressions and recompute the cleanup and
+shutdown margin before enabling that runtime; the current value is not a measured
+guarantee for future helpers.
 
 Unconfirmed cleanup retains staging/worker-block.json before bounded outcome
 recording. Job/attempt ownership checks remain mandatory; get/finish retry SQLite

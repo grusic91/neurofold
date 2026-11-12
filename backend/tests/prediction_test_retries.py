@@ -1,6 +1,5 @@
 """Bounded client-side busy recovery for storage/concurrency assertions only."""
 
-import sqlite3
 import time
 from collections.abc import Callable, Mapping
 from typing import Any, Protocol
@@ -19,14 +18,6 @@ def retry_busy[T](
             return operation()
         except OrchestrationError as exc:
             if exc.code != "PREDICTION_BUSY" or index == attempts - 1:
-                raise
-        except sqlite3.OperationalError as exc:
-            code = getattr(exc, "sqlite_errorcode", None)
-            busy = (
-                isinstance(code, int)
-                and code & 255 in (sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED)
-            ) or str(exc) in ("database is locked", "database table is locked")
-            if not busy or index == attempts - 1:
                 raise
         wait(0.05)
     raise AssertionError("Retry attempts must be positive")

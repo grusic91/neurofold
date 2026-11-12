@@ -94,12 +94,15 @@ platform results are distinct from the historical first pass and pending remote 
 | real child copy/succeeded | Retains real profile/handshake wall-clock budgets; does not test a timeout and can still be timing-sensitive on an overloaded host. No timeout was widened to hide it. | Hosted CI flake; revisit supervision-clock injection rather than extending a functional limit. |
 | controlled entrypoint startup and recording exhaustion | Only outer hang guards were enlarged, with inline justification; production retry/execution bounds are unchanged. | Re-measure on a new emulator/runtime, independently of behavior budgets. |
 | concurrent HTTP submissions | Fixed in round 7: bounded retries only for 503/PREDICTION_BUSY, respecting Retry-After and reusing the identical key/body. Only the initial four calls enter the barrier. Final 202 responses, one job ID and durable reopening remain asserted. | No deferral; retain retry limits and the final uniqueness assertions. |
-| concurrent durable submissions | Fixed in round 7: bounded retries cover initialization/submission on PREDICTION_BUSY or raw SQLite busy/locked errors. All eight callers retain identical keys/specs; reopening, conflicts and exact specs remain asserted. | No deferral; non-busy failures and exhausted retries must surface. |
+| concurrent durable submissions | Round 8 restores the submit race: each thread finishes independent repository initialization with bounded PREDICTION_BUSY retries, then all eight rendezvous before submitting with separate bounded retries. Reopening, conflicts and exact specs remain asserted. A submit-only deferred-BEGIN mutant must fail. Raw SQLite exceptions are not retried. | Retain the post-initialization barrier and transaction sensitivity; do not let initialization's flock serialize the submissions. |
 | slow-publication lease reservation | Fixed in round 7: an already-finished child isolates the publication/lease invariant from subprocess startup. Clock advancement, recovery rejection and successful publication remain asserted; removing lease reservation still fails the test. | No deferral; real child lifecycle/timeout coverage remains in process/worker tests. |
+| Darwin EPERM retry bound | The current 100 ms retry bound is pinned by portable fake-clock boundary cases; Darwin helper probes cover real exit behavior. | M4, before enabling the first macOS runtime child that spawns helpers: re-measure under representative CPU/IO load, update boundary tests if changed, and recompute shutdown margin. |
 
 Only the named test families run during their respective CPU-saturation batches:
-five L4 families in round 6, then the three repaired cases in round 7. Full
-suites run separately while the host is otherwise idle. Round 7 runs no full
-emulated Linux suite; its hosted Linux/container checkpoint waits for explicit
-commit and feature-branch push authorization.
+five L4 families in round 6, the three repaired cases in round 7, and the restored
+durable submit race in round 8. Full suites run separately while the host is
+otherwise idle. Round-7 hosted CI
+43257968940 passed and is recorded in the checkpoint. Round 8 runs no full
+emulated Linux suite; its follow-up hosted checkpoint waits for explicit commit
+and feature-branch push authorization. Main is not a target.
 The [new checkpoint](nf04-m2-post-closure-evidence.md) records repetition counts.

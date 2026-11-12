@@ -327,14 +327,17 @@ H1 remains unresolved and M3 has not started.
 | Repair | Behavior, test and sensitivity |
 | --- | --- |
 | Concurrent HTTP submission | At most eight attempts, only for 503/PREDICTION_BUSY with retryable=true, respecting the server's Retry-After. Each attempt reuses the identical key/body. Only the initial four calls enter the synchronization barrier. All final responses must still be 202, share one job ID, and match durable reopening. Four injected initial busy responses fail the old test and pass the repair. |
-| Durable concurrent submission | At most eight construction/submission attempts on PREDICTION_BUSY or SQLite busy/locked only, with a short test-side backoff. All eight callers retain the same key/spec; reopening, exact sequence/parameters, conflict and availability ordering checks remain. Injected typed busy and raw database-locked errors each fail before and pass after. Other errors and exhausted retries remain visible. |
+| Durable concurrent submission | Round 7 retained the value assertions and bounded retries, but construction after the barrier serialized submits on the initialization flock. Its passing runs did not preserve the original race sensitivity. Round 8 corrects this: finish independently retried construction before the barrier, then retry submit separately on the same repository. Only typed PREDICTION_BUSY is retried; raw SQLite exceptions propagate. See T1 below. |
 | Slow-publication lease reservation | Uses an already-finished child and the same authored bundle, isolating publication from real subprocess startup. The existing three-second UTC advance, recovery==0 and final succeeded assertions remain. Simulated 100-second startup elapsed time fails the old test and passes the repair; a minimal mutant removing lease reservation still fails the repaired test. Real process lifetime/timeout tests remain unchanged. |
 | Integrity diagnostics | Startup and runtime handlers retain exit 65 and log error_type plus recognized fixed authored validation messages, without traceback or chained causes. A fixed-message gate replaces unrecognized/wrapped detail with a generic authored validation message. Four subprocess cases through both entrypoints fail on missing details before and pass after. A private chained cause never appears; an additional unknown-message regression fails on the direct-str intermediate logger and passes the message gate. |
 | Hostname diagnostic failure | gethostname is guarded independently of PID/PGID collection. Lookup exceptions yield host_id=null while preserving the marker, known process IDs, failed/SUPERVISION_FAILED with termination false, the stop flag and exit 78. Injected OSError and RuntimeError each escape before the fix and pass after it. |
 
 These repairs close the HTTP/durable/publication deferrals; test-matrix records
-resolved treatments rather than future fixes. No functional timeout or assertion
-is weakened. HTTP/barrier outer hang guards include bounded client retries and
+resolved treatments rather than future fixes. **Round-8 correction:** although the
+assertion text was retained, round 7 weakened the durable submit race by moving
+initialization after the barrier. Its native/hosted passes are not evidence of
+unchanged transaction-race coverage. T1 below restores that sensitivity.
+HTTP/barrier outer hang guards include bounded client retries and
 loaded thread startup, with inline justification; server limits are unchanged.
 The test-only response protocol supports both installed HTTP client response
 types without changing application dependencies.
@@ -381,20 +384,92 @@ Both local Compose configurations validate. No full emulated Linux suite is run
 for round 7. New image/compose/controlled smoke and Linux checks are reserved for
 the hosted checkpoint, as the user requested.
 
-### Round-7 hosted checkpoint and approval gate
+### Round-7 hosted checkpoint — recorded in round 8
 
-**Commit authorized; waiting for separate push authorization.** After local
-verification, the user approved committing this checkpoint and requested a branch
-without the codex prefix. The target is `fix/nf04-m2-round7-hardening`; main is not
-a push target. The resulting commit identity is recorded separately to avoid a
-self-reference. No push or hosted workflow rerun is performed at this checkpoint.
-The earlier successful fd2c8d5 run above is historical and does not validate this
-follow-up.
+The user authorized the round-7 commit and feature-branch push separately.
+[CI **43257968940**](https://github.com/grusic91/neurofold/actions/runs/43257968940)
+concluded **success**, event **push** on **fix/nf04-m2-round7-hardening** at
+**8b7acc0657a22771829c46f963025f965a3de9f5**. It started
+2026-11-12T16:22:36Z and completed by 16:26:16Z. All four jobs passed.
+Runner: **ubuntu-26.04**, image **20261101.186.1**.
 
-New run URL, ID, runner image, Python versions, SQLite versions and conclusion
-remain pending until the approved feature-branch push triggers CI. The version
-print steps already present in this checkpoint will capture actual
-hosted Python/SQLite versions. No current-tree hosted pass is claimed.
+| Backend Python | SQLite | Full result | Coverage |
+| --- | --- | --- | --- |
+| 3.12.16 | 3.53.1 | 2,086 passed / 20 Darwin-only skips | 95.33% |
+| 3.13.18 | 3.53.1 | 2,086 passed / 20 Darwin-only skips | 95.33% |
+
+Frontend: **36 unit / 12 browser / 1 integration** passes. Compose smoke and
+controlled prediction smoke pass, including **158 in-container tests** (one
+non-fatal pytest cache-permission warning). Exact metadata, logs and the parsed
+record are retained in `backend/outputs/nf04-m2-round7/hosted-checkpoint.json`,
+`hosted-checkpoint.md` and `hosted-run-43257968940.*`.
+
+This corrects the committed pre-push pending text. The results are for 8b7acc0;
+they do not validate the round-8 follow-up or resolve its newly identified T1
+coverage gap. Main was not pushed. No merge or M3 start is implied.
+
+## Round-8 follow-up — 2026-11-12
+
+Work starts from clean 8b7acc0 on fix/nf04-m2-round7-hardening. No production
+code, SQLite/child timeout, scientific codec, public schema, dependency or lockfile
+changes are included. H1 remains unresolved and M3 has not started.
+
+| Item | Repair and sensitivity |
+| --- | --- |
+| T1 | Each worker constructs its independent repository with bounded retry **before** the eight-party barrier, then submits with a separate bounded retry on that same repository. This removes the initialization flock from the racing submit path. All eight results, single ID, reopening, conflicts, availability ordering and exact specs remain asserted. A submit-only deferred-BEGIN mutant, with initialization and other writes unchanged, passes the round-7 test 3/3 and fails the repaired test 3/3. No forced sleep or additional rendezvous is used to obtain those mutant failures. |
+| T2 | Both entrypoints get an additional startup-private case: startup raises ArchiveIntegrityError('PRIVATE_DETAIL_DO_NOT_LOG'); exit 65, generic authored message, absence of PRIVATE/Traceback are required. Replacing only either main's message renderer with str(exc) fails its dedicated case. |
+| R8-REL-1 | The actual 43257968940 round-7 result is recorded above, replacing the pending status. The new follow-up run will be recorded after separately approved commit and branch push; no new run is claimed yet. |
+| R8-REL-2 | Design and test-matrix now explicitly require M4 remeasurement of the 100 ms Darwin EPERM bound before enabling the first macOS runtime child that spawns helpers, under representative CPU/IO load, with boundary-test and shutdown-margin updates if changed. |
+| Optional drift check | A static AST check discovers ArchiveIntegrityError subclasses and literal constructor messages, requiring allowlist membership or a reasoned explicit exclusion. The three InvalidChildOutput literals are explicitly excluded as proposal rejection messages. Removing an existing allowlist entry fails this drift test. |
+| Optional retry cleanup | The raw sqlite3 retry branch is removed. A raw database-locked OperationalError now belongs to the non-retry tests and must propagate immediately; only the repository's documented typed PREDICTION_BUSY is retried. |
+
+Raw before/after probes and checks are retained under ignored
+`backend/outputs/nf04-m2-round8/`. The initial production startup-mutant probe
+was not reached because the subprocess reset PYTHONPATH; this setup miss and its
+logs are retained separately and are not counted as a successful sensitivity
+result. The corrected probe selects the mutated main by explicit script path,
+preserving all test assertions and the actual startup handler.
+
+The restored durable submit test passes **10/10 under native CPU saturation**,
+with **11 busy loops for 11 reported CPUs**. The driver terminates and reaps its
+load processes before either full suite. The focused startup/drift check passes
+**11 cases**. The final full native results are:
+
+| Python | SQLite | Full result | Coverage | Duration |
+| --- | --- | --- | --- | --- |
+| 3.12.16 | 3.53.1 | 2,109 passed | 95.33% | 116.05 s |
+| 3.13.2 | 3.50.4 | 2,109 passed | 95.36% | 115.34 s |
+
+Locked installs, Ruff, formatting and strict mypy (**103 files**) pass on both.
+The development environment is restored to Python 3.12 afterward. Normal npm ci
+and every AGENTS.md frontend command pass on Node **24.5.0** / npm **11.5.1**:
+**36 unit / 12 browser / 1 integration** tests, including browser installation.
+Frontend checks run after both full native suites, without overlapping heavy
+work. Both the base Compose configuration and its controlled-prediction overlay
+validate. An initial attempt to validate the overlay without its required base
+file is retained as a setup error, not a product failure or a passing check.
+No full emulated Linux suite is run. New Linux/container smoke results wait for
+the hosted checkpoint; the earlier hosted result above belongs to 8b7acc0.
+
+The final **169-file runtime/configuration payload** hashes to
+`0961c3b36f1566678b8432a5804478cef59b3e8bf802347f6f6dd124ffc12265`.
+The complete **214-file reviewable tree excluding this checkpoint itself** hashes
+to `06c70b91e4a82694dcc0d9c7e1a3002e3b845e833a05296323ba38a2aff8bed8`.
+Encoding is SHA-256 of compact sorted JSON maps from paths to raw-byte SHA-256
+hashes. Raw maps and `tested-change-identity.json` are retained in the round-8
+output directory. Runtime inputs predate the final native checks; **118 protected
+production/backend-script/infra/frontend/schema/license/configuration/lock files**
+equal the starting tree. The raw artifact manifest is separate from source
+identity.
+
+### Round-8 hosted checkpoint — awaiting authorization
+
+The follow-up remains uncommitted on **fix/nf04-m2-round7-hardening** at 8b7acc0.
+The user requires separate approval before committing and before pushing this
+branch. No round-8 hosted run exists yet. After those approvals, record its URL,
+ID, push revision, runner/image, Python/SQLite versions, test/coverage counts,
+frontend and both smoke results, and conclusion. Main is not a commit, push or
+merge target; any change to main requires separate authorization.
 
 ## Remaining gates
 
